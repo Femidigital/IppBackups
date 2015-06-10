@@ -14,6 +14,7 @@ using System.Xml.Linq;
 using Microsoft.SqlServer.Management.Smo;
 using Microsoft.SqlServer.Management.Common;
 using System.IO;
+using Tools;
 
 
 namespace IppBackups
@@ -257,16 +258,19 @@ namespace IppBackups
             string dbDataSubFolderPath = dataFilePath + "\\" + databaseName;
             string dbLogSubFolderPath = logFilePath + "\\" + databaseName;
 
-            if(!Directory.Exists(dbDataSubFolderPath))
+            using (new Impersonator(userName, "OSCAR", password))
             {
-                lbl_Output.Text += "Creating Database Data Subfolder: " + dbDataSubFolderPath + ".\n";
-                Directory.CreateDirectory(dbDataSubFolderPath);
-            }
+                if (!Directory.Exists(dbDataSubFolderPath))
+                {
+                    lbl_Output.Text += "Creating Database Data Subfolder: " + dbDataSubFolderPath + ".\n";
+                    Directory.CreateDirectory(dbDataSubFolderPath);
+                }
 
-            if(!Directory.Exists(dbLogSubFolderPath))
-            {
-                lbl_Output.Text += "Creating Database Log Subfolder: " + dbLogSubFolderPath + ".\n";
-                Directory.CreateDirectory(dbLogSubFolderPath);
+                if (!Directory.Exists(dbLogSubFolderPath))
+                {
+                    lbl_Output.Text += "Creating Database Log Subfolder: " + dbLogSubFolderPath + ".\n";
+                    Directory.CreateDirectory(dbLogSubFolderPath);
+                }
             }
            
             //String dataFileLocation = dataFilePath + "\\" + databaseName + "\\" + databaseName + ".mdf";
