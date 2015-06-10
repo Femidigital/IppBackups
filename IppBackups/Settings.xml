@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Servers>
+  <Server name="DEV-SQL02" instance="DEV-SQL02, 1433" ip="10.103.109.81" user="OSCAR\Administrator" password="ca5ablanca" backups="F:\CBS">
+    <Environment name="TFS2010" data="H:\" log="L:\">TFS2010</Environment>
+  </Server>
+  <Server name="R1L1SQL01CLB" instance="R1L1SQL01CLB, 1500" ip="10.103.109.84" user="uat-cloudadmin" password="Password1" backups="S:\CBS">
+    <Environment name="UAT" data="E:\SQLData\Cloud" log="L:\Cloud">UAT</Environment>
+  </Server>
+  <Server name="R1L2SQL01CLB" instance="R1L2SQL01CLB, 1500" ip="10.103.109.85" user="qa-cloudadmin" password="Password1" backups="F:\CBS">
+    <Environment name="CI" data="E:\SQLData\Cloud" log="L:\Cloud">CI</Environment>
+    <Environment name="QA" data="E:\SQLData\Cloud" log="L:\Cloud">QA</Environment>
+  </Server>
+  <Server name="BSI10DBX03CLB" instance="BSI10DBX03CLB, 1433" ip="10.45.87.43" user="prod-cloudadmin" password="!C0mm4nd1ng$" backups="S:\CBS">
+    <Environment name="PPD" data="F:\MSSQL\Data" log="L:\MSSQL\Logs">PPD</Environment>
+    <Environment name="PROD" data="F:\MSSQL\Data" log="L:\MSSQL\Logs">PROD</Environment>
+  </Server>
+  <Server name="UK-CHDEVSQL01" instance="UK-CHDEVSQL01, 1433" ip="10.103.109.45" user="mig-cloudadmin" password="Password1" backups="\\10.103.109.159\C$\CBS">
+    <Environment name="MIG" data="E:\SQLData" log="E:\SQLLogs">MIG</Environment>
+  </Server>
+  <Server name="UK-CHFMIGSQL" instance="UK-CHFMIGSQL, 1433" ip="10.103.109.56" user="uat-cloudadmin" password="Password1" backups="C:\CBS">
+    <Environment name="TEST" data="C:\SQLData" log="C:\SQLLogs">TEST</Environment>
+  </Server>
+  <Server name="R1L1SQL03CLB" instance="" ip="10.103.109.87" user="uat-admin" password="Password1" backups="">
+    <Environment name="" data="" log="">
+    </Environment>
+    <Environment name="TESTDEV02" data="D:/SQL/DATA" log="L:/SQL/DATA">TESTDEV02</Environment>
+  </Server>
+  <Server name="R1L2SQL04CLB" instance="" ip="10.103.109.86" user="uat-cloudadmin" password="Password1" backups="">
+    <Environment name="" data="" log="">
+    </Environment>
+    <Environment name="TESTDEV03" data="D:/DATA" log="F:/LOGS">TESTDEV03</Environment>
+  </Server>
+</Servers>
