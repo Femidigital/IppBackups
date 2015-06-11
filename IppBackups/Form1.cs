@@ -239,27 +239,36 @@ namespace IppBackups
 
         }
 
-        public void RestoreDatabase(String databaseName, String filePath, String serverName, String userName, String password, String dataFilePath, String logFilePath)
+        public void RestoreDatabase(String databaseName, String filePath, String serverName, String userName, String password, String dataFilePath, String logFilePath, String localCopyBackup)
         {
             
-            Restore sqlRestore = new Restore();
+            //Restore sqlRestore = new Restore();
 
-            BackupDeviceItem deviceItem = new BackupDeviceItem(filePath, DeviceType.File);
-            sqlRestore.Devices.Add(deviceItem);
-            sqlRestore.Database = databaseName;
+            //BackupDeviceItem deviceItem = new BackupDeviceItem(filePath, DeviceType.File);
+            //sqlRestore.Devices.Add(deviceItem);
+            //sqlRestore.Database = databaseName;
+            //lbl_Output.Text += "Before connecttion \n";
+            //ServerConnection connection = new ServerConnection(serverName, userName, password);
+            //Server sqlServer = new Server(connection);
+            //lbl_Output.Text += "After connecttion \n";
 
-            ServerConnection connection = new ServerConnection(serverName, userName, password);
-            Server sqlServer = new Server(connection);
-
-
-            Database db = sqlServer.Databases[databaseName];
-            sqlRestore.Action = RestoreActionType.Database;
+            //Database db = sqlServer.Databases[databaseName];
+            //sqlRestore.Action = RestoreActionType.Database;
 
             string dbDataSubFolderPath = dataFilePath + "\\" + databaseName;
             string dbLogSubFolderPath = logFilePath + "\\" + databaseName;
+            string CopiedBackup = "\\\\" + serverName + "\\" + System.IO.Path.Combine(localCopyBackup, databaseName + ".bak");
+            string targetCopy = CopiedBackup.Replace(":", "$");
 
-            using (new Impersonator(userName, "OSCAR", password))
-            {
+            /* Try connecting to the restore Server */
+
+            //Microsoft.SqlServer.Management.Smo.Server selected_rServer = new Microsoft.SqlServer.Management.Smo.Server(curSrvInstance);
+            //selected_rServer.ConnectionContext.LoginSecure = false;
+            //selected_rServer.ConnectionContext.Login = userName;
+            //selected_rServer.ConnectionContext.Password = password;
+
+            //using (new Impersonator(userName, "BSI-GLOBAL" , password))
+            //{
                 if (!Directory.Exists(dbDataSubFolderPath))
                 {
                     lbl_Output.Text += "Creating Database Data Subfolder: " + dbDataSubFolderPath + ".\n";
@@ -271,7 +280,32 @@ namespace IppBackups
                     lbl_Output.Text += "Creating Database Log Subfolder: " + dbLogSubFolderPath + ".\n";
                     Directory.CreateDirectory(dbLogSubFolderPath);
                 }
-            }
+
+                lbl_Output.Text += "Copying backup file locally from: " + filePath + " to : " + targetCopy + "\n";
+                using (new Impersonator("oyefesoa", "PRIVATE", "Newpass11"))
+                {
+                    lbl_Output.Text += "Copying backup file locally \n";
+                    System.IO.File.Copy(filePath, targetCopy, true);
+                    lbl_Output.Text += "Copyied backup file locally \n";
+                }
+            //}
+
+            /* temp trial */
+
+            Restore sqlRestore = new Restore();
+
+            BackupDeviceItem deviceItem = new BackupDeviceItem(filePath, DeviceType.File);
+            sqlRestore.Devices.Add(deviceItem);
+            sqlRestore.Database = databaseName;
+            lbl_Output.Text += "Before connecttion \n";
+            ServerConnection connection = new ServerConnection(serverName, userName, password);
+            Server sqlServer = new Server(connection);
+            lbl_Output.Text += "After connecttion \n";
+
+            Database db = sqlServer.Databases[databaseName];
+            sqlRestore.Action = RestoreActionType.Database;
+
+            /* temp trial */
            
             //String dataFileLocation = dataFilePath + "\\" + databaseName + "\\" + databaseName + ".mdf";
             //String logFileLocation = logFilePath + "\\" + databaseName + "\\" + databaseName + "_Log.ldf";
@@ -468,11 +502,12 @@ namespace IppBackups
                 doc.Load(sXmlFile);
                 var sServer = doc.SelectSingleNode("/Servers/Server[@name='" + cBox_DestServer.SelectedItem.ToString() + "']");
                 var environment = doc.SelectSingleNode("/Servers/Server/Environment[@name='" + cBox_DestEnvironment.SelectedItem.ToString() + "']");
-                string srvName = sServer.Attributes["instance"].Value;
+                string srvName = sServer.Attributes["name"].Value;
                 string dataFilePath = environment.Attributes["data"].Value;
                 string logFilePath = environment.Attributes["log"].Value;
                 string restore_dataFilePath = "\\\\" + cBox_DestServer.Text + "\\" + dataFilePath.Replace(":", "$");
                 string restore_logFilePath = "\\\\" + cBox_DestServer.Text + "\\" + logFilePath.Replace(":", "$");
+                string localcopy = sServer.Attributes["backups"].Value;
 
                 // try another connection method
                 r_sUsername = sServer.Attributes["user"].Value;
@@ -497,9 +532,9 @@ namespace IppBackups
                         //RestoreDatabase(String databaseName, String filePath, String serverName, String userName, String password, String dataFilePath, String logFilePath)
                         //BackupDatabase(db, sUsername, sPassword, curSrvInstance, destPath);
                         lbl_Output.Text += "Restore : " + db + " database to " + restore_db + " database on : " + filePath + " to : " + restore_dataFilePath + " and : " + restore_logFilePath + "'\n";
-                        lbl_Output.Text += "User : " + r_sUsername + " with password " + r_sPassword + "'\n";
+                        lbl_Output.Text += "User : " + r_sUsername + "'\n";
                         //RestoreDatabase(restore_db, filePath, srvName, r_sUsername, r_sPassword, dataFilePath, logFilePath);
-                        RestoreDatabase(restore_db, filePath, srvName, r_sUsername, r_sPassword, restore_dataFilePath, restore_logFilePath);
+                        RestoreDatabase(restore_db, filePath, srvName, r_sUsername, r_sPassword, restore_dataFilePath, restore_logFilePath, localcopy);
                         //worker.ReportProgress();
                     }
                     catch (Exception ex)
