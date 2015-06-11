@@ -18,6 +18,7 @@ namespace IppBackups
     {
         private string ConfigFileName = ConfigurationManager.AppSettings["ConfigFileName"];
         private string sSettingPath = ConfigurationManager.AppSettings["SettingsPath"];
+        XmlDocument doc = new XmlDocument();
         string sXmlFile = "";
         bool bServer = false;
         bool bEnvironment = false;
@@ -39,7 +40,7 @@ namespace IppBackups
             
             try
             {
-                XmlDocument doc = new XmlDocument();
+                //XmlDocument doc = new XmlDocument();
                 doc.Load(sXmlFile);
 
                 tView_Servers.Nodes.Clear();
@@ -124,8 +125,10 @@ namespace IppBackups
 
         void tView_Servers_NodeMouseClick(object sender, System.Windows.Forms.TreeNodeMouseClickEventArgs e)
         {
+            /* Now using global variable
             XmlDocument doc = new XmlDocument();
             doc.Load(sXmlFile);
+             */
 
             XmlNode nNode;
             XmlNode pNode;
@@ -400,10 +403,12 @@ namespace IppBackups
         private void btn_Apply_Click(object sender, EventArgs e)
         {
             string nodeType = "";
+            /* Now using a global variable.
             XmlDocument doc2 = new XmlDocument();
-            doc2.Load(sXmlFile);
+             */
+            doc.Load(sXmlFile);
 
-            XmlNode root = doc2.DocumentElement;
+            XmlNode root = doc.DocumentElement;
 
             if (bServer)
             {
@@ -415,32 +420,32 @@ namespace IppBackups
             }
 
             //Create a new node.
-            XmlElement elem = doc2.CreateElement("Server");
+            XmlElement elem = doc.CreateElement("Server");
 
             //Create Attributes.
-            XmlAttribute name = doc2.CreateAttribute("name");
+            XmlAttribute name = doc.CreateAttribute("name");
             name.Value = tBox_ServerName.Text;
-            XmlAttribute instance = doc2.CreateAttribute("instance");
-            instance.Value = "";
-            XmlAttribute ip = doc2.CreateAttribute("ip");
+            XmlAttribute instance = doc.CreateAttribute("instance");
+            instance.Value = tBox_Instance.Text;
+            XmlAttribute ip = doc.CreateAttribute("ip");
             ip.Value = tBox_IPaddress.Text;
-            XmlAttribute user = doc2.CreateAttribute("user");
+            XmlAttribute user = doc.CreateAttribute("user");
             user.Value = tBox_Username.Text;
-            XmlAttribute password = doc2.CreateAttribute("password");
+            XmlAttribute password = doc.CreateAttribute("password");
             password.Value = tBox_Password.Text;
-            XmlAttribute backups = doc2.CreateAttribute("backups");
-            backups.Value = "";
+            XmlAttribute backups = doc.CreateAttribute("backups");
+            backups.Value = tBox_BackupLocation.Text;
 
             // Create and empty Environment Node under new Server.
-            XmlElement elemEnv = doc2.CreateElement("Environment");
+            XmlElement elemEnv = doc.CreateElement("Environment");
             elemEnv.InnerText = tBox_Environment.Text;
 
             //Create Blank Attributes for blank Environment Node.
-            XmlAttribute EnvName = doc2.CreateAttribute("name");
+            XmlAttribute EnvName = doc.CreateAttribute("name");
             EnvName.Value = tBox_Environment.Text;
-            XmlAttribute data = doc2.CreateAttribute("data");
+            XmlAttribute data = doc.CreateAttribute("data");
             data.Value = tBox_DataFile.Text;
-            XmlAttribute log = doc2.CreateAttribute("log");
+            XmlAttribute log = doc.CreateAttribute("log");
             log.Value = tBox_LogFiles.Text;
 
 
@@ -461,11 +466,11 @@ namespace IppBackups
                 root.InsertAfter(elem, root.LastChild);
             }
             
-            XmlNode elemServ = doc2.SelectSingleNode("//Server[@name='" + tBox_ServerName.Text + "']");
+            XmlNode elemServ = doc.SelectSingleNode("//Server[@name='" + tBox_ServerName.Text + "']");
            
             elemServ.AppendChild(elemEnv);
 
-            doc2.Save(sXmlFile);
+            doc.Save(sXmlFile);
 
             btn_Apply.Enabled = false;
             DisableServerDetails();
