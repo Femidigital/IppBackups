@@ -282,11 +282,21 @@ namespace IppBackups
                 }
 
                 lbl_Output.Text += "Copying backup file locally from: " + filePath + " to : " + targetCopy + "\n";
-                using (new Impersonator("oyefesoa", "PRIVATE", "Newpass11"))
+                using (new Impersonator("oyefesoa", "Private", "Newpass11"))
                 {
+                    lbl_Output.Text += "Display files in Source...\n";
+                    DirectoryInfo SourcefilePaths = new DirectoryInfo(@"\\R1L1SQL01CLB\S$\CBS");
+                    FileInfo[] Files = SourcefilePaths.GetFiles("*.*");
+                    foreach (FileInfo file in Files)
+                    {
+                        lbl_Output.Text += file.Name + "\n";
+                    }
+
+                    /*
                     lbl_Output.Text += "Copying backup file locally \n";
                     System.IO.File.Copy(filePath, targetCopy, true);
                     lbl_Output.Text += "Copyied backup file locally \n";
+                     */
                 }
             //}
 

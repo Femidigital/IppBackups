@@ -21,7 +21,9 @@ namespace IppBackups
         XmlDocument doc = new XmlDocument();
         string sXmlFile = "";
         bool bServer = false;
+        bool bServer_Edit = false;
         bool bEnvironment = false;
+        bool bEnvironment_Edit = false;
 
         public Settings()
         {
@@ -267,6 +269,7 @@ namespace IppBackups
 
             if(m.Text.ToLower() == "new server")
             {
+                bServer = true;
                 actionText = "New Server";
                 //string newSrvName = MessageBox("New Server");
                 TreeNode newNode = new TreeNode("New Server");
@@ -284,6 +287,7 @@ namespace IppBackups
             }
             else if (m.Text.ToLower() == "new environment")
             {
+                bEnvironment = true;
                 actionText = "New Environment";
 
                 TreeNode newEnvNode = new TreeNode("New Environment");
@@ -300,6 +304,7 @@ namespace IppBackups
             }
             else if (m.Text.ToLower() == "edit server")
             {
+                bServer_Edit = true;
                 actionText = "Edit Server Click";
                 EnableServerDetails();
                 //btn_Apply.Enabled = true;
@@ -316,6 +321,7 @@ namespace IppBackups
             }
             else if (m.Text.ToLower() == "edit environment")
             {
+                bEnvironment = true;
                 actionText = "Edit Environment Click";
                 EnableEnvironmentDetails();
                 //btn_Apply.Enabled = true;
@@ -464,6 +470,21 @@ namespace IppBackups
             {
                 //Add the node to the document.
                 root.InsertAfter(elem, root.LastChild);
+                bServer = false;
+            }
+            else if ( bServer_Edit )
+            {
+                XmlNode oldElem = doc.SelectSingleNode("//Server[@name='" + tBox_ServerName.Text + "']");
+                root.ReplaceChild(elem, oldElem);
+                bServer_Edit = false;
+            }
+            else if ( bEnvironment )
+            {
+                bEnvironment = false;
+            }
+            else if ( bEnvironment_Edit)
+            {
+                bEnvironment = false;
             }
             
             XmlNode elemServ = doc.SelectSingleNode("//Server[@name='" + tBox_ServerName.Text + "']");
