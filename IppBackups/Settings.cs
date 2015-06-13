@@ -416,14 +416,14 @@ namespace IppBackups
 
             XmlNode root = doc.DocumentElement;
 
-            if (bServer)
-            {
-                nodeType = "Server";
-            }
-            else
-            {
-                nodeType = "Environemnt";
-            }
+            //if (bServer)
+            //{
+            //    nodeType = "Server";
+            //}
+            //else
+            //{
+            //    nodeType = "Environemnt";
+            //}
 
             //Create a new node.
             XmlElement elem = doc.CreateElement("Server");
@@ -475,7 +475,12 @@ namespace IppBackups
             else if ( bServer_Edit )
             {
                 XmlNode oldElem = doc.SelectSingleNode("//Server[@name='" + tBox_ServerName.Text + "']");
-                root.ReplaceChild(elem, oldElem);
+                oldElem.Attributes["instance"].Value = tBox_Instance.Text;
+                oldElem.Attributes["ip"].Value = tBox_IPaddress.Text;
+                oldElem.Attributes["user"].Value = tBox_Username.Text;
+                oldElem.Attributes["password"].Value = tBox_Password.Text;
+                oldElem.Attributes["backups"].Value = tBox_BackupLocation.Text;
+               // root.ReplaceChild(elem, oldElem);
                 bServer_Edit = false;
             }
             else if ( bEnvironment )
@@ -487,9 +492,9 @@ namespace IppBackups
                 bEnvironment = false;
             }
             
-            XmlNode elemServ = doc.SelectSingleNode("//Server[@name='" + tBox_ServerName.Text + "']");
+            //XmlNode elemServ = doc.SelectSingleNode("//Server[@name='" + tBox_ServerName.Text + "']");
            
-            elemServ.AppendChild(elemEnv);
+            //elemServ.AppendChild(elemEnv);
 
             doc.Save(sXmlFile);
 
