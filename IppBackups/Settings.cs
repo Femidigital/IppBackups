@@ -243,12 +243,12 @@ namespace IppBackups
             if (tView_Servers.SelectedNode.Parent.Text == "Servers")
             {
                 tBox_ServerName.Text = node.Text;
-                bServer = true;
+                //bServer = true;
             }
             else
             {
                 tBox_Environment.Text = node.Text;
-                bEnvironment = true;
+                //bEnvironment = true;
             }
 
             btn_Apply.Enabled = true;
@@ -321,7 +321,7 @@ namespace IppBackups
             }
             else if (m.Text.ToLower() == "edit environment")
             {
-                bEnvironment = true;
+                bEnvironment_Edit = true;
                 actionText = "Edit Environment Click";
                 EnableEnvironmentDetails();
                 //btn_Apply.Enabled = true;
@@ -489,6 +489,9 @@ namespace IppBackups
             }
             else if ( bEnvironment_Edit)
             {
+                XmlNode envNode = doc.SelectSingleNode("//Environment[@name='" + tBox_Environment.Text + "']");
+                envNode.Attributes["data"].Value = tBox_DataFile.Text;
+                envNode.Attributes["log"].Value = tBox_LogFiles.Text;
                 bEnvironment = false;
             }
             
