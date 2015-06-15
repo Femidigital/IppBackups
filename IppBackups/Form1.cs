@@ -301,7 +301,7 @@ namespace IppBackups
                     }
                                 
                     lbl_Output.Text += "Copying backup file locally \n";
-                    System.IO.File.Copy(filePath, targetCopy, true);
+//System.IO.File.Copy(filePath, targetCopy, true);
                     lbl_Output.Text += "Copyied backup file locally \n";
                     
                 //}
@@ -322,20 +322,22 @@ namespace IppBackups
                 ServerConnection connection = new ServerConnection(serverInstance, userName, password);
                 Server sqlServer = new Server(connection);
                 /* last known success */
-                
-                Database db = sqlServer.Databases[databaseName];
-                sqlRestore.Action = RestoreActionType.Database;
-               
-                /* temp trial */
 
-                //String dataFileLocation = dataFilePath + "\\" + databaseName + "\\" + databaseName + ".mdf";
-                //String logFileLocation = logFilePath + "\\" + databaseName + "\\" + databaseName + "_Log.ldf";
-                string dataFileLocation = dbDataSubFolderPath + "\\" + databaseName + ".mdf";
-                string logFileLocation = dbLogSubFolderPath + "\\" + databaseName + "_Log.ldf";
-                
-                db = sqlServer.Databases[databaseName];
-                RelocateFile rf = new RelocateFile(databaseName, dataFileLocation);
-                
+               
+                    Database db = sqlServer.Databases[databaseName];
+                    sqlRestore.Action = RestoreActionType.Database;
+                    
+                    /* temp trial */
+
+                    //String dataFileLocation = dataFilePath + "\\" + databaseName + "\\" + databaseName + ".mdf";
+                    //String logFileLocation = logFilePath + "\\" + databaseName + "\\" + databaseName + "_Log.ldf";
+                    string dataFileLocation = dbDataSubFolderPath + "\\" + databaseName + ".mdf";
+                    string logFileLocation = dbLogSubFolderPath + "\\" + databaseName + "_Log.ldf";
+                    try
+                    {    
+                    db = sqlServer.Databases[databaseName];
+                    RelocateFile rf = new RelocateFile(databaseName, dataFileLocation);
+                    
                 //sqlRestore.RelocateFiles.Add(new RelocateFile(databaseName, dataFileLocation));
                 //sqlRestore.RelocateFiles.Add(new RelocateFile(databaseName + "_log", logFileLocation));
 
@@ -351,8 +353,7 @@ namespace IppBackups
                     sqlRestore.PercentComplete += new PercentCompleteEventHandler(sqlRestore_PercentComplete);
                     lbl_Output.Text += "About to restore... '\n";
                 
-                    try
-                    {
+                   
                         sqlRestore.SqlRestore(sqlServer);
                     }
                     catch (Exception ex)
