@@ -39,7 +39,7 @@ namespace IppBackups
         enum Environments
         {
             TEST = 0,
-            Dev = 1,
+            DEV = 1,
             MIG = 2,
             CI = 3,
             QA = 4,
