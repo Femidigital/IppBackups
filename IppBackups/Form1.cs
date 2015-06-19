@@ -260,16 +260,14 @@ namespace IppBackups
                 Directory.CreateDirectory(dbLogSubFolderPath);
             }
 
-            DirectoryInfo SourcefilePaths = new DirectoryInfo(filePath.Substring(0,filePath.LastIndexOf("\\")));
-            FileInfo[] Files = SourcefilePaths.GetFiles("*.*");
-            foreach (FileInfo file in Files)
-            {
-                lbl_Output.Text += file.Name + "\n";
-            }
-                                
+           
             lbl_Output.Text += "Copying backup file locally \n";
+            lbl_Output.Text += "Copying from : " + filePath + "\n";
+            lbl_Output.Text += "Copying to : " + targetCopy + "\n";
             System.IO.File.Copy(filePath, targetCopy, true);
+
             lbl_Output.Text += "Copyied backup file locally \n";
+
 
             targetCopy = localiseUNCPath(targetCopy);
 
@@ -324,32 +322,18 @@ namespace IppBackups
 
         public void RestoreDatabase(String databaseName, String filePath, String serverName, String userName, String password, String dataFilePath, String logFilePath)
         {
-
-            Restore sqlRestore = new Restore();
-
-            BackupDeviceItem deviceItem = new BackupDeviceItem(filePath, DeviceType.File);
-            sqlRestore.Devices.Add(deviceItem);
-            sqlRestore.Database = databaseName;
-
-            ServerConnection connection = new ServerConnection(serverName, userName, password);
-            Server sqlServer = new Server(connection);
-
-
-            Database db = sqlServer.Databases[databaseName];
-            sqlRestore.Action = RestoreActionType.Database;
-
             string dbDataSubFolderPath = dataFilePath + "\\" + databaseName;
             string dbLogSubFolderPath = logFilePath + "\\" + databaseName;
 
             if (!Directory.Exists(@dbDataSubFolderPath))
             {
-                lbl_Output.Text += "Creating Database Data Subfolder. '\n";
+                lbl_Output.Text += "Creating Database Data Subfolder. " + dbDataSubFolderPath + "\n";
                 Directory.CreateDirectory(dbDataSubFolderPath);
             }
 
             if (!Directory.Exists(@dbLogSubFolderPath))
             {
-                lbl_Output.Text += "Creating Database Log Subfolder. '\n";
+                lbl_Output.Text += "Creating Database Log Subfolder. " + dbLogSubFolderPath + "\n";
                 Directory.CreateDirectory(dbLogSubFolderPath);
             }
 
@@ -358,12 +342,91 @@ namespace IppBackups
             string dataFileLocation = dbDataSubFolderPath + "\\" + databaseName + ".mdf";
             string logFileLocation = dbLogSubFolderPath + "\\" + databaseName + "_Log.ldf";
 
+            Restore sqlRestore = new Restore();
+
+            BackupDeviceItem deviceItem = new BackupDeviceItem(filePath, DeviceType.File);
+            sqlRestore.Devices.Add(deviceItem);
+            sqlRestore.Database = databaseName;
+
+            ServerConnection connection = new ServerConnection(serverName, userName, password);
+            //ServerConnection connection = new ServerConnection(serverName);
+            Server sqlServer = new Server(connection);
+
+
+            Database db = sqlServer.Databases[databaseName];
+            sqlRestore.Action = RestoreActionType.Database;
+
             db = sqlServer.Databases[databaseName];
             RelocateFile rf = new RelocateFile(databaseName, dataFileLocation);
 
             //sqlRestore.RelocateFiles.Add(new RelocateFile(databaseName, dataFileLocation));
             //sqlRestore.RelocateFiles.Add(new RelocateFile(databaseName + "_log", logFileLocation));
 
+
+            System.Data.DataTable logicalRestoreFiles = sqlRestore.ReadFileList(sqlServer);
+            sqlRestore.RelocateFiles.Add(new RelocateFile(logicalRestoreFiles.Rows[0][0].ToString(), dataFileLocation));
+            sqlRestore.RelocateFiles.Add(new RelocateFile(logicalRestoreFiles.Rows[1][0].ToString(), logFileLocation));
+            sqlRestore.ReplaceDatabase = true;
+            sqlRestore.Complete += new ServerMessageEventHandler(sqlRestore_Complete);
+            sqlRestore.PercentCompleteNotification = 10;
+            sqlRestore.PercentComplete += new PercentCompleteEventHandler(sqlRestore_PercentComplete);
+            lbl_Output.Text += "About to restore... '\n";
+
+            try
+            {
+                sqlRestore.SqlRestore(sqlServer);
+            }
+            catch (Exception ex)
+            {
+                lbl_Output.Text += ex.InnerException.Message + "'\n";
+                //lbl_Output.Text += ex.Message + "'\n";
+            }
+            db = sqlServer.Databases[databaseName];
+            db.FileGroups[0].Files[0].Rename(databaseName);
+            db.LogFiles[0].Rename(databaseName + "_log");
+            db.SetOnline();
+            sqlServer.Refresh();
+
+        }
+
+        public void RestoreDatabaseToPrivate(String databaseName, String filePath, String serverName, String serverInstance, String userName, String password, String dataFilePath, String logFilePath, String localCopyBackup)
+        {
+            string dbDataSubFolderPath = dataFilePath + "\\" + databaseName;
+            string dbLogSubFolderPath = logFilePath + "\\" + databaseName;
+            string CopiedBackup = "\\\\" + serverName + "\\" + System.IO.Path.Combine(localCopyBackup, databaseName + ".bak");
+            string targetCopy = CopiedBackup.Replace(":", "$");
+
+            if (!Directory.Exists(@dbDataSubFolderPath))
+            {
+                lbl_Output.Text += "Creating Database Data Subfolder. " + dbDataSubFolderPath + "\n";
+                Directory.CreateDirectory(dbDataSubFolderPath);
+            }
+
+            if (!Directory.Exists(@dbLogSubFolderPath))
+            {
+                lbl_Output.Text += "Creating Database Log Subfolder. " + dbLogSubFolderPath + "\n";
+                Directory.CreateDirectory(dbLogSubFolderPath);
+            }
+
+            string dataFileLocation = dbDataSubFolderPath + "\\" + databaseName + ".mdf";
+            string logFileLocation = dbLogSubFolderPath + "\\" + databaseName + "_Log.ldf";
+
+            Restore sqlRestore = new Restore();
+
+            BackupDeviceItem deviceItem = new BackupDeviceItem(filePath, DeviceType.File);
+            sqlRestore.Devices.Add(deviceItem);
+            sqlRestore.Database = databaseName;
+
+            ServerConnection connection = new ServerConnection(serverName, userName, password);
+
+            Server sqlServer = new Server(connection);
+
+
+            Database db = sqlServer.Databases[databaseName];
+            sqlRestore.Action = RestoreActionType.Database;
+
+            db = sqlServer.Databases[databaseName];
+            RelocateFile rf = new RelocateFile(databaseName, dataFileLocation);
 
             System.Data.DataTable logicalRestoreFiles = sqlRestore.ReadFileList(sqlServer);
             sqlRestore.RelocateFiles.Add(new RelocateFile(logicalRestoreFiles.Rows[0][0].ToString(), dataFileLocation));
@@ -582,8 +645,19 @@ namespace IppBackups
                         // Perform a time consuming operation and report progress
                         lbl_Output.Text += "Restore : " + db + " database to " + restore_db + " database on : " + filePath + " to : " + restore_dataFilePath + " and : " + restore_logFilePath + "'\n";
                         lbl_Output.Text += "User : " + r_sUsername + "'\n";
-                        //RestoreDatabase(restore_db, filePath, srvName, r_sUsername, r_sPassword, dataFilePath, logFilePath);
-                        RestoreDatabaseToOscar(restore_db, filePath, srvName, srvInstance ,r_sUsername, r_sPassword, restore_dataFilePath, restore_logFilePath, localcopy);
+                        lbl_Output.Text += "Selected destination server  : " + cBox_DestServer.Text + "\n";
+                        if (cBox_DestServer.Text == "UK-CHFMIGSQL")
+                        {
+                            lbl_Output.Text += "Restoring database to OSCAR domain.\n";
+                            RestoreDatabaseToOscar(restore_db, filePath, srvName, srvInstance, r_sUsername, r_sPassword, restore_dataFilePath, restore_logFilePath, localcopy);
+                        }
+                        else
+                        {
+                            lbl_Output.Text += "Restoring database to PRIVATE domain.\n";
+                           // RestoreDatabase(restore_db, filePath, srvName, r_sUsername, r_sPassword, dataFilePath, logFilePath);
+                            RestoreDatabaseToPrivate(restore_db, filePath, srvName, srvInstance, r_sUsername, r_sPassword, restore_dataFilePath, restore_logFilePath, localcopy);
+                        }
+                        
                         //worker.ReportProgress();
                     }
                     catch (Exception ex)
