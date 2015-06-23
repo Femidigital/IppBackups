@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,7 @@ using System.Windows.Forms;
 using System.Configuration;
 using System.Xml;
 using System.Xml.Linq;
+using System.Collections.Specialized;
 using Microsoft.SqlServer.Management.Smo;
 using Microsoft.SqlServer.Management.Common;
 using System.IO;
@@ -658,6 +660,16 @@ namespace IppBackups
                             RestoreDatabaseToPrivate(restore_db, filePath, srvName, srvInstance, r_sUsername, r_sPassword, restore_dataFilePath, restore_logFilePath, localcopy);
                         }
                         
+                        if ( db.Contains("BSOL") || db.Contains("CloudAdmin"))
+                        {
+                            Server myServer = new Server(@cBox_DestServer.Text);
+                            GenerateViewScript(myServer, db);
+                        }
+
+                        if ( db.Contains("CloudAdmin") || db.Contains("PersonalData"))
+                        {
+                            update_DatabaseEntries(cBox_DestEnvironment.Text);
+                        }
                         //worker.ReportProgress();
                     }
                     catch (Exception ex)
@@ -731,6 +743,45 @@ namespace IppBackups
                 cBox_DestEnvironment.Items.Add(xEnvironment.InnerText);
             }
             cBox_DestEnvironment.SelectedItem = cBox_DestEnvironment.Items[0];
+        }
+
+        private void update_DatabaseEntries(string env)
+        {
+            lbl_Output.Text += "Updating Database entries for CloudAdmin...\n";
+            string sqlConnectionString = "";
+            string scriptFile = "UpdateDatabaseEntries-" + env + ".sql";
+            FileInfo file = new FileInfo(scriptFile);
+            string script = file.OpenText().ReadToEnd();
+            SqlConnection conn = new SqlConnection(sqlConnectionString);
+            Server server = new Server(new ServerConnection(conn));
+            server.ConnectionContext.ExecuteNonQuery(script);
+            lbl_Output.Text += "Update completed...\n";
+        }
+
+        private void GenerateViewScript( Server rServer, string db)
+        {
+            Scripter scripter = new Scripter(rServer);
+            Database restoreDb = rServer.Databases[db];
+
+            lbl_Output.Text += "Generating Script for creating Views in : " + db + " on " + rServer + "\n";
+            /* With ScriptingOptions you can specify different scripting options,
+             * for example to include IF NOT EXISTS, DROP statements, output location etc */
+            ScriptingOptions scriptOptions = new ScriptingOptions();
+            scriptOptions.ScriptDrops = true;
+            scriptOptions.IncludeIfNotExists = true;
+            foreach (Microsoft.SqlServer.Management.Smo.View myView in restoreDb.Views)
+            {
+                /* Generating IF EXISTS and DROP command for views */
+                StringCollection viewScripts = myView.Script(scriptOptions);
+                foreach (string script in viewScripts)
+                    lbl_Output.Text += script + "\n";
+                /* Generating CREATE VIEW command */
+                viewScripts = myView.Script();
+                foreach (string script in viewScripts)
+                    lbl_Output.Text += script + "\n";
+
+            }
+            lbl_Output.Text += "View Scripts completed...\n";
         }
     }
 }
