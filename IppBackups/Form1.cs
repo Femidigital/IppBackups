@@ -659,16 +659,16 @@ namespace IppBackups
                            // RestoreDatabase(restore_db, filePath, srvName, r_sUsername, r_sPassword, dataFilePath, logFilePath);
                             RestoreDatabaseToPrivate(restore_db, filePath, srvName, srvInstance, r_sUsername, r_sPassword, restore_dataFilePath, restore_logFilePath, localcopy);
                         }
-                        
-                        if ( db.Contains("BSOL") || db.Contains("CloudAdmin"))
+
+                        if (restore_db.Contains("BSOL") || restore_db.Contains("CloudAdmin"))
                         {
-                            Server myServer = new Server(@cBox_DestServer.Text);
-                            GenerateViewScript(myServer, db);
+                            Server myServer = new Server(srvInstance);
+                            GenerateViewScript(myServer, restore_db);
                         }
 
-                        if ( db.Contains("CloudAdmin") || db.Contains("PersonalData"))
+                        if (restore_db.Contains("CloudAdmin") || restore_db.Contains("PersonalData"))
                         {
-                            update_DatabaseEntries(cBox_DestEnvironment.Text);
+                            update_DatabaseEntries(srvInstance ,cBox_DestEnvironment.Text);
                         }
                         //worker.ReportProgress();
                     }
@@ -745,16 +745,31 @@ namespace IppBackups
             cBox_DestEnvironment.SelectedItem = cBox_DestEnvironment.Items[0];
         }
 
-        private void update_DatabaseEntries(string env)
+        private void update_DatabaseEntries(string serverInstance, string env)
         {
             lbl_Output.Text += "Updating Database entries for CloudAdmin...\n";
-            string sqlConnectionString = "";
+            
+           // string sqlConnectionString = "";
             string scriptFile = "UpdateDatabaseEntries-" + env + ".sql";
             FileInfo file = new FileInfo(scriptFile);
             string script = file.OpenText().ReadToEnd();
-            SqlConnection conn = new SqlConnection(sqlConnectionString);
-            Server server = new Server(new ServerConnection(conn));
-            server.ConnectionContext.ExecuteNonQuery(script);
+            //SqlConnection conn = new SqlConnection(sqlConnectionString);
+            //Server server = new Server(new ServerConnection(conn));
+            lbl_Output.Text += "Loading file from: " + scriptFile + "\n";
+            ServerConnection connection = new ServerConnection(serverInstance);
+            Server sqlServer = new Server(connection);
+            try
+            {
+                sqlServer.ConnectionContext.ExecuteNonQuery(script);
+            }
+            catch(SqlServerManagementException e)
+            {
+                lbl_Output.Text += e.InnerException + "\n";
+            }
+            catch(SqlException e)
+            {
+                lbl_Output.Text += e.InnerException + "\n";
+            }
             lbl_Output.Text += "Update completed...\n";
         }
 
@@ -762,6 +777,7 @@ namespace IppBackups
         {
             Scripter scripter = new Scripter(rServer);
             Database restoreDb = rServer.Databases[db];
+            System.IO.StreamWriter sqlFile = new StreamWriter("CreateView_" + db + ".sql");
 
             lbl_Output.Text += "Generating Script for creating Views in : " + db + " on " + rServer + "\n";
             /* With ScriptingOptions you can specify different scripting options,
@@ -774,11 +790,19 @@ namespace IppBackups
                 /* Generating IF EXISTS and DROP command for views */
                 StringCollection viewScripts = myView.Script(scriptOptions);
                 foreach (string script in viewScripts)
-                    lbl_Output.Text += script + "\n";
+                {
+                    //lbl_Output.Text += script + "\n";
+                    sqlFile.WriteLine(script.Replace("[" + cBox_Environment.Text + "-", "[" + cBox_DestEnvironment.Text + "-"));
+                    // sqlFile.WriteLine(script);
+                }
                 /* Generating CREATE VIEW command */
                 viewScripts = myView.Script();
                 foreach (string script in viewScripts)
-                    lbl_Output.Text += script + "\n";
+                {
+                 //   lbl_Output.Text += script + "\n";
+                    sqlFile.WriteLine(script.Replace("[" + cBox_Environment.Text + "-", "[" + cBox_DestEnvironment.Text + "-"));
+                  //  sqlFile.WriteLine(script);
+                }
 
             }
             lbl_Output.Text += "View Scripts completed...\n";
