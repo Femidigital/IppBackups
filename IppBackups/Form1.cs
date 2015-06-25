@@ -668,7 +668,7 @@ namespace IppBackups
 
                         if (restore_db.Contains("CloudAdmin") || restore_db.Contains("PersonalData"))
                         {
-                            update_DatabaseEntries(srvInstance ,cBox_DestEnvironment.Text);
+                            update_DatabaseEntries(srvInstance ,cBox_DestEnvironment.Text, restore_db);
                         }
                         //worker.ReportProgress();
                     }
@@ -745,22 +745,25 @@ namespace IppBackups
             cBox_DestEnvironment.SelectedItem = cBox_DestEnvironment.Items[0];
         }
 
-        private void update_DatabaseEntries(string serverInstance, string env)
+        private void update_DatabaseEntries(string serverInstance, string env, string db)
         {
-            lbl_Output.Text += "Updating Database entries for CloudAdmin...\n";
-            
-           // string sqlConnectionString = "";
-            string scriptFile = "UpdateDatabaseEntries-" + env + ".sql";
+            lbl_Output.Text += "Updating Database entries for " + db + "...\n";
+
+            string sqlConnectionString = "Data Source=" + serverInstance + "; Initial Catalog=" + db + "; Integrated Security=SSPI;";
+            string scriptFile = "UpdateDatabaseEntries" + db.Substring(db.IndexOf("-") + 1) + "-" + env + ".sql";
             FileInfo file = new FileInfo(scriptFile);
             string script = file.OpenText().ReadToEnd();
-            //SqlConnection conn = new SqlConnection(sqlConnectionString);
-            //Server server = new Server(new ServerConnection(conn));
+            SqlConnection conn = new SqlConnection(sqlConnectionString);
+            conn.Open();
+            SqlCommand cmd = new SqlCommand(script,conn);
             lbl_Output.Text += "Loading file from: " + scriptFile + "\n";
-            ServerConnection connection = new ServerConnection(serverInstance);
-            Server sqlServer = new Server(connection);
+            //ServerConnection connection = new ServerConnection(serverInstance);
+            //Server sqlServer = new Server(connection);
             try
             {
-                sqlServer.ConnectionContext.ExecuteNonQuery(script);
+                //sqlServer.ConnectionContext.ExecuteNonQuery(script);
+                cmd.ExecuteNonQuery();
+                conn.Close();
             }
             catch(SqlServerManagementException e)
             {

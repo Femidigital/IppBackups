@@ -129,6 +129,9 @@
     <Content Include="Scripts\UpdateDatabaseEntries-UAT.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Scripts\UpdateDatabaseEntriesCloudAdmin-TEST.sql" />
+    <Content Include="Scripts\UpdateDatabaseEntriesEcommerce-TEST.sql" />
+    <Content Include="Scripts\UpdateDatabaseEntriesPersonalData-TEST.sql" />
     <Content Include="Settings.xml">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
