@@ -114,10 +114,30 @@
     <Content Include="Resources\Images\gear03.png" />
     <Content Include="Resources\Images\server.jpg" />
     <Content Include="Resources\Images\server_2.jpg" />
-    <Content Include="Scripts\UpdataDatabaseEntriesEcommerce-MIG.sql" />
-    <Content Include="Scripts\UpdateDatabaseEntriesCloudAdmin-MIG.sql" />
-    <Content Include="Scripts\UpdateDatabaseEntriesPersonalData-MIG.sql" />
-    <Content Include="Scripts\UpdateDatabaseEntriesPersonalData-UAT.sql" />
+    <Content Include="Scripts\KillAllConnectionsToDb.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\UpdataDatabaseEntriesEcommerce-MIG.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\UpdateDatabaseEntriesCloudAdmin-MIG.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\UpdateDatabaseEntriesCloudAdmin-PPD.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\UpdateDatabaseEntriesEcommerce-PPD.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\UpdateDatabaseEntriesPersonalData-MIG.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\UpdateDatabaseEntriesPersonalData-PPD.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\UpdateDatabaseEntriesPersonalData-UAT.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Scripts\UpdateDatabaseEntries-MIG.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -133,14 +153,30 @@
     <Content Include="Scripts\UpdateDatabaseEntries-UAT.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\UpdateDatabaseEntriesCloudAdmin-QA.sql" />
-    <Content Include="Scripts\UpdateDatabaseEntriesCloudAdmin-TEST.sql" />
-    <Content Include="Scripts\UpdateDatabaseEntriesCloudAdmin-UAT.sql" />
-    <Content Include="Scripts\UpdateDatabaseEntriesEcommerce-QA.sql" />
-    <Content Include="Scripts\UpdateDatabaseEntriesEcommerce-TEST.sql" />
-    <Content Include="Scripts\UpdateDatabaseEntriesEcommerce-UAT.sql" />
-    <Content Include="Scripts\UpdateDatabaseEntriesPersonalData-QA.sql" />
-    <Content Include="Scripts\UpdateDatabaseEntriesPersonalData-TEST.sql" />
+    <Content Include="Scripts\UpdateDatabaseEntriesCloudAdmin-QA.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\UpdateDatabaseEntriesCloudAdmin-TEST.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\UpdateDatabaseEntriesCloudAdmin-UAT.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\UpdateDatabaseEntriesEcommerce-QA.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\UpdateDatabaseEntriesEcommerce-TEST.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\UpdateDatabaseEntriesEcommerce-UAT.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\UpdateDatabaseEntriesPersonalData-QA.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\UpdateDatabaseEntriesPersonalData-TEST.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Settings.xml">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

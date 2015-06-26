@@ -37,6 +37,7 @@ namespace IppBackups
         string r_serverName = "";
         string r_sUsername = "";
         string r_sPassword = "";
+        Dictionary<string, bool> backStatus = new Dictionary<string, bool>();
 
         enum Environments
         {
@@ -503,6 +504,8 @@ namespace IppBackups
 
         private void btn_Execute_Click(object sender, EventArgs e)
         {
+            backStatus.Clear();
+
             if (rBtn_Backup.Checked)
             {
                 if (backupbackgroundWorker.IsBusy != true)
@@ -558,19 +561,30 @@ namespace IppBackups
                     try
                     {
                         string destPath = backupDestination + "\\" + db + ".bak";
-                        lbl_Output.Text += "Starting Backup for " + db + ".'\n";
+                        lbl_Output.Text += "Starting Backup for " + db + ".\n";
 
                         // Perform a time consuming operation and report progress
                         BackupDatabase(db, sUsername, sPassword, curSrvInstance, destPath);
+                        backStatus.Add(db, true);
                         //worker.ReportProgress();
                     }
                     catch (Exception ex)
                     {
+                        backStatus.Add(db, false);
                         lbl_Output.Text += ex.Message + "'\n";
                     }
                     finally
                     {
-                        lbl_Output.Text += "Backup completed...'\n";
+                        bool status;
+                        //if (backStatus.TryGetValue(db, out status))
+                        if(backStatus[db])
+                        {
+                            lbl_Output.Text += "Backup completed...\n";
+                        }
+                        else
+                        {
+                            lbl_Output.Text += "Backup completed with error(s)...\n";
+                        }
                         //restorebackgroundWorker.RunWorkerAsync();
                     }
                 }
@@ -594,10 +608,10 @@ namespace IppBackups
             }
             else
             {
-                lbl_Output.Text += "Done!";
+                lbl_Output.Text += "Done!!!\n\n";
                 if ( rBtn_Refresh.Checked)
                 {
-                    lbl_Output.Text += "Refresh environment... '\n";
+                    lbl_Output.Text += "Refreshing " + cBox_DestEnvironment.Text + " environment with selected database(s)... \n";
                     restorebackgroundWorker.RunWorkerAsync();
                 }
             }
@@ -638,47 +652,54 @@ namespace IppBackups
                 
                 foreach (string db in databaseList)
                 {
-                    try
+                    if (backStatus[db])
                     {
-                        string restore_db = db.Replace(cBox_Environment.Text, cBox_DestEnvironment.Text);
-                        string filePath = "\\\\" + curSrv + "\\" + backupDestination.Replace(":", "$") + "\\" + db + ".bak";
-                        lbl_Output.Text += "Starting restore for " + db + ".'\n";
+                        try
+                        {
+                            string restore_db = db.Replace(cBox_Environment.Text, cBox_DestEnvironment.Text);
+                            string filePath = "\\\\" + curSrv + "\\" + backupDestination.Replace(":", "$") + "\\" + db + ".bak";
+                            lbl_Output.Text += "Starting restore for " + db + ".'\n";
 
-                        // Perform a time consuming operation and report progress
-                        lbl_Output.Text += "Restore : " + db + " database to " + restore_db + " database on : " + filePath + " to : " + restore_dataFilePath + " and : " + restore_logFilePath + "'\n";
-                        lbl_Output.Text += "User : " + r_sUsername + "'\n";
-                        lbl_Output.Text += "Selected destination server  : " + cBox_DestServer.Text + "\n";
-                        if (cBox_DestServer.Text == "UK-CHFMIGSQL")
-                        {
-                            lbl_Output.Text += "Restoring database to OSCAR domain.\n";
-                            RestoreDatabaseToOscar(restore_db, filePath, srvName, srvInstance, r_sUsername, r_sPassword, restore_dataFilePath, restore_logFilePath, localcopy);
-                        }
-                        else
-                        {
-                            lbl_Output.Text += "Restoring database to PRIVATE domain.\n";
-                           // RestoreDatabase(restore_db, filePath, srvName, r_sUsername, r_sPassword, dataFilePath, logFilePath);
-                            RestoreDatabaseToPrivate(restore_db, filePath, srvName, srvInstance, r_sUsername, r_sPassword, restore_dataFilePath, restore_logFilePath, localcopy);
-                        }
+                            // Perform a time consuming operation and report progress
+                            lbl_Output.Text += "Restore : " + db + " database to " + restore_db + " database on : " + filePath + " to : " + restore_dataFilePath + " and : " + restore_logFilePath + "'\n";
+                            lbl_Output.Text += "User : " + r_sUsername + "'\n";
+                            lbl_Output.Text += "Selected destination server  : " + cBox_DestServer.Text + "\n";
+                            if (cBox_DestServer.Text == "UK-CHFMIGSQL")
+                            {
+                                lbl_Output.Text += "Restoring database to OSCAR domain.\n";
+                                RestoreDatabaseToOscar(restore_db, filePath, srvName, srvInstance, r_sUsername, r_sPassword, restore_dataFilePath, restore_logFilePath, localcopy);
+                            }
+                            else
+                            {
+                                lbl_Output.Text += "Restoring database to PRIVATE domain.\n";
+                                // RestoreDatabase(restore_db, filePath, srvName, r_sUsername, r_sPassword, dataFilePath, logFilePath);
+                                RestoreDatabaseToPrivate(restore_db, filePath, srvName, srvInstance, r_sUsername, r_sPassword, restore_dataFilePath, restore_logFilePath, localcopy);
+                            }
 
-                        if (restore_db.Contains("BSOL") || restore_db.Contains("CloudAdmin"))
-                        {
-                            Server myServer = new Server(srvInstance);
-                            GenerateViewScript(myServer, restore_db);
-                        }
+                            if (restore_db.Contains("BSOL") || restore_db.Contains("CloudAdmin"))
+                            {
+                                Server myServer = new Server(srvInstance);
+                                GenerateViewScript(myServer, restore_db);
+                            }
 
-                        if (restore_db.Contains("CloudAdmin") || restore_db.Contains("PersonalData"))
-                        {
-                            update_DatabaseEntries(srvInstance ,cBox_DestEnvironment.Text, restore_db);
+                            if (restore_db.Contains("CloudAdmin") || restore_db.Contains("PersonalData"))
+                            {
+                                update_DatabaseEntries(srvInstance, cBox_DestEnvironment.Text, restore_db);
+                            }
+                            //worker.ReportProgress();
                         }
-                        //worker.ReportProgress();
+                        catch (Exception ex)
+                        {
+                            lbl_Output.Text += ex.Message + "'\n";
+                        }
+                        finally
+                        {
+                            lbl_Output.Text += "Restore completed...'\n";
+                        }
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        lbl_Output.Text += ex.Message + "'\n";
-                    }
-                    finally
-                    {
-                        lbl_Output.Text += "Restore completed...'\n";
+                        lbl_Output.Text += "\nThere was a problem with the last " + db + " backup, restore can not be performed...\n";
                     }
                 }
             }
@@ -795,7 +816,7 @@ namespace IppBackups
                 foreach (string script in viewScripts)
                 {
                     //lbl_Output.Text += script + "\n";
-                    sqlFile.WriteLine(script.Replace("[" + cBox_Environment.Text + "-", "[" + cBox_DestEnvironment.Text + "-"));
+                    sqlFile.WriteLine(script.Replace("[" + cBox_Environment.Text.ToLower() + "-", "[" + cBox_DestEnvironment.Text.ToLower() + "-"));
                     // sqlFile.WriteLine(script);
                 }
                 /* Generating CREATE VIEW command */
@@ -803,12 +824,68 @@ namespace IppBackups
                 foreach (string script in viewScripts)
                 {
                  //   lbl_Output.Text += script + "\n";
-                    sqlFile.WriteLine(script.Replace("[" + cBox_Environment.Text + "-", "[" + cBox_DestEnvironment.Text + "-"));
+                    sqlFile.WriteLine(script.Replace("[" + cBox_Environment.Text.ToLower() + "-", "[" + cBox_DestEnvironment.Text.ToLower() + "-"));
                   //  sqlFile.WriteLine(script);
                 }
 
             }
             lbl_Output.Text += "View Scripts completed...\n";
+            UpdateView(rServer.ToString(), cBox_DestEnvironment.Text, db);
+        }
+
+        private void UpdateView(string serverInstance, string env, string db)
+        {
+            string sqlConnectionString = "Data Source=" + serverInstance + "; Initial Catalog=" + db + "; Integrated Security=SSPI;";
+            string scriptFile = "CreateView_" + db + ".sql";
+            FileInfo file = new FileInfo(scriptFile);
+            string script = file.OpenText().ReadToEnd();
+            SqlConnection conn = new SqlConnection(sqlConnectionString);
+            conn.Open();
+            SqlCommand cmd = new SqlCommand(script, conn);
+            lbl_Output.Text += "Loading file from: " + scriptFile + "\n";
+
+            try
+            {
+                cmd.ExecuteNonQuery();
+                conn.Close();
+            }
+            catch (SqlServerManagementException e)
+            {
+                lbl_Output.Text += e.InnerException + "\n";
+            }
+            catch (SqlException e)
+            {
+                lbl_Output.Text += e.InnerException + "\n";
+            }
+        }
+
+        private void KillAllConnectionsToDb(string serverInstance, string env, string db)
+        {
+            lbl_Output.Text += "Killing all conncetions to " + db + "...\n";
+
+            string sqlConnectionString = "Data Source=" + serverInstance + "; Initial Catalog=" + db + "; Integrated Security=SSPI;";
+            string scriptFile = "KillAllConnectionsToDb.sql";
+            scriptFile = scriptFile.Replace("ToBeReplaced",db);
+            FileInfo file = new FileInfo(scriptFile);
+            string script = file.OpenText().ReadToEnd();
+            SqlConnection conn = new SqlConnection(sqlConnectionString);
+            conn.Open();
+            SqlCommand cmd = new SqlCommand(script, conn);
+            lbl_Output.Text += "Loading file from: " + scriptFile + "\n";
+
+            try
+            {
+                cmd.ExecuteNonQuery();
+                conn.Close();
+            }
+            catch (SqlServerManagementException e)
+            {
+                lbl_Output.Text += e.InnerException + "\n";
+            }
+            catch (SqlException e)
+            {
+                lbl_Output.Text += e.InnerException + "\n";
+            }
         }
     }
 }
