@@ -6,6 +6,7 @@ using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -558,9 +559,16 @@ namespace IppBackups
             {
                 foreach (string db in databaseList)
                 {
-                    try
+                    string destPath = backupDestination + "\\" + db + ".bak";
+
+                    if (File.Exists(destPath))
                     {
-                        string destPath = backupDestination + "\\" + db + ".bak";
+                        lbl_Output.Text += "Deleting existing backup file ...\n";
+                        File.Delete(destPath);
+                    }
+
+                    try
+                    {                        
                         lbl_Output.Text += "Starting Backup for " + db + ".\n";
 
                         // Perform a time consuming operation and report progress
@@ -812,50 +820,77 @@ namespace IppBackups
             foreach (Microsoft.SqlServer.Management.Smo.View myView in restoreDb.Views)
             {
                 /* Generating IF EXISTS and DROP command for views */
-                StringCollection viewScripts = myView.Script(scriptOptions);
+                StringCollection viewScripts = myView.Script();// (scriptOptions);
                 foreach (string script in viewScripts)
                 {
                     //lbl_Output.Text += script + "\n";
-                    sqlFile.WriteLine(script.Replace("[" + cBox_Environment.Text.ToLower() + "-", "[" + cBox_DestEnvironment.Text.ToLower() + "-"));
-                    // sqlFile.WriteLine(script);
+                    var newScript = "USE [" + db + "]\nGO \n" + script + "\nGO";
+                    var scritpAlter = Regex.Replace(newScript, "CREATE VIEW", "ALTER VIEW", RegexOptions.IgnoreCase);
+                    var scriptWithoutANSI = Regex.Replace(scritpAlter, "SET ANSI_NULLS ON", "SET ANSI_NULLS ON \n GO \n", RegexOptions.IgnoreCase);
+                    var scriptWithoutQUOTEDIDOFF = Regex.Replace(scriptWithoutANSI, "SET QUOTED_IDENTIFIER OFF", "SET QUOTED_IDENTIFIER OFF \n GO \n", RegexOptions.IgnoreCase);
+                    var scriptWithoutQUOTEDIDON = Regex.Replace(scriptWithoutQUOTEDIDOFF, "SET QUOTED_IDENTIFIER ON", "SET QUOTED_IDENTIFIER ON \n GO \n", RegexOptions.IgnoreCase);
+                    var updatedScript = Regex.Replace(scriptWithoutQUOTEDIDON, cBox_Environment.Text + "-", cBox_DestEnvironment.Text + "-", RegexOptions.IgnoreCase);
+                    //sqlFile.WriteLine(script.Replace("[" + cBox_Environment.Text.ToLower() + "-", "[" + cBox_DestEnvironment.Text.ToLower() + "-"));
+                    sqlFile.WriteLine(updatedScript);
                 }
-                /* Generating CREATE VIEW command */
-                viewScripts = myView.Script();
-                foreach (string script in viewScripts)
-                {
-                 //   lbl_Output.Text += script + "\n";
-                    sqlFile.WriteLine(script.Replace("[" + cBox_Environment.Text.ToLower() + "-", "[" + cBox_DestEnvironment.Text.ToLower() + "-"));
-                  //  sqlFile.WriteLine(script);
-                }
+                ///* Generating CREATE VIEW command */
+                //viewScripts = myView.Script();
+                //foreach (string script in viewScripts)
+                //{
+                // //   lbl_Output.Text += script + "\n";
+                //    var updatedScript = Regex.Replace(script, cBox_Environment.Text + "-", cBox_DestEnvironment.Text + "-", RegexOptions.IgnoreCase);
+                //    //sqlFile.WriteLine(script.Replace("[" + cBox_Environment.Text.ToLower() + "-", "[" + cBox_DestEnvironment.Text.ToLower() + "-"));
+                //    sqlFile.WriteLine(updatedScript);
+                //}
 
             }
             lbl_Output.Text += "View Scripts completed...\n";
+            sqlFile.Close();
             UpdateView(rServer.ToString(), cBox_DestEnvironment.Text, db);
         }
 
         private void UpdateView(string serverInstance, string env, string db)
         {
-            string sqlConnectionString = "Data Source=" + serverInstance + "; Initial Catalog=" + db + "; Integrated Security=SSPI;";
+            //string sqlConnectionString = "Data Source=" + serverInstance + "; Initial Catalog=" + db + "; Integrated Security=SSPI;";
+            string sqlConnectionString = "Data Source=" + cBox_DestServer.Text + "; Initial Catalog=" + db + "; Integrated Security=SSPI;";
             string scriptFile = "CreateView_" + db + ".sql";
             FileInfo file = new FileInfo(scriptFile);
             string script = file.OpenText().ReadToEnd();
             SqlConnection conn = new SqlConnection(sqlConnectionString);
+            lbl_Output.Text += "Opening connection to : " + serverInstance + "\n";
             conn.Open();
             SqlCommand cmd = new SqlCommand(script, conn);
-            lbl_Output.Text += "Loading file from: " + scriptFile + "\n";
+            lbl_Output.Text += "Loading Viewupdate file from: " + scriptFile + "\n";
 
             try
             {
-                cmd.ExecuteNonQuery();
+                lbl_Output.Text += "Inside the try block...";
+                System.Diagnostics.Debug.WriteLine("Inside the try block...");
+                int resultSet = 0;
+                resultSet = cmd.ExecuteNonQuery();
+                lbl_Output.Text += "After ExecuteNonQuery...";
+                System.Diagnostics.Debug.WriteLine("After ExecuteNonQuery...");
                 conn.Close();
+                System.Diagnostics.Debug.WriteLine("After Closing connection...");
+                lbl_Output.Text += "No. of records affected : " + resultSet.ToString() + "\n";
             }
-            catch (SqlServerManagementException e)
+            catch (SqlServerManagementException ex)
             {
-                lbl_Output.Text += e.InnerException + "\n";
+                lbl_Output.Text += "SME " + ex.Message + "\n";
+                System.Diagnostics.Debug.WriteLine("Inside the catch block...");
+                lbl_Output.Text += ex.InnerException + "\n";
             }
-            catch (SqlException e)
+            catch (SqlException ex)
             {
-                lbl_Output.Text += e.InnerException + "\n";
+                lbl_Output.Text += "SQLE " + ex.Message + "\n";
+                System.Diagnostics.Debug.WriteLine("Inside the catch block...");
+                lbl_Output.Text += ex.InnerException + "\n";
+            }
+            catch (Exception ex)
+            {
+                lbl_Output.Text += "E " + ex.Message + "\n";
+                System.Diagnostics.Debug.WriteLine("Inside the catch block...");
+                lbl_Output.Text += ex.InnerException + "\n";
             }
         }
 
