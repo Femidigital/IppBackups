@@ -817,21 +817,27 @@ namespace IppBackups
             ScriptingOptions scriptOptions = new ScriptingOptions();
             scriptOptions.ScriptDrops = true;
             scriptOptions.IncludeIfNotExists = true;
+            sqlFile.WriteLine("USE [" + db + "]\nGO\n");
+            lbl_Output.Text += "No. of views in " + restoreDb.ToString() + " is " + restoreDb.Views.Count.ToString() + "\n";
             foreach (Microsoft.SqlServer.Management.Smo.View myView in restoreDb.Views)
             {
-                /* Generating IF EXISTS and DROP command for views */
-                StringCollection viewScripts = myView.Script();// (scriptOptions);
-                foreach (string script in viewScripts)
+                if (!myView.IsSystemObject)
                 {
-                    //lbl_Output.Text += script + "\n";
-                    var newScript = "USE [" + db + "]\nGO \n" + script + "\nGO";
-                    var scritpAlter = Regex.Replace(newScript, "CREATE VIEW", "ALTER VIEW", RegexOptions.IgnoreCase);
-                    var scriptWithoutANSI = Regex.Replace(scritpAlter, "SET ANSI_NULLS ON", "SET ANSI_NULLS ON \n GO \n", RegexOptions.IgnoreCase);
-                    var scriptWithoutQUOTEDIDOFF = Regex.Replace(scriptWithoutANSI, "SET QUOTED_IDENTIFIER OFF", "SET QUOTED_IDENTIFIER OFF \n GO \n", RegexOptions.IgnoreCase);
-                    var scriptWithoutQUOTEDIDON = Regex.Replace(scriptWithoutQUOTEDIDOFF, "SET QUOTED_IDENTIFIER ON", "SET QUOTED_IDENTIFIER ON \n GO \n", RegexOptions.IgnoreCase);
-                    var updatedScript = Regex.Replace(scriptWithoutQUOTEDIDON, cBox_Environment.Text + "-", cBox_DestEnvironment.Text + "-", RegexOptions.IgnoreCase);
-                    //sqlFile.WriteLine(script.Replace("[" + cBox_Environment.Text.ToLower() + "-", "[" + cBox_DestEnvironment.Text.ToLower() + "-"));
-                    sqlFile.WriteLine(updatedScript);
+                    /* Generating IF EXISTS and DROP command for views */
+                    StringCollection viewScripts = myView.Script();// (scriptOptions);
+                    lbl_Output.Text += "No. of script to create " + viewScripts.Count.ToString() + "\n";
+                    foreach (string script in viewScripts)
+                    {
+                        //lbl_Output.Text += script + "\n";
+                        //var newScript = "USE [" + db + "]\nGO \n" + script + "\nGO";
+                        var scriptAlter = Regex.Replace(script, "CREATE VIEW", "ALTER VIEW", RegexOptions.IgnoreCase);
+                        //var scriptWithoutANSI = Regex.Replace(scritpAlter, "SET ANSI_NULLS ON", "SET ANSI_NULLS ON \n GO \n", RegexOptions.IgnoreCase);
+                        //var scriptWithoutQUOTEDIDOFF = Regex.Replace(scriptWithoutANSI, "SET QUOTED_IDENTIFIER OFF", "SET QUOTED_IDENTIFIER OFF \n GO \n", RegexOptions.IgnoreCase);
+                        //var scriptWithoutQUOTEDIDON = Regex.Replace(scriptWithoutQUOTEDIDOFF, "SET QUOTED_IDENTIFIER ON", "SET QUOTED_IDENTIFIER ON \n GO \n", RegexOptions.IgnoreCase);
+                        var updatedScript = Regex.Replace(scriptAlter, cBox_Environment.Text + "-", cBox_DestEnvironment.Text + "-", RegexOptions.IgnoreCase);
+                        //sqlFile.WriteLine(script.Replace("[" + cBox_Environment.Text.ToLower() + "-", "[" + cBox_DestEnvironment.Text.ToLower() + "-"));
+                        sqlFile.WriteLine(updatedScript + "\nGO");
+                    }
                 }
                 ///* Generating CREATE VIEW command */
                 //viewScripts = myView.Script();
