@@ -815,39 +815,51 @@ namespace IppBackups
             /* With ScriptingOptions you can specify different scripting options,
              * for example to include IF NOT EXISTS, DROP statements, output location etc */
             ScriptingOptions scriptOptions = new ScriptingOptions();
+            scriptOptions.AnsiPadding = true;
+            //scriptOptions.AppendToFile = false;
+            scriptOptions.IncludeHeaders = true;
+            scriptOptions.ExtendedProperties = true;
+            scriptOptions.SchemaQualify = true;
+            scriptOptions.Default = true;
+            //scriptOptions.ScriptData = true;
             scriptOptions.ScriptDrops = true;
             scriptOptions.IncludeIfNotExists = true;
-            sqlFile.WriteLine("USE [" + db + "]\nGO\n");
-            lbl_Output.Text += "No. of views in " + restoreDb.ToString() + " is " + restoreDb.Views.Count.ToString() + "\n";
+            //scriptOptions.WithDependencies = true;
+            //sqlFile.WriteLine("USE [" + db + "]\nGO\n");
+            //lbl_Output.Text += "No. of views in " + restoreDb.ToString() + " is " + restoreDb.Views.Count.ToString() + "\n";
             foreach (Microsoft.SqlServer.Management.Smo.View myView in restoreDb.Views)
             {
-                if (!myView.IsSystemObject)
+                if (!myView.IsSystemObject && myView.Name == "Address")
                 {
                     /* Generating IF EXISTS and DROP command for views */
-                    StringCollection viewScripts = myView.Script();// (scriptOptions);
-                    lbl_Output.Text += "No. of script to create " + viewScripts.Count.ToString() + "\n";
+                    StringCollection viewScripts = myView.Script(scriptOptions);
+                    //StringCollection viewScripts = myView.Script();// (scriptOptions);
+                  //  lbl_Output.Text += "No. of script to create " + viewScripts.Count.ToString() + "\n";
                     foreach (string script in viewScripts)
                     {
                         //lbl_Output.Text += script + "\n";
                         //var newScript = "USE [" + db + "]\nGO \n" + script + "\nGO";
-                        var scriptAlter = Regex.Replace(script, "CREATE VIEW", "ALTER VIEW", RegexOptions.IgnoreCase);
+                        //var scriptAlter = Regex.Replace(script, "CREATE VIEW", "ALTER VIEW", RegexOptions.IgnoreCase);
                         //var scriptWithoutANSI = Regex.Replace(scritpAlter, "SET ANSI_NULLS ON", "SET ANSI_NULLS ON \n GO \n", RegexOptions.IgnoreCase);
                         //var scriptWithoutQUOTEDIDOFF = Regex.Replace(scriptWithoutANSI, "SET QUOTED_IDENTIFIER OFF", "SET QUOTED_IDENTIFIER OFF \n GO \n", RegexOptions.IgnoreCase);
                         //var scriptWithoutQUOTEDIDON = Regex.Replace(scriptWithoutQUOTEDIDOFF, "SET QUOTED_IDENTIFIER ON", "SET QUOTED_IDENTIFIER ON \n GO \n", RegexOptions.IgnoreCase);
-                        var updatedScript = Regex.Replace(scriptAlter, cBox_Environment.Text + "-", cBox_DestEnvironment.Text + "-", RegexOptions.IgnoreCase);
+                        var updatedScript = Regex.Replace(script, cBox_Environment.Text + "-", cBox_DestEnvironment.Text + "-", RegexOptions.IgnoreCase);
                         //sqlFile.WriteLine(script.Replace("[" + cBox_Environment.Text.ToLower() + "-", "[" + cBox_DestEnvironment.Text.ToLower() + "-"));
+                        sqlFile.WriteLine(updatedScript);
                         sqlFile.WriteLine(updatedScript + "\nGO");
                     }
+
+                    /* Generating CREATE VIEW command */
+                    viewScripts = myView.Script();
+                    foreach (string create_script in viewScripts)
+                    {
+                        //   lbl_Output.Text += script + "\n";
+                        var updatedScript = Regex.Replace(create_script, cBox_Environment.Text + "-", cBox_DestEnvironment.Text + "-", RegexOptions.IgnoreCase);
+                        //sqlFile.WriteLine(script.Replace("[" + cBox_Environment.Text.ToLower() + "-", "[" + cBox_DestEnvironment.Text.ToLower() + "-"));
+                        sqlFile.WriteLine(create_script);
+                    }
                 }
-                ///* Generating CREATE VIEW command */
-                //viewScripts = myView.Script();
-                //foreach (string script in viewScripts)
-                //{
-                // //   lbl_Output.Text += script + "\n";
-                //    var updatedScript = Regex.Replace(script, cBox_Environment.Text + "-", cBox_DestEnvironment.Text + "-", RegexOptions.IgnoreCase);
-                //    //sqlFile.WriteLine(script.Replace("[" + cBox_Environment.Text.ToLower() + "-", "[" + cBox_DestEnvironment.Text.ToLower() + "-"));
-                //    sqlFile.WriteLine(updatedScript);
-                //}
+                
 
             }
             lbl_Output.Text += "View Scripts completed...\n";
