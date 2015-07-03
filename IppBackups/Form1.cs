@@ -184,6 +184,7 @@ namespace IppBackups
             }
             catch(Exception ex)
             {
+                // TODO: Change font color
                 lbl_Output.Text += "Error Connecting to " + sName + " on " + curSrv + ".'\n";
                 lbl_Output.Text += "'\t" + ex.Message + ".'\n";
             }
@@ -314,6 +315,7 @@ namespace IppBackups
                 }
                 catch (Exception ex)
                 {
+                    // TODO: Change font color
                     lbl_Output.Text += ex.InnerException.Message + "'\n";
                 }
                 db = sqlServer.Databases[databaseName];
@@ -382,6 +384,7 @@ namespace IppBackups
             }
             catch (Exception ex)
             {
+                // TODO: Change font color
                 lbl_Output.Text += ex.InnerException.Message + "'\n";
                 //lbl_Output.Text += ex.Message + "'\n";
             }
@@ -447,6 +450,7 @@ namespace IppBackups
             }
             catch (Exception ex)
             {
+                // TODO: Change font color
                 lbl_Output.Text += ex.InnerException.Message + "'\n";
                 //lbl_Output.Text += ex.Message + "'\n";
             }
@@ -536,6 +540,7 @@ namespace IppBackups
                 }
                 else
                 {
+                    // TODO: Change font color
                     lbl_Output.Text += "Cannot refresh from a lower environemnt... '\n";
                 }
             }
@@ -557,6 +562,7 @@ namespace IppBackups
             }
             else
             {
+                // TODO: Fix deleting or relacing existing backup file
                 foreach (string db in databaseList)
                 {
                     string destPath = backupDestination + "\\" + db + ".bak";
@@ -587,10 +593,12 @@ namespace IppBackups
                         //if (backStatus.TryGetValue(db, out status))
                         if(backStatus[db])
                         {
+                            // TODO: Change font color to green
                             lbl_Output.Text += "Backup completed...\n";
                         }
                         else
                         {
+                            // TODO: Change font color
                             lbl_Output.Text += "Backup completed with error(s)...\n";
                         }
                         //restorebackgroundWorker.RunWorkerAsync();
@@ -612,6 +620,7 @@ namespace IppBackups
             }
             else if (e.Error != null)
             {
+                // TODO: Change font color
                 lbl_Output.Text += "Error: " + e.Error.Message;
             }
             else
@@ -672,6 +681,7 @@ namespace IppBackups
                             lbl_Output.Text += "Restore : " + db + " database to " + restore_db + " database on : " + filePath + " to : " + restore_dataFilePath + " and : " + restore_logFilePath + "'\n";
                             lbl_Output.Text += "User : " + r_sUsername + "'\n";
                             lbl_Output.Text += "Selected destination server  : " + cBox_DestServer.Text + "\n";
+                            // TODO: Workout how to identify which domain the server is under
                             if (cBox_DestServer.Text == "UK-CHFMIGSQL")
                             {
                                 lbl_Output.Text += "Restoring database to OSCAR domain.\n";
@@ -698,15 +708,18 @@ namespace IppBackups
                         }
                         catch (Exception ex)
                         {
+                            // TODO: Change font color
                             lbl_Output.Text += ex.Message + "'\n";
                         }
                         finally
                         {
+                            // TODO: Change font color to green
                             lbl_Output.Text += "Restore completed...'\n";
                         }
                     }
                     else
                     {
+                        // TODO: Change font color
                         lbl_Output.Text += "\nThere was a problem with the last " + db + " backup, restore can not be performed...\n";
                     }
                 }
@@ -726,6 +739,7 @@ namespace IppBackups
             }
             else if (e.Error != null)
             {
+                // TODO: Change font color
                 lbl_Output.Text += "Error: " + e.Error.Message;
             }
             else
@@ -796,10 +810,12 @@ namespace IppBackups
             }
             catch(SqlServerManagementException e)
             {
+                // TODO: Change font color
                 lbl_Output.Text += e.InnerException + "\n";
             }
             catch(SqlException e)
             {
+                // TODO: Change font color
                 lbl_Output.Text += e.InnerException + "\n";
             }
             lbl_Output.Text += "Update completed...\n";
@@ -815,18 +831,25 @@ namespace IppBackups
             /* With ScriptingOptions you can specify different scripting options,
              * for example to include IF NOT EXISTS, DROP statements, output location etc */
             ScriptingOptions scriptOptions = new ScriptingOptions();
-            scriptOptions.AnsiPadding = true;
+            //scriptOptions.AnsiPadding = true;
             //scriptOptions.AppendToFile = false;
-            scriptOptions.IncludeHeaders = true;
-            scriptOptions.ExtendedProperties = true;
-            scriptOptions.SchemaQualify = true;
-            scriptOptions.Default = true;
+            //scriptOptions.IncludeHeaders = true;
+            //scriptOptions.ExtendedProperties = true;
+            //scriptOptions.SchemaQualify = true;
+            //scriptOptions.Default = true;
             //scriptOptions.ScriptData = true;
             scriptOptions.ScriptDrops = true;
             scriptOptions.IncludeIfNotExists = true;
             //scriptOptions.WithDependencies = true;
             //sqlFile.WriteLine("USE [" + db + "]\nGO\n");
             //lbl_Output.Text += "No. of views in " + restoreDb.ToString() + " is " + restoreDb.Views.Count.ToString() + "\n";
+
+            ScriptingOptions scriptOptionsForCreate = new ScriptingOptions();
+            scriptOptionsForCreate.AnsiPadding = true;
+            scriptOptionsForCreate.ExtendedProperties = true;
+            scriptOptionsForCreate.SchemaQualify = true;
+            scriptOptionsForCreate.Default = true;
+
             foreach (Microsoft.SqlServer.Management.Smo.View myView in restoreDb.Views)
             {
                 if (!myView.IsSystemObject && myView.Name == "Address")
@@ -846,11 +869,10 @@ namespace IppBackups
                         var updatedScript = Regex.Replace(script, cBox_Environment.Text + "-", cBox_DestEnvironment.Text + "-", RegexOptions.IgnoreCase);
                         //sqlFile.WriteLine(script.Replace("[" + cBox_Environment.Text.ToLower() + "-", "[" + cBox_DestEnvironment.Text.ToLower() + "-"));
                         sqlFile.WriteLine(updatedScript);
-                        sqlFile.WriteLine(updatedScript + "\nGO");
                     }
 
                     /* Generating CREATE VIEW command */
-                    viewScripts = myView.Script();
+                    viewScripts = myView.Script(scriptOptionsForCreate);
                     foreach (string create_script in viewScripts)
                     {
                         //   lbl_Output.Text += script + "\n";
@@ -894,18 +916,21 @@ namespace IppBackups
             }
             catch (SqlServerManagementException ex)
             {
+                // TODO: Change font color
                 lbl_Output.Text += "SME " + ex.Message + "\n";
                 System.Diagnostics.Debug.WriteLine("Inside the catch block...");
                 lbl_Output.Text += ex.InnerException + "\n";
             }
             catch (SqlException ex)
             {
+                // TODO: Change font color
                 lbl_Output.Text += "SQLE " + ex.Message + "\n";
                 System.Diagnostics.Debug.WriteLine("Inside the catch block...");
                 lbl_Output.Text += ex.InnerException + "\n";
             }
             catch (Exception ex)
             {
+                // TODO: Change font color
                 lbl_Output.Text += "E " + ex.Message + "\n";
                 System.Diagnostics.Debug.WriteLine("Inside the catch block...");
                 lbl_Output.Text += ex.InnerException + "\n";
