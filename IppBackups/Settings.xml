@@ -1,8 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Servers>
-  <Server name="FDC_TAB" instance="FDC_TAB\DEV_SQL2K12" ip="127.0.0.1" user="dev-admin" password="Password1" backups="D:\Backups\SQL2012">
-	<Environment name="DEV" data="D:\SQL\Data" log="D:\SQL\Logs">DEV</Environment>
-  </Server>	
   <Server name="DEV-SQL02" instance="DEV-SQL02, 1433" ip="10.103.109.81" user="OSCAR\Administrator" password="ca5ablanca" backups="F:\CBS">
     <Environment name="TFS2010" data="H:\" log="L:\">TFS2010</Environment>
   </Server>

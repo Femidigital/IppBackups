@@ -831,43 +831,25 @@ namespace IppBackups
             /* With ScriptingOptions you can specify different scripting options,
              * for example to include IF NOT EXISTS, DROP statements, output location etc */
             ScriptingOptions scriptOptions = new ScriptingOptions();
-            //scriptOptions.AnsiPadding = true;
-            //scriptOptions.AppendToFile = false;
-            //scriptOptions.IncludeHeaders = true;
-            //scriptOptions.ExtendedProperties = true;
-            //scriptOptions.SchemaQualify = true;
-            //scriptOptions.Default = true;
-            //scriptOptions.ScriptData = true;
             scriptOptions.ScriptDrops = true;
             scriptOptions.IncludeIfNotExists = true;
-            //scriptOptions.WithDependencies = true;
-            //sqlFile.WriteLine("USE [" + db + "]\nGO\n");
-            //lbl_Output.Text += "No. of views in " + restoreDb.ToString() + " is " + restoreDb.Views.Count.ToString() + "\n";
 
             ScriptingOptions scriptOptionsForCreate = new ScriptingOptions();
             scriptOptionsForCreate.AnsiPadding = true;
             scriptOptionsForCreate.ExtendedProperties = true;
-            scriptOptionsForCreate.SchemaQualify = true;
-            scriptOptionsForCreate.Default = true;
+            scriptOptionsForCreate.IncludeIfNotExists = true;
 
             foreach (Microsoft.SqlServer.Management.Smo.View myView in restoreDb.Views)
             {
-                if (!myView.IsSystemObject && myView.Name == "Address")
+                if (!myView.IsSystemObject)
                 {
                     /* Generating IF EXISTS and DROP command for views */
                     StringCollection viewScripts = myView.Script(scriptOptions);
-                    //StringCollection viewScripts = myView.Script();// (scriptOptions);
-                  //  lbl_Output.Text += "No. of script to create " + viewScripts.Count.ToString() + "\n";
+
                     foreach (string script in viewScripts)
                     {
-                        //lbl_Output.Text += script + "\n";
-                        //var newScript = "USE [" + db + "]\nGO \n" + script + "\nGO";
-                        //var scriptAlter = Regex.Replace(script, "CREATE VIEW", "ALTER VIEW", RegexOptions.IgnoreCase);
-                        //var scriptWithoutANSI = Regex.Replace(scritpAlter, "SET ANSI_NULLS ON", "SET ANSI_NULLS ON \n GO \n", RegexOptions.IgnoreCase);
-                        //var scriptWithoutQUOTEDIDOFF = Regex.Replace(scriptWithoutANSI, "SET QUOTED_IDENTIFIER OFF", "SET QUOTED_IDENTIFIER OFF \n GO \n", RegexOptions.IgnoreCase);
-                        //var scriptWithoutQUOTEDIDON = Regex.Replace(scriptWithoutQUOTEDIDOFF, "SET QUOTED_IDENTIFIER ON", "SET QUOTED_IDENTIFIER ON \n GO \n", RegexOptions.IgnoreCase);
                         var updatedScript = Regex.Replace(script, cBox_Environment.Text + "-", cBox_DestEnvironment.Text + "-", RegexOptions.IgnoreCase);
-                        //sqlFile.WriteLine(script.Replace("[" + cBox_Environment.Text.ToLower() + "-", "[" + cBox_DestEnvironment.Text.ToLower() + "-"));
+
                         sqlFile.WriteLine(updatedScript);
                     }
 
@@ -875,10 +857,9 @@ namespace IppBackups
                     viewScripts = myView.Script(scriptOptionsForCreate);
                     foreach (string create_script in viewScripts)
                     {
-                        //   lbl_Output.Text += script + "\n";
                         var updatedScript = Regex.Replace(create_script, cBox_Environment.Text + "-", cBox_DestEnvironment.Text + "-", RegexOptions.IgnoreCase);
-                        //sqlFile.WriteLine(script.Replace("[" + cBox_Environment.Text.ToLower() + "-", "[" + cBox_DestEnvironment.Text.ToLower() + "-"));
-                        sqlFile.WriteLine(create_script);
+
+                        sqlFile.WriteLine(updatedScript);
                     }
                 }
                 
@@ -891,7 +872,6 @@ namespace IppBackups
 
         private void UpdateView(string serverInstance, string env, string db)
         {
-            //string sqlConnectionString = "Data Source=" + serverInstance + "; Initial Catalog=" + db + "; Integrated Security=SSPI;";
             string sqlConnectionString = "Data Source=" + cBox_DestServer.Text + "; Initial Catalog=" + db + "; Integrated Security=SSPI;";
             string scriptFile = "CreateView_" + db + ".sql";
             FileInfo file = new FileInfo(scriptFile);
@@ -901,39 +881,31 @@ namespace IppBackups
             conn.Open();
             SqlCommand cmd = new SqlCommand(script, conn);
             lbl_Output.Text += "Loading Viewupdate file from: " + scriptFile + "\n";
-
-            try
+            for (int i = 0; i < 2; i++)
             {
-                lbl_Output.Text += "Inside the try block...";
-                System.Diagnostics.Debug.WriteLine("Inside the try block...");
-                int resultSet = 0;
-                resultSet = cmd.ExecuteNonQuery();
-                lbl_Output.Text += "After ExecuteNonQuery...";
-                System.Diagnostics.Debug.WriteLine("After ExecuteNonQuery...");
-                conn.Close();
-                System.Diagnostics.Debug.WriteLine("After Closing connection...");
-                lbl_Output.Text += "No. of records affected : " + resultSet.ToString() + "\n";
-            }
-            catch (SqlServerManagementException ex)
-            {
-                // TODO: Change font color
-                lbl_Output.Text += "SME " + ex.Message + "\n";
-                System.Diagnostics.Debug.WriteLine("Inside the catch block...");
-                lbl_Output.Text += ex.InnerException + "\n";
-            }
-            catch (SqlException ex)
-            {
-                // TODO: Change font color
-                lbl_Output.Text += "SQLE " + ex.Message + "\n";
-                System.Diagnostics.Debug.WriteLine("Inside the catch block...");
-                lbl_Output.Text += ex.InnerException + "\n";
-            }
-            catch (Exception ex)
-            {
-                // TODO: Change font color
-                lbl_Output.Text += "E " + ex.Message + "\n";
-                System.Diagnostics.Debug.WriteLine("Inside the catch block...");
-                lbl_Output.Text += ex.InnerException + "\n";
+                try
+                {
+                    int resultSet = 0;
+                    resultSet = cmd.ExecuteNonQuery();
+                    conn.Close();
+                }
+                catch (SqlServerManagementException ex)
+                {
+                    // TODO: Change font color
+                    lbl_Output.Text += "SME " + ex.Message + "\n";
+                }
+                catch (SqlException ex)
+                {
+                    // TODO: Change font color
+                    //lbl_Output.ForeColor = Color.Red;
+                    //lbl_Output.Text += ex.Message + "\n";
+                    continue;
+                }
+                catch (Exception ex)
+                {
+                    // TODO: Change font color
+                    lbl_Output.Text += "E " + ex.Message + "\n";
+                }
             }
         }
 
