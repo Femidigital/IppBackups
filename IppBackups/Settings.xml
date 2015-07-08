@@ -4,18 +4,22 @@
     <Environment name="TFS2010" data="H:\" log="L:\">TFS2010</Environment>
   </Server>
   <Server name="R1L1SQL01CLB" instance="R1L1SQL01CLB, 1500" ip="10.103.109.84" user="uat-cloudadmin" password="Password1" backups="S:\CBS">
-    <Environment name="UAT" data="E:\SQLData\Cloud" log="L:\Cloud">UAT</Environment>
+    <Environment name="UAT_Old" data="E:\SQLData\Cloud" log="L:\Cloud">UAT_Old</Environment>
   </Server>
   <Server name="R1L2SQL01CLB" instance="R1L2SQL01CLB, 1500" ip="10.103.109.85" user="qa-cloudadmin" password="Password1" backups="F:\CBS">
     <Environment name="CI" data="E:\SQLData\Cloud" log="L:\Cloud">CI</Environment>
-    <Environment name="QA" data="E:\SQLData\Cloud" log="L:\Cloud">QA</Environment>
+    <Environment name="QA_Old" data="E:\SQLData\Cloud" log="L:\Cloud">QA_Old</Environment>
   </Server>
   <Server name="BSI10DBX03CLB" instance="BSI10DBX03CLB, 1433" ip="10.45.87.43" user="prod-cloudadmin" password="!C0mm4nd1ng$" backups="S:\CBS">
     <Environment name="PPD" data="F:\MSSQL\Data" log="L:\MSSQL\Logs">PPD</Environment>
     <Environment name="PROD" data="F:\MSSQL\Data" log="L:\MSSQL\Logs">PROD</Environment>
   </Server>
-  <Server name="UK-CHDEVSQL01" instance="UK-CHDEVSQL01, 1433" ip="10.103.109.45" user="mig-cloudadmin" password="Password1" backups="\\10.103.109.159\C$\CBS">
+  <Server name="UK-CHDEVSQL01" instance="UK-CHDEVSQL01, 1433" ip="10.103.109.45" user="mig-cloudadmin" password="Password1" backups="S:\CBS">
     <Environment name="MIG" data="E:\SQLData" log="E:\SQLLogs">MIG</Environment>
+    <Environment name="QA" data="E:\SQLData" log="L:\SQLLogs">QA</Environment>
+  </Server>
+  <Server name="UK-CHDEVSQL02" instance="UK-CHDEVSQL02, 1433" ip="10.103.109.46" user="uat-cloudadmin" password="Password1" backups="S:\CBS">
+    <Environment name="UAT" data="E:\SQLData" log="L:\SQLLogs">UAT</Environment>
   </Server>
   <Server name="UK-CHFMIGSQL" instance="UK-CHFMIGSQL\UKCHFMIG, 1433" ip="10.103.109.56" user="uat-cloudadmin" password="Password1" backups="C:\CBS">
     <Environment name="TEST" data="C:\SQLData" log="C:\SQLLogs">TEST</Environment>

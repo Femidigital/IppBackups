@@ -682,7 +682,7 @@ namespace IppBackups
                             lbl_Output.Text += "User : " + r_sUsername + "'\n";
                             lbl_Output.Text += "Selected destination server  : " + cBox_DestServer.Text + "\n";
                             // TODO: Workout how to identify which domain the server is under
-                            if (cBox_DestServer.Text == "UK-CHFMIGSQL")
+                            if (cBox_DestServer.Text == "UK-CHFMIGSQL" || cBox_DestServer.Text == "UK-CHDEVSQL01" || cBox_DestServer.Text == "UK-CHDEVSQL02")
                             {
                                 lbl_Output.Text += "Restoring database to OSCAR domain.\n";
                                 RestoreDatabaseToOscar(restore_db, filePath, srvName, srvInstance, r_sUsername, r_sPassword, restore_dataFilePath, restore_logFilePath, localcopy);
@@ -694,13 +694,15 @@ namespace IppBackups
                                 RestoreDatabaseToPrivate(restore_db, filePath, srvName, srvInstance, r_sUsername, r_sPassword, restore_dataFilePath, restore_logFilePath, localcopy);
                             }
 
-                            if (restore_db.Contains("BSOL") || restore_db.Contains("CloudAdmin"))
+                            //if (restore_db.Contains("BSOL") || restore_db.Contains("CloudAdmin"))
+                            if (restore_db == ( cBox_DestEnvironment.Text + "-BSOL") || restore_db == ( cBox_DestEnvironment.Text + "-CloudAdmin"))
                             {
                                 Server myServer = new Server(srvInstance);
                                 GenerateViewScript(myServer, restore_db);
                             }
 
-                            if (restore_db.Contains("CloudAdmin") || restore_db.Contains("PersonalData"))
+                            //if (restore_db.Contains("CloudAdmin") || restore_db.Contains("PersonalData"))
+                            if (restore_db == (cBox_DestEnvironment.Text + "-CloudAdmin") || restore_db == (cBox_DestEnvironment.Text + "-PersonalData") || restore_db == (cBox_DestEnvironment.Text + "-Ecommerce"))
                             {
                                 update_DatabaseEntries(srvInstance, cBox_DestEnvironment.Text, restore_db);
                             }
