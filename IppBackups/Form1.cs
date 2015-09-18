@@ -66,6 +66,7 @@ namespace IppBackups
             this.Visible = true;
 
             InitializeComponent();
+            InitializeCustomEvents();
             backupbackgroundWorker.WorkerReportsProgress = true;
             backupbackgroundWorker.WorkerSupportsCancellation = true;
             LoadValuesFromSettings();
@@ -522,7 +523,9 @@ namespace IppBackups
             }
             else if (rBtn_Restore.Checked)
             {
-                lbl_Output.Text += "Restored... '\n";
+                //lbl_Output.Text += "Restored... '\n";
+                lbl_Output.Text += "Restoring " + cBox_DestEnvironment.Text + " environment with selected database(s)... \n";
+                restorebackgroundWorker.RunWorkerAsync();
             }
             else if (rBtn_Refresh.Checked)
             {
@@ -655,11 +658,11 @@ namespace IppBackups
                 string restore_dataFilePath = "\\\\" + cBox_DestServer.Text + "\\" + dataFilePath.Replace(":", "$");
                 string restore_logFilePath = "\\\\" + cBox_DestServer.Text + "\\" + logFilePath.Replace(":", "$");
                 string localcopy = sServer.Attributes["backups"].Value;
-
+             
                 // try another connection method
                 r_sUsername = sServer.Attributes["user"].Value;
                 r_sPassword = sServer.Attributes["password"].Value;
-
+               
                 // try another connection method
                 Microsoft.SqlServer.Management.Smo.Server selectedRestoreServer = new Microsoft.SqlServer.Management.Smo.Server(srvName);
                 selectedRestoreServer.ConnectionContext.LoginSecure = false;
@@ -669,8 +672,9 @@ namespace IppBackups
                 
                 foreach (string db in databaseList)
                 {
-                    if (backStatus[db])
+                    if (backStatus[db] || rBtn_Restore.Checked )
                     {
+                        lbl_Output.Text += "Got this far... \n ";
                         try
                         {
                             string restore_db = db.Replace(cBox_Environment.Text, cBox_DestEnvironment.Text);
@@ -756,6 +760,20 @@ namespace IppBackups
             {
                 // Cancel the asychronous operation.
                 backupbackgroundWorker.CancelAsync();
+            }
+        }
+
+        private void rBtn_Restore_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rBtn_Restore.Checked == true)
+            {
+                cBox_DestServer.Enabled = true;
+                cBox_DestEnvironment.Enabled = true;
+            }
+            else
+            {
+                cBox_DestServer.Enabled = false;
+                cBox_DestEnvironment.Enabled = false;
             }
         }
 
