@@ -34,8 +34,8 @@
     </Environment>
     <Environment name="TESTDEV03" data="D:/DATA" log="F:/LOGS">TESTDEV03</Environment>
   </Server>
-  <Server name="BSI16DBS03PRV" instance="BSI16DBS03PRV, 1433" ip="10.45.87.43" user="prod-cloudadmin" password="!C0mm4nd1ng$" backups="S:\SQL Backups\CBS">
+  <!--<Server name="BSI16DBS03PRV" instance="BSI16DBS03PRV, 1433" ip="10.45.87.43" user="prod-cloudadmin" password="!C0mm4nd1ng$" backups="S:\SQL Backups\CBS">
     <Environment name="PPD" data="F:\MSSQL\Data" log="L:\MSSQL\Logs">PPD</Environment>
     <Environment name="PROD" data="F:\MSSQL\Data" log="L:\MSSQL\Logs">PROD</Environment>
-  </Server>
+  </Server>-->
 </Servers>
