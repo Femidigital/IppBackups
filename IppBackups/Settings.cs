@@ -13,7 +13,7 @@ using System.Configuration;
 
 namespace IppBackups
 {
-    
+
     public partial class Settings : Form
     {
         private string ConfigFileName = ConfigurationManager.AppSettings["ConfigFileName"];
@@ -22,6 +22,8 @@ namespace IppBackups
         string sXmlFile = "";
         bool bServer = false;
         bool bServer_Edit = false;
+        bool bInstance = false;
+        bool bInstance_Edit = false;
         bool bEnvironment = false;
         bool bEnvironment_Edit = false;
 
@@ -30,16 +32,18 @@ namespace IppBackups
             InitializeComponent();
 
             InitializeTreeViewEvents();
-            
-            //sXmlFile = "..\\..\\" + ConfigFileName;
-            sXmlFile = ConfigFileName;
+
+            sXmlFile = "..\\..\\" + ConfigFileName;
+            //sXmlFile = ConfigFileName;
 
             //tView_Servers.ImageList = tvServers_imageList;
-            tView_Servers.SetBounds(5, 18, 140, 280);
+            //tView_Servers.SetBounds(5, 18, 140, 280);
+            tView_Servers.SetBounds(5, 18, 160, 350);
 
             DisableServerDetails();
+            DisableInstanceDetails();
             DisableEnvironmentDetails();
-            
+
             try
             {
                 //XmlDocument doc = new XmlDocument();
@@ -47,19 +51,19 @@ namespace IppBackups
 
                 tView_Servers.Nodes.Clear();
                 tView_Servers.Nodes.Add(new TreeNode(doc.DocumentElement.Name));
-                
+
                 TreeNode tNode = new TreeNode();
                 tNode = tView_Servers.Nodes[0];
 
                 AddNode(doc.DocumentElement, tNode);
-                tView_Servers.ExpandAll();               
+                tView_Servers.ExpandAll();
 
             }
-            catch(XmlException xmlex)
+            catch (XmlException xmlex)
             {
                 MessageBox.Show(xmlex.Message);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
@@ -73,10 +77,10 @@ namespace IppBackups
             int i;
 
 
-            if(inXmlNode.HasChildNodes)
+            if (inXmlNode.HasChildNodes)
             {
                 nodeList = inXmlNode.ChildNodes;
-                for( i = 0; i <= inXmlNode.ChildNodes.Count - 1; i++ )
+                for (i = 0; i <= inXmlNode.ChildNodes.Count - 1; i++)
                 {
                     xNode = inXmlNode.ChildNodes[i];
 
@@ -85,14 +89,28 @@ namespace IppBackups
                         inTreeNode.Nodes.Add(new TreeNode(xNode.Attributes["name"].Value));
 
                         tNode = inTreeNode.Nodes[i];
+                        tNode.Tag = "Server";
+                        AddNode(xNode, tNode);
+                    }
+                    else if (xNode.Name == "Instance")
+                    {
+                        inTreeNode.Nodes.Add(new TreeNode(xNode.Attributes["instance"].Value));
+                        tNode = inTreeNode.Nodes[i];
+                        tNode.Tag = "Instance";
                         AddNode(xNode, tNode);
                     }
                     else
                     {
-                        if(xNode.InnerText != null && xNode.InnerText != "")
+                        if (xNode.InnerText != null && xNode.InnerText != "")
+                        {
                             inTreeNode.Nodes.Add(new TreeNode(xNode.InnerText));
-                        //inTreeNode.ImageIndex = 0;
-                        //tView_Servers.SelectedNode.ImageIndex = 0;
+                            //inTreeNode.Tag = "Element";
+                            //inTreeNode.ImageIndex = 0;
+                            //tView_Servers.SelectedNode.ImageIndex = 0;
+                            tNode = inTreeNode.Nodes[i];
+                            tNode.Tag = "Environment";
+                            //AddNode(xNode, tNode);
+                        }
                     }
                 }
             }
@@ -134,10 +152,11 @@ namespace IppBackups
 
             XmlNode nNode;
             XmlNode pNode;
+            XmlNode sNode;
 
             if (e.Node.Parent != null)
             {
-                if(e.Node.Text == "New Server")
+                if (e.Node.Text == "New Server")
                 {
                     tBox_ServerName.Text = "";
                     tBox_Instance.Text = "";
@@ -150,13 +169,13 @@ namespace IppBackups
                     tBox_DataFile.Text = "";
                     tBox_LogFiles.Text = "";
                 }
-                else if ( e.Node.Parent.Text == "New Environment")
+                else if (e.Node.Parent.Text == "New Environment")
                 {
                     tBox_Environment.Text = "";
                     tBox_DataFile.Text = "";
                     tBox_LogFiles.Text = "";
 
-                    nNode = doc.SelectSingleNode("/Servers/Server[@name='" + e.Node.Parent.Text + "']");
+                    nNode = doc.SelectSingleNode("/Servers/Server/Instance[@instance='" + e.Node.Parent.Text + "']");
 
                     tBox_ServerName.Text = nNode.Attributes["name"].Value;
                     tBox_Instance.Text = nNode.Attributes["instance"].Value;
@@ -165,8 +184,12 @@ namespace IppBackups
                     tBox_Password.Text = nNode.Attributes["password"].Value;
                     tBox_BackupLocation.Text = nNode.Attributes["backups"].Value;
                 }
-                else if ( e.Node.Parent.FullPath == "Servers")
+                else if (e.Node.Parent.FullPath == "Servers")
                 {
+                    tBox_Instance.Text = "";
+                    tBox_Username.Text = "";
+                    tBox_Password.Text = "";
+                    tBox_BackupLocation.Text = "";
                     tBox_Environment.Text = "";
                     tBox_DataFile.Text = "";
                     tBox_LogFiles.Text = "";
@@ -174,20 +197,38 @@ namespace IppBackups
                     nNode = doc.SelectSingleNode("/Servers/Server[@name='" + e.Node.Text + "']");
 
                     tBox_ServerName.Text = nNode.Attributes["name"].Value;
-                    tBox_Instance.Text = nNode.Attributes["instance"].Value;
+                    // tBox_Instance.Text = nNode.Attributes["instance"].Value;
                     tBox_IPaddress.Text = nNode.Attributes["ip"].Value;
+                    //tBox_Username.Text = nNode.Attributes["user"].Value;
+                    //tBox_Password.Text = nNode.Attributes["password"].Value;
+                    //tBox_BackupLocation.Text = nNode.Attributes["backups"].Value;
+                }
+                else if (e.Node.Tag.ToString() == "Instance")
+                {
+                    tBox_Environment.Text = "";
+                    tBox_DataFile.Text = "";
+                    tBox_LogFiles.Text = "";
+
+                    nNode = doc.SelectSingleNode("/Servers/Server/Instance[@instance='" + e.Node.Text + "']");
+                    sNode = nNode.ParentNode;
+
+                    tBox_ServerName.Text = sNode.Attributes["name"].Value;
+                    tBox_Instance.Text = nNode.Attributes["instance"].Value;
+                    tBox_IPaddress.Text = sNode.Attributes["ip"].Value;
+                    tBox_Port.Text = nNode.Attributes["port"].Value;
                     tBox_Username.Text = nNode.Attributes["user"].Value;
                     tBox_Password.Text = nNode.Attributes["password"].Value;
                     tBox_BackupLocation.Text = nNode.Attributes["backups"].Value;
                 }
                 else
                 {
-                    nNode = doc.SelectSingleNode("/Servers/Server/Environment[@name='" + e.Node.Text + "']");
+                    nNode = doc.SelectSingleNode("/Servers/Server/Instance/Environment[@name='" + e.Node.Text + "']");
                     pNode = nNode.ParentNode;
+                    sNode = pNode.ParentNode;
 
-                    tBox_ServerName.Text = pNode.Attributes["name"].Value;
+                    tBox_ServerName.Text = sNode.Attributes["name"].Value;
                     tBox_Instance.Text = pNode.Attributes["instance"].Value;
-                    tBox_IPaddress.Text = pNode.Attributes["ip"].Value;
+                    tBox_IPaddress.Text = sNode.Attributes["ip"].Value;
                     tBox_Username.Text = pNode.Attributes["user"].Value;
                     tBox_BackupLocation.Text = pNode.Attributes["backups"].Value;
 
@@ -200,37 +241,43 @@ namespace IppBackups
 
         void tView_Servers_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-           if(e.Button == MouseButtons.Right)
-           {
-               tView_Servers.SelectedNode = tView_Servers.GetNodeAt(e.X, e.Y);
+            if (e.Button == MouseButtons.Right)
+            {
+                tView_Servers.SelectedNode = tView_Servers.GetNodeAt(e.X, e.Y);
 
-               int x = tView_Servers.SelectedNode.Bounds.X + tView_Servers.SelectedNode.Bounds.Width;
-               int y = tView_Servers.SelectedNode.Bounds.Y + tView_Servers.SelectedNode.Bounds.Width;
-               Point nodePos = new Point(x, y);
+                int x = tView_Servers.SelectedNode.Bounds.X + tView_Servers.SelectedNode.Bounds.Width;
+                int y = tView_Servers.SelectedNode.Bounds.Y + tView_Servers.SelectedNode.Bounds.Width;
+                Point nodePos = new Point(x, y);
 
-               if (tView_Servers.SelectedNode != null)
-               {
-                   ContextMenu cm = new ContextMenu();
+                if (tView_Servers.SelectedNode != null)
+                {
+                    ContextMenu cm = new ContextMenu();
 
-                   if ( tView_Servers.SelectedNode.Parent == null)
-                   {
-                       AddMenuItem(cm, "New Server");
-                   }
-                   else if (tView_Servers.SelectedNode.Parent.Text == "Servers" || tView_Servers.SelectedNode.Parent.Text == "<Servers></Servers>")
-                   {
-                       AddMenuItem(cm, "New Environment");
-                       AddMenuItem(cm, "Edit Server");
-                       AddMenuItem(cm, "Remove Server");
-                   }
-                   else if (tView_Servers.SelectedNode.Parent.Text != "Server" && tView_Servers.SelectedNode.Parent != null)
-                   {
-                       AddMenuItem(cm, "Edit Environment");
-                       AddMenuItem(cm, "Remove Environment");
-                   }
+                    if (tView_Servers.SelectedNode.Parent == null)
+                    {
+                        AddMenuItem(cm, "New Server");
+                    }
+                    else if (tView_Servers.SelectedNode.Parent.Text == "Servers" || tView_Servers.SelectedNode.Parent.Text == "<Servers></Servers>")
+                    {
+                        AddMenuItem(cm, "New Instance");
+                        AddMenuItem(cm, "Edit Server");
+                        AddMenuItem(cm, "Remove Server");
+                    }
+                    else if (tView_Servers.SelectedNode.Tag == "Instance")
+                    {
+                        AddMenuItem(cm, "New Environment");
+                        AddMenuItem(cm, "Edit Instance");
+                        AddMenuItem(cm, "Remove Instance");
+                    }
+                    else if (tView_Servers.SelectedNode.Parent.Text != "Server" && tView_Servers.SelectedNode.Tag != "Instance" && tView_Servers.SelectedNode.Parent != null)
+                    {
+                        AddMenuItem(cm, "Edit Environment");
+                        AddMenuItem(cm, "Remove Environment");
+                    }
 
-                   cm.Show(this, nodePos);
-               }
-           }
+                    cm.Show(this, nodePos);
+                }
+            }
         }
 
         void tView_Servers_AfterLabelEdit(object sender, System.Windows.Forms.NodeLabelEditEventArgs e)
@@ -245,6 +292,10 @@ namespace IppBackups
                 tBox_ServerName.Text = node.Text;
                 //bServer = true;
             }
+            else if (tView_Servers.SelectedNode.Parent.Tag == "Server")
+            {
+                tBox_Instance.Text = node.Text;
+            }
             else
             {
                 tBox_Environment.Text = node.Text;
@@ -257,7 +308,7 @@ namespace IppBackups
         private MenuItem AddMenuItem(ContextMenu cm, string text)
         {
             MenuItem item = new MenuItem(text, new System.EventHandler(this.cmItemClick));
-           // item.Tag = context;
+            // item.Tag = context;
             cm.MenuItems.Add(item);
             return item;
         }
@@ -267,7 +318,7 @@ namespace IppBackups
             string actionText = "";
             MenuItem m = (MenuItem)sender;
 
-            if(m.Text.ToLower() == "new server")
+            if (m.Text.ToLower() == "new server")
             {
                 bServer = true;
                 actionText = "New Server";
@@ -278,12 +329,30 @@ namespace IppBackups
                 tView_Servers.SelectedNode = newNode;
                 tView_Servers.LabelEdit = true;
 
-                if(!newNode.IsEditing)
+                if (!newNode.IsEditing)
                 {
                     newNode.BeginEdit();
                     EnableServerDetails();
                 }
-                
+
+            }
+            if (m.Text.ToLower() == "new instance")
+            {
+                bInstance = true;
+                actionText = "New Instance";
+                //string newSrvName = MessageBox("New Server");
+                TreeNode newNode = new TreeNode("New Instance");
+
+                tView_Servers.SelectedNode.Nodes.Add(newNode);
+                tView_Servers.SelectedNode = newNode;
+                tView_Servers.LabelEdit = true;
+
+                if (!newNode.IsEditing)
+                {
+                    newNode.BeginEdit();
+                    EnableInstanceDetails();
+                }
+
             }
             else if (m.Text.ToLower() == "new environment")
             {
@@ -319,6 +388,12 @@ namespace IppBackups
                     RemoveItemFromXml("Server", actionText);
                 }
             }
+            else if (m.Text.ToLower() == "edit instance")
+            {
+                bInstance_Edit = true;
+                actionText = "Edit Instance Click";
+                EnableInstanceDetails();
+            }
             else if (m.Text.ToLower() == "edit environment")
             {
                 bEnvironment_Edit = true;
@@ -347,7 +422,7 @@ namespace IppBackups
                 }
             }
 
-           // MessageBox.Show(actionText);
+            // MessageBox.Show(actionText);
         }
 
         private void RemoveItemFromXml(string nType, string itemToDelete)
@@ -364,9 +439,22 @@ namespace IppBackups
 
         private void EnableServerDetails()
         {
-           // tBox_ServerName.Enabled = true;
-            tBox_Instance.Enabled = true;
+            // tBox_ServerName.Enabled = true;
+            //tBox_Instance.Enabled = true;
             tBox_IPaddress.Enabled = true;
+            //tBox_Username.Enabled = true;
+            //tBox_Password.Enabled = true;
+            //tBox_BackupLocation.Enabled = true;
+
+            //if (!btn_Apply.Enabled)
+            //    btn_Apply.Enabled = false;
+        }
+
+        private void EnableInstanceDetails()
+        {
+            // tBox_ServerName.Enabled = true;
+            //tBox_Instance.Enabled = true;
+            tBox_Port.Enabled = true;
             tBox_Username.Enabled = true;
             tBox_Password.Enabled = true;
             tBox_BackupLocation.Enabled = true;
@@ -378,8 +466,21 @@ namespace IppBackups
         private void DisableServerDetails()
         {
             tBox_ServerName.Enabled = false;
-            tBox_Instance.Enabled = false;
+            //tBox_Instance.Enabled = false;
             tBox_IPaddress.Enabled = false;
+            //tBox_Username.Enabled = false;
+            //tBox_Password.Enabled = false;
+            //tBox_BackupLocation.Enabled = false;
+
+            //if (btn_Apply.Enabled)
+            btn_Apply.Enabled = false;
+        }
+
+        private void DisableInstanceDetails()
+        {
+            tBox_ServerName.Enabled = false;
+            tBox_Instance.Enabled = false;
+            tBox_Port.Enabled = false;
             tBox_Username.Enabled = false;
             tBox_Password.Enabled = false;
             tBox_BackupLocation.Enabled = false;
@@ -390,7 +491,7 @@ namespace IppBackups
 
         private void EnableEnvironmentDetails()
         {
-           // tBox_Environment.Enabled = true;
+            // tBox_Environment.Enabled = true;
             tBox_DataFile.Enabled = true;
             tBox_LogFiles.Enabled = true;
 
@@ -431,19 +532,45 @@ namespace IppBackups
             //Create Attributes.
             XmlAttribute name = doc.CreateAttribute("name");
             name.Value = tBox_ServerName.Text;
-            XmlAttribute instance = doc.CreateAttribute("instance");
-            instance.Value = tBox_Instance.Text;
+            //XmlAttribute instance = doc.CreateAttribute("instance");
+            //instance.Value = tBox_Instance.Text;
             XmlAttribute ip = doc.CreateAttribute("ip");
             ip.Value = tBox_IPaddress.Text;
+            //XmlAttribute user = doc.CreateAttribute("user");
+            //user.Value = tBox_Username.Text;
+            //XmlAttribute password = doc.CreateAttribute("password");
+            //password.Value = tBox_Password.Text;
+            //XmlAttribute backups = doc.CreateAttribute("backups");
+            //backups.Value = tBox_BackupLocation.Text;
+
+            XmlNode InstElement = doc.CreateElement("Instance");
+
+            XmlAttribute instance = doc.CreateAttribute("instance");
+            if (tBox_Instance.Text != "")
+            {
+                instance.Value = tBox_Instance.Text;
+            }
+            else
+            {
+                instance.Value = "Default";
+            }
+
+            XmlAttribute port = doc.CreateAttribute("port");
+            port.Value = tBox_Port.Text;
+
             XmlAttribute user = doc.CreateAttribute("user");
             user.Value = tBox_Username.Text;
+
             XmlAttribute password = doc.CreateAttribute("password");
             password.Value = tBox_Password.Text;
+
             XmlAttribute backups = doc.CreateAttribute("backups");
             backups.Value = tBox_BackupLocation.Text;
 
+
             // Create and empty Environment Node under new Server.
             XmlElement elemEnv = doc.CreateElement("Environment");
+            //XmlNode elemEnv = doc.CreateElement("Environment");
             elemEnv.InnerText = tBox_Environment.Text;
 
             //Create Blank Attributes for blank Environment Node.
@@ -456,55 +583,104 @@ namespace IppBackups
 
 
             elem.Attributes.Append(name);
-            elem.Attributes.Append(instance);
+            //elem.Attributes.Append(instance);
             elem.Attributes.Append(ip);
-            elem.Attributes.Append(user);
-            elem.Attributes.Append(password);
-            elem.Attributes.Append(backups);
+
+            InstElement.Attributes.Append(instance);
+            InstElement.Attributes.Append(port);
+            InstElement.Attributes.Append(user);
+            InstElement.Attributes.Append(password);
+            InstElement.Attributes.Append(backups);
 
             elemEnv.Attributes.Append(EnvName);
             elemEnv.Attributes.Append(data);
-            elemEnv.Attributes.Append(log);            
+            elemEnv.Attributes.Append(log);
 
             if (bServer)
             {
+                InstElement.AppendChild(elemEnv);
+                elem.AppendChild(InstElement);
                 //Add the node to the document.
                 root.InsertAfter(elem, root.LastChild);
                 bServer = false;
             }
-            else if ( bServer_Edit )
+            else if (bServer_Edit)
             {
                 XmlNode oldElem = doc.SelectSingleNode("//Server[@name='" + tBox_ServerName.Text + "']");
-                oldElem.Attributes["instance"].Value = tBox_Instance.Text;
+                //oldElem.Attributes["instance"].Value = tBox_Instance.Text;
                 oldElem.Attributes["ip"].Value = tBox_IPaddress.Text;
+                //oldElem.Attributes["user"].Value = tBox_Username.Text;
+                //oldElem.Attributes["password"].Value = tBox_Password.Text;
+                //oldElem.Attributes["backups"].Value = tBox_BackupLocation.Text;
+                // root.ReplaceChild(elem, oldElem);
+                bServer_Edit = false;
+            }
+            if (bInstance)
+            {
+                elem.AppendChild(InstElement);
+                //Add the node to the document.
+                root.InsertAfter(elem, root.LastChild);
+                bInstance = false;
+            }
+            else if (bInstance_Edit)
+            {
+                XmlNode oldElem = doc.SelectSingleNode("//Servers/Server/Instance[@instance='" + tBox_Instance.Text + "']");
+                oldElem.Attributes["instance"].Value = tBox_Instance.Text;
+                oldElem.Attributes["port"].Value = tBox_Port.Text;
                 oldElem.Attributes["user"].Value = tBox_Username.Text;
                 oldElem.Attributes["password"].Value = tBox_Password.Text;
                 oldElem.Attributes["backups"].Value = tBox_BackupLocation.Text;
-               // root.ReplaceChild(elem, oldElem);
-                bServer_Edit = false;
+                // root.ReplaceChild(elem, oldElem);
+                bInstance_Edit = false;
             }
-            else if ( bEnvironment )
+            else if (bEnvironment)
             {
+
+                //InstElement.AppendChild(elemEnv);
+                //elem.AppendChild(InstElement);
+                //root.InsertAfter(elemEnv, elem.LastChild);  // append the newly created environment to the selected server's child node.
+                //root.InsertAfter(elem, root.LastChild);
+                //InstElement.InsertAfter(elemEnv, InstElement.LastChild);
+                //InstElement.AppendChild(elemEnv);
+                //root.RemoveChild(root.SelectSingleNode("//Servers/Server/Instance/Environment[@name='']"));
+                root.SelectSingleNode("//Servers/Server/Instance[@instance='" + tBox_Instance.Text + "']").AppendChild(elemEnv);
+                //root.SelectSingleNode("//Servers/Server/Instance[@instance='" + tBox_Instance.Text + "']").AppendChild(elemEnv);
                 bEnvironment = false;
+                int count = 0;
+                XmlNode curNode = root.SelectSingleNode("//Servers/Server/Instance[@instance='" + tBox_Instance.Text + "']");
+                count = curNode.ChildNodes.Count;
+                if (count == 2)
+                {
+                    //XmlNodeList curElem = curNode.SelectNodes("//Servers/Server/Instance/Environment");
+                    XmlNodeList curElem = curNode.ChildNodes;
+
+                    if (curElem[0].Attributes["name"].Value == "")
+                    {
+                        root.SelectSingleNode("//Servers/Server/Instance[@instance='" + tBox_Instance.Text + "']").RemoveChild(curElem[0]);
+                    }
+                    
+
+                }
             }
-            else if ( bEnvironment_Edit)
+            else if (bEnvironment_Edit)
             {
                 XmlNode envNode = doc.SelectSingleNode("//Environment[@name='" + tBox_Environment.Text + "']");
                 envNode.Attributes["data"].Value = tBox_DataFile.Text;
                 envNode.Attributes["log"].Value = tBox_LogFiles.Text;
                 bEnvironment = false;
             }
-            
+
             //XmlNode elemServ = doc.SelectSingleNode("//Server[@name='" + tBox_ServerName.Text + "']");
-           
+
             //elemServ.AppendChild(elemEnv);
 
             doc.Save(sXmlFile);
 
             btn_Apply.Enabled = false;
             DisableServerDetails();
+            DisableInstanceDetails();
             DisableEnvironmentDetails();
-            
+
         }
 
         private void tBox_Instance_TextChanged(object sender, EventArgs e)
@@ -527,25 +703,25 @@ namespace IppBackups
 
         private void tBox_Password_TextChanged(object sender, EventArgs e)
         {
-            if(tBox_Password.Enabled && !btn_Apply.Enabled)
+            if (tBox_Password.Enabled && !btn_Apply.Enabled)
                 btn_Apply.Enabled = true;
         }
 
         private void tBox_BackupLocation_TextChanged(object sender, EventArgs e)
         {
-            if(tBox_BackupLocation.Enabled && !btn_Apply.Enabled)
+            if (tBox_BackupLocation.Enabled && !btn_Apply.Enabled)
                 btn_Apply.Enabled = true;
         }
 
         private void tBox_DataFile_TextChanged(object sender, EventArgs e)
         {
-            if(tBox_DataFile.Enabled && !btn_Apply.Enabled)
+            if (tBox_DataFile.Enabled && !btn_Apply.Enabled)
                 btn_Apply.Enabled = true;
         }
 
         private void tBox_LogFiles_TextChanged(object sender, EventArgs e)
         {
-            if(tBox_LogFiles.Enabled && !btn_Apply.Enabled)
+            if (tBox_LogFiles.Enabled && !btn_Apply.Enabled)
                 btn_Apply.Enabled = true;
         }
     }

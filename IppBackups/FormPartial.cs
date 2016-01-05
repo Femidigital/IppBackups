@@ -10,6 +10,10 @@ namespace IppBackups
     {
         private void InitializeCustomEvents()
         {
+            this.cBox_Server.DisplayMember = "Name";
+            this.cBox_Server.ValueMember = "Id";
+
+
             this.rBtn_Restore.CheckedChanged += new System.EventHandler(this.rBtn_Restore_CheckedChanged);
         }
     }
