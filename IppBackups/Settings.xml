@@ -1,8 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Servers>
-  <Server name="CHI-7S45842" ip="127.0.0.1">
-    <Instance instance="Default" port="1433" user="Bsi-Global\Oyefesoa" password="zorfe1243210" backups="C:\SQLBackups">
+  <Server name="LocalHost" ip="127.0.0.1">
+    <Instance instance="Default" port="1433" user="Oyefesoa" password="zorfe1243210" backups="C:\SQLBackups">
       <Environment name="DEV" data="C:\SQLData" log="C:\SQLLogs">DEV</Environment>
+    </Instance>
+  </Server>
+  <Server name="UK-CHDEVSQL01" ip="10.103.109.45">
+    <Instance instance="Default" port="1433" user="qa-cloudadmin" password="Password1" backups="S:\CBS">
+      <Environment name="QA" data="E:\SQLData" log="L:\SQLLogs">QA</Environment>
     </Instance>
   </Server>
 </Servers>

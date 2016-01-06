@@ -222,6 +222,7 @@ namespace IppBackups
                         if ( curSrvInstance != "Default" )
                         {
                             curSrvInstanceToConnect += "\\" + curSrvInstance;
+                            curSrvInstance = curSrvInstanceToConnect;
                         }
                         
                         if (sPort != "" && sPort != "1433")
@@ -277,7 +278,7 @@ namespace IppBackups
 
                     selectedDb++;
                 }
-                lbl_Output.Text += "Connected successfully.\n";
+                lbl_Output.Text += "Connected to " + sName + " on " + curSrv + " successfully.\n";
             }
             catch (Exception ex)
             {
@@ -713,7 +714,8 @@ namespace IppBackups
                         lbl_Output.Text += "Starting Backup for " + db + ".\n";
 
                         // Perform a time consuming operation and report progress
-                        BackupDatabase(db, sUsername, sPassword, curSrvInstance, destPath);
+                        //BackupDatabase(db, sUsername, sPassword, curSrvInstance, destPath);
+                        BackupDatabase(db, sUsername, sPassword, curSrvInstanceToConnect, destPath);
                         backStatus.Add(db, true);
                         //worker.ReportProgress();
                     }
