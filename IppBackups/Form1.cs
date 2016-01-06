@@ -228,6 +228,9 @@ namespace IppBackups
                         {
                             curSrvInstanceToConnect += ", " + sPort;
                         }
+
+                        if (sUsername == "")
+                            sUsername = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
                     }
                 }
             }

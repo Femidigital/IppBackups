@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Linq;
 using System.Configuration;
+using System.Text.RegularExpressions;
 
 namespace IppBackups
 {
@@ -209,7 +210,7 @@ namespace IppBackups
                     tBox_DataFile.Text = "";
                     tBox_LogFiles.Text = "";
 
-                    nNode = doc.SelectSingleNode("/Servers/Server/Instance[@instance='" + e.Node.Text + "']");
+                    nNode = doc.SelectSingleNode("/Servers/Server[@name='" + e.Node.Parent.Text + "']/Instance[@instance='" + e.Node.Text + "']");
                     sNode = nNode.ParentNode;
 
                     tBox_ServerName.Text = sNode.Attributes["name"].Value;
@@ -624,7 +625,7 @@ namespace IppBackups
             }
             else if (bInstance_Edit)
             {
-                XmlNode oldElem = doc.SelectSingleNode("//Servers/Server/Instance[@instance='" + tBox_Instance.Text + "']");
+                XmlNode oldElem = doc.SelectSingleNode("//Servers/Server[@name='" + tBox_ServerName.Text + "']/Instance[@instance='" + tBox_Instance.Text + "']");
                 oldElem.Attributes["instance"].Value = tBox_Instance.Text;
                 oldElem.Attributes["port"].Value = tBox_Port.Text;
                 oldElem.Attributes["user"].Value = tBox_Username.Text;
@@ -643,11 +644,11 @@ namespace IppBackups
                 //InstElement.InsertAfter(elemEnv, InstElement.LastChild);
                 //InstElement.AppendChild(elemEnv);
                 //root.RemoveChild(root.SelectSingleNode("//Servers/Server/Instance/Environment[@name='']"));
-                root.SelectSingleNode("//Servers/Server/Instance[@instance='" + tBox_Instance.Text + "']").AppendChild(elemEnv);
+                root.SelectSingleNode("//Servers/Server[@name='" + tBox_ServerName.Text +"']/Instance[@instance='" + tBox_Instance.Text + "']").AppendChild(elemEnv);
                 //root.SelectSingleNode("//Servers/Server/Instance[@instance='" + tBox_Instance.Text + "']").AppendChild(elemEnv);
                 bEnvironment = false;
                 int count = 0;
-                XmlNode curNode = root.SelectSingleNode("//Servers/Server/Instance[@instance='" + tBox_Instance.Text + "']");
+                XmlNode curNode = root.SelectSingleNode("//Servers/Server[@name='" + tBox_ServerName.Text + "']/Instance[@instance='" + tBox_Instance.Text + "']");
                 count = curNode.ChildNodes.Count;
                 if (count == 2)
                 {
@@ -656,7 +657,7 @@ namespace IppBackups
 
                     if (curElem[0].Attributes["name"].Value == "")
                     {
-                        root.SelectSingleNode("//Servers/Server/Instance[@instance='" + tBox_Instance.Text + "']").RemoveChild(curElem[0]);
+                        root.SelectSingleNode("//Servers/Server[@name='" + tBox_ServerName.Text + "']/Instance[@instance='" + tBox_Instance.Text + "']").RemoveChild(curElem[0]);
                     }
                     
 
@@ -723,6 +724,31 @@ namespace IppBackups
         {
             if (tBox_LogFiles.Enabled && !btn_Apply.Enabled)
                 btn_Apply.Enabled = true;
+        }
+
+        private void tBox_IPaddress_Validated(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tBox_IPaddress_Validating(object sender, CancelEventArgs e)
+        {
+            Regex re = new Regex(@"^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$");
+
+             //if (re.IsMatch(tBox_IPaddress.Text) || tBox_IPaddress.Text == "")
+            if ( !re.IsMatch(tBox_IPaddress.Text))           
+            {
+                errorProvider1.SetError(tBox_IPaddress, "Valid IP is required");
+                e.Cancel = true;
+                return;
+            }
+           
+            /*if(tBox_IPaddress.Text == "")
+            {
+                errorProvider1.SetError(tBox_IPaddress, "Valid IP is required");
+                e.Cancel = true;
+                return;
+            }*/
         }
     }
 }
