@@ -389,6 +389,16 @@ namespace IppBackups
                     RemoveItemFromXml("Server", actionText);
                 }
             }
+            else if (m.Text.ToLower() == "remove instance")
+            {
+                string strMsg = String.Format("Are you sure you want to remove the Instance : {0} and all its environment?", tView_Servers.SelectedNode.Text);
+                actionText = tView_Servers.SelectedNode.Text;
+                if (MessageBox.Show(strMsg, "Close Application", MessageBoxButtons.YesNo) != DialogResult.No)
+                {
+                    tView_Servers.Nodes.Remove(tView_Servers.SelectedNode);
+                    RemoveItemFromXml("Instance", actionText);
+                }
+            }
             else if (m.Text.ToLower() == "edit instance")
             {
                 bInstance_Edit = true;
@@ -429,10 +439,19 @@ namespace IppBackups
         private void RemoveItemFromXml(string nType, string itemToDelete)
         {
             XDocument xdoc = XDocument.Load(sXmlFile);
+            /*
             var q = from node in xdoc.Descendants(nType)
                     let attr = node.Attribute("name")
                     where attr != null && attr.Value == itemToDelete
                     select node;
+             */
+            var q = from node in xdoc.Descendants(nType)
+                    let pAttr = node.Parent.Attribute("name")
+                    let attr = node.Attribute("name")
+                    let inst = node.Attribute("instance")
+                    where (attr != null && attr.Value == itemToDelete) || (inst.Value == itemToDelete && pAttr.Value == tBox_ServerName.Text)
+                    select node;
+
             q.ToList().ForEach(x => x.Remove());
             xdoc.Save(sXmlFile);
             MessageBox.Show("Removed " + itemToDelete);
@@ -618,9 +637,20 @@ namespace IppBackups
             }
             if (bInstance)
             {
+                int count = 0;
+                InstElement.AppendChild(elemEnv);
                 elem.AppendChild(InstElement);
                 //Add the node to the document.
-                root.InsertAfter(elem, root.LastChild);
+                XmlNode curNode = root.SelectSingleNode("//Servers/Server[@name='" + tBox_ServerName.Text + "']").AppendChild(InstElement);
+                count = curNode.ChildNodes.Count;
+                if (count <= 1)
+                {
+                    //root.InsertAfter(elem, root.LastChild);
+                }
+                else
+                {
+                    root.InsertAfter(elem, curNode);
+                }
                 bInstance = false;
             }
             else if (bInstance_Edit)
