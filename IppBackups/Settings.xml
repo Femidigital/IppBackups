@@ -1,23 +1,29 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Servers>
-	<Server name="LocalHost" ip="127.0.0.1">
-		<Instance instance="Default" port="1433" user="" password="" backups="">
-			<Environment name="" data="" log="">
-			</Environment>
-		</Instance>
-	</Server>
-	<Server name="UK-CHDEVSQL01" ip="10.103.109.45">
-		<Instance instance="Default" port="1433" user="qa-cloudadmin" password="Password1" backups="S:\CBS">
-			<Environment name="QA" data="E:\SQLData" log="L:\SQLLogs">QA</Environment>
-		</Instance>
-	</Server>
-	<Server name="FDC_TAB" ip="12.0.0.1">
-		<Instance instance="Default" port="" user="" password="" backups="">
-			<Environment name="" data="" log="">
-			</Environment>
-		</Instance>
-		<Instance instance="DEV_SQL2K12" port="1433" user="dev-admin" password="Password1" backups="D:\Backups\SQL2012">
-			<Environment name="DEV" data="D:\SQL\SQL2K12\DATA" log="D:\SQL\SQL2K12\LOG">DEV</Environment>
-		</Instance>
-	</Server>
+  <Server name="LocalHost" ip="127.0.0.1">
+    <Instance instance="Default" port="1433" user="" password="" backups="">
+      <Environment name="" data="" log="">
+      </Environment>
+    </Instance>
+  </Server>
+  <Server name="UK-CHDEVSQL01" ip="10.103.109.45">
+    <Instance instance="Default" port="1433" user="qa-cloudadmin" password="Password1" backups="S:\CBS">
+      <Environment name="QA" data="E:\SQLData" log="L:\SQLLogs">QA</Environment>
+    </Instance>
+  </Server>
+  <Server name="FDC_TAB" ip="12.0.0.1">
+    <Instance instance="DEV_SQL2K12" port="1433" user="dev-admin" password="Password1" backups="D:\Backups\SQL2012">
+      <Environment name="DEV" data="D:\SQL\SQL2K12\DATA" log="D:\SQL\SQL2K12\LOG">DEV</Environment>
+    </Instance>
+  </Server>
+  <Server name="CHI-7S45842" ip="127.0.0.1">
+    <Instance instance="Default" port="1433" user="BSI-GLOBAL\OyefesoA" password="zorfe1243210" backups="C:\Backups">
+      <Environment name="DEV" data="C:\SQLData" log="C:\SQLLogs">DEV</Environment>
+    </Instance>
+  </Server>
+  <Server name="UK-CHDEVSQL02" ip="10.103.109.46">
+    <Instance instance="Default" port="1433" user="uat-cloudadmin" password="Password1" backups="S:\CBS">
+      <Environment name="UAT" data="E:\SQLData" log="L:\SQLLogs">UAT</Environment>
+    </Instance>
+  </Server>
 </Servers>

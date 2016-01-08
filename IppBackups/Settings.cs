@@ -162,6 +162,7 @@ namespace IppBackups
                     tBox_ServerName.Text = "";
                     tBox_Instance.Text = "";
                     tBox_IPaddress.Text = "";
+                    tBox_Port.Text = "";
                     tBox_Username.Text = "";
                     tBox_Password.Text = "";
                     tBox_BackupLocation.Text = "";
@@ -181,6 +182,7 @@ namespace IppBackups
                     tBox_ServerName.Text = nNode.Attributes["name"].Value;
                     tBox_Instance.Text = nNode.Attributes["instance"].Value;
                     tBox_IPaddress.Text = nNode.Attributes["ip"].Value;
+                    tBox_Port.Text = nNode.Attributes["port"].Value;
                     tBox_Username.Text = nNode.Attributes["user"].Value;
                     tBox_Password.Text = nNode.Attributes["password"].Value;
                     tBox_BackupLocation.Text = nNode.Attributes["backups"].Value;
@@ -188,6 +190,7 @@ namespace IppBackups
                 else if (e.Node.Parent.FullPath == "Servers")
                 {
                     tBox_Instance.Text = "";
+                    tBox_Port.Text = "";
                     tBox_Username.Text = "";
                     tBox_Password.Text = "";
                     tBox_BackupLocation.Text = "";
@@ -230,7 +233,9 @@ namespace IppBackups
                     tBox_ServerName.Text = sNode.Attributes["name"].Value;
                     tBox_Instance.Text = pNode.Attributes["instance"].Value;
                     tBox_IPaddress.Text = sNode.Attributes["ip"].Value;
+                    tBox_Port.Text = pNode.Attributes["port"].Value;
                     tBox_Username.Text = pNode.Attributes["user"].Value;
+                    tBox_Password.Text = pNode.Attributes["password"].Value;
                     tBox_BackupLocation.Text = pNode.Attributes["backups"].Value;
 
                     tBox_Environment.Text = e.Node.Text;

@@ -283,7 +283,7 @@ namespace IppBackups
             catch (Exception ex)
             {
                 // TODO: Change font color
-                lbl_Output.Text += "Error Connecting to " + sName + " on " + curSrv + ".'\n";
+                lbl_Output.Text += "Error Connecting to " + sName + " on " + curSrv + " as " + sUsername + ".'\n";
                 lbl_Output.Text += "'\t" + ex.Message + ".'\n";
             }
 
