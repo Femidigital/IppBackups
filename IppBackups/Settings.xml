@@ -11,7 +11,7 @@
       <Environment name="QA" data="E:\SQLData" log="L:\SQLLogs">QA</Environment>
     </Instance>
   </Server>
-  <Server name="FDC_TAB" ip="12.0.0.1">
+  <Server name="FDC_TAB" ip="127.0.0.1">
     <Instance instance="DEV_SQL2K12" port="1433" user="dev-admin" password="Password1" backups="D:\Backups\SQL2012">
       <Environment name="DEV" data="D:\SQL\SQL2K12\DATA" log="D:\SQL\SQL2K12\LOG">DEV</Environment>
     </Instance>
