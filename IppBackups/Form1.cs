@@ -237,56 +237,63 @@ namespace IppBackups
             }
 
 
-
-
-            Microsoft.SqlServer.Management.Smo.Server selectedServer = new Microsoft.SqlServer.Management.Smo.Server(curSrvInstanceToConnect);
-            selectedServer.ConnectionContext.LoginSecure = false;
-            selectedServer.ConnectionContext.Login = sUsername;
-            selectedServer.ConnectionContext.Password = sPassword;
-            //ConnectToBackupServer();
-
-            try
+            if (curSrvInstanceToConnect == "LocalHost")
             {
-                int selectedDb = 0;
-                int columnCount = 1;
-                int rowSize = 15;
-                int rowCount = selectedServer.Databases.Count;
-                columnCount = (selectedDb / rowSize);
+                Microsoft.SqlServer.Management.Smo.Server selectedServer = new Microsoft.SqlServer.Management.Smo.Server();
+                lbl_Output.Text += "Connected to " + selectedServer.Information.Version + " successfully.\n";
+            }
+            else
+            {
 
-                foreach (Database db in selectedServer.Databases)
+                Microsoft.SqlServer.Management.Smo.Server selectedServer = new Microsoft.SqlServer.Management.Smo.Server(curSrvInstanceToConnect);
+                selectedServer.ConnectionContext.LoginSecure = false;
+                selectedServer.ConnectionContext.Login = sUsername;
+                selectedServer.ConnectionContext.Password = sPassword;
+                //}
+                //ConnectToBackupServer();
+
+                try
                 {
-                    if ((selectedDb < selectedServer.Databases.Count) && (selectedDb < rowSize))
-                    {
-                        //selectedDb++;
-                    }
-                    else
-                    {
-                        selectedDb = 0;
-                        columnCount++;
-                    }
-                    //columnCount = (selectedDb / rowSize);
-                    //cBox_Server.Items.Add(db.Name);
-                    CheckBox box = new CheckBox();
-                    box.CheckedChanged += box_CheckedChanged;
-                    box.Tag = db.Name.ToString();
-                    box.Text = db.Name.ToString();
-                    box.AutoSize = true;
-                    //box.Location = new Point(10 + (columnCount * 150) , (selectedDb % rowSize) * 20);
-                    //box.Location = new Point(10 + (columnCount * 150), (grpBox_Databases.DisplayRectangle.Top + 10) + (selectedDb % rowSize) * 20);
-                    box.Location = new Point(10 + (columnCount * 150), (grpBox_Databases.DisplayRectangle.Top + 10) + (selectedDb % rowSize) * 20);
-                    grpBox_Databases.Controls.Add(box);
+                    int selectedDb = 0;
+                    int columnCount = 1;
+                    int rowSize = 15;
+                    int rowCount = selectedServer.Databases.Count;
+                    columnCount = (selectedDb / rowSize);
 
-                    selectedDb++;
+                    foreach (Database db in selectedServer.Databases)
+                    {
+                        if ((selectedDb < selectedServer.Databases.Count) && (selectedDb < rowSize))
+                        {
+                            //selectedDb++;
+                        }
+                        else
+                        {
+                            selectedDb = 0;
+                            columnCount++;
+                        }
+                        //columnCount = (selectedDb / rowSize);
+                        //cBox_Server.Items.Add(db.Name);
+                        CheckBox box = new CheckBox();
+                        box.CheckedChanged += box_CheckedChanged;
+                        box.Tag = db.Name.ToString();
+                        box.Text = db.Name.ToString();
+                        box.AutoSize = true;
+                        //box.Location = new Point(10 + (columnCount * 150) , (selectedDb % rowSize) * 20);
+                        //box.Location = new Point(10 + (columnCount * 150), (grpBox_Databases.DisplayRectangle.Top + 10) + (selectedDb % rowSize) * 20);
+                        box.Location = new Point(10 + (columnCount * 150), (grpBox_Databases.DisplayRectangle.Top + 10) + (selectedDb % rowSize) * 20);
+                        grpBox_Databases.Controls.Add(box);
+
+                        selectedDb++;
+                    }
+                    lbl_Output.Text += "Connected to " + sName + " on " + curSrv + " successfully.\n";
                 }
-                lbl_Output.Text += "Connected to " + sName + " on " + curSrv + " successfully.\n";
+                catch (Exception ex)
+                {
+                    // TODO: Change font color
+                    lbl_Output.Text += "Error Connecting to " + sName + " on " + curSrv + " as " + sUsername + ".'\n";
+                    lbl_Output.Text += "'\t" + ex.Message + ".'\n";
+                }
             }
-            catch (Exception ex)
-            {
-                // TODO: Change font color
-                lbl_Output.Text += "Error Connecting to " + sName + " on " + curSrv + " as " + sUsername + ".'\n";
-                lbl_Output.Text += "'\t" + ex.Message + ".'\n";
-            }
-
         }
 
         void box_CheckedChanged(object sender, EventArgs e)
