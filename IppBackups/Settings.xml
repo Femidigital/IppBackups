@@ -2,8 +2,7 @@
 <Servers>
   <Server name="LocalHost" ip="127.0.0.1">
     <Instance instance="Default" port="1433" user="" password="" backups="">
-      <Environment name="" data="" log="">
-      </Environment>
+      <Environment name="DEV" data="C:\SQLData" log="C:\SQLLogs">DEV</Environment>
     </Instance>
   </Server>
   <Server name="UK-CHDEVSQL01" ip="10.103.109.45">

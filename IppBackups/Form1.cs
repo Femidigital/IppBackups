@@ -169,6 +169,7 @@ namespace IppBackups
             XmlNode curServer;
             serverName = sName;
             curSrvInstanceToConnect = "";
+            Microsoft.SqlServer.Management.Smo.Server selectedServer;
 
             /*
             XmlDocument doc2 = new XmlDocument();
@@ -239,17 +240,17 @@ namespace IppBackups
 
             if (curSrvInstanceToConnect == "LocalHost")
             {
-                Microsoft.SqlServer.Management.Smo.Server selectedServer = new Microsoft.SqlServer.Management.Smo.Server();
-                lbl_Output.Text += "Connected to " + selectedServer.Information.Version + " successfully.\n";
+                selectedServer = new Microsoft.SqlServer.Management.Smo.Server();
+                lbl_Output.Text += "Connected to " + selectedServer.InstanceName + " successfully.\n";
             }
             else
             {
 
-                Microsoft.SqlServer.Management.Smo.Server selectedServer = new Microsoft.SqlServer.Management.Smo.Server(curSrvInstanceToConnect);
+                selectedServer = new Microsoft.SqlServer.Management.Smo.Server(curSrvInstanceToConnect);
                 selectedServer.ConnectionContext.LoginSecure = false;
                 selectedServer.ConnectionContext.Login = sUsername;
                 selectedServer.ConnectionContext.Password = sPassword;
-                //}
+             }
                 //ConnectToBackupServer();
 
                 try
@@ -293,7 +294,6 @@ namespace IppBackups
                     lbl_Output.Text += "Error Connecting to " + sName + " on " + curSrv + " as " + sUsername + ".'\n";
                     lbl_Output.Text += "'\t" + ex.Message + ".'\n";
                 }
-            }
         }
 
         void box_CheckedChanged(object sender, EventArgs e)
