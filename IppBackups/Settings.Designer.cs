@@ -336,6 +336,9 @@
             this.tvServers_imageList.TransparentColor = System.Drawing.Color.Transparent;
             this.tvServers_imageList.Images.SetKeyName(0, "big_tree.jpg");
             this.tvServers_imageList.Images.SetKeyName(1, "server.jpg");
+            this.tvServers_imageList.Images.SetKeyName(2, "server_2.jpg");
+            this.tvServers_imageList.Images.SetKeyName(3, "Gear.ico");
+            this.tvServers_imageList.Images.SetKeyName(4, "gear02.png");
             // 
             // btn_Apply
             // 

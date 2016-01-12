@@ -37,7 +37,7 @@ namespace IppBackups
             sXmlFile = "..\\..\\" + ConfigFileName;
             //sXmlFile = ConfigFileName;
 
-            //tView_Servers.ImageList = tvServers_imageList;
+            tView_Servers.ImageList = tvServers_imageList;
             //tView_Servers.SetBounds(5, 18, 140, 280);
             tView_Servers.SetBounds(5, 18, 160, 350);
 
@@ -90,6 +90,7 @@ namespace IppBackups
                         inTreeNode.Nodes.Add(new TreeNode(xNode.Attributes["name"].Value));
 
                         tNode = inTreeNode.Nodes[i];
+                        tNode.ImageIndex = 1;
                         tNode.Tag = "Server";
                         AddNode(xNode, tNode);
                     }
@@ -97,6 +98,7 @@ namespace IppBackups
                     {
                         inTreeNode.Nodes.Add(new TreeNode(xNode.Attributes["instance"].Value));
                         tNode = inTreeNode.Nodes[i];
+                        tNode.ImageIndex = 2;
                         tNode.Tag = "Instance";
                         AddNode(xNode, tNode);
                     }
@@ -109,6 +111,7 @@ namespace IppBackups
                             //inTreeNode.ImageIndex = 0;
                             //tView_Servers.SelectedNode.ImageIndex = 0;
                             tNode = inTreeNode.Nodes[i];
+                            tNode.ImageIndex = 3;
                             tNode.Tag = "Environment";
                             //AddNode(xNode, tNode);
                         }

@@ -15,6 +15,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Collections.Specialized;
 using Microsoft.SqlServer.Management.Smo;
+using Microsoft.SqlServer.Management.Smo.Wmi;
 using Microsoft.SqlServer.Management.Common;
 using System.IO;
 using Tools;
@@ -241,6 +242,16 @@ namespace IppBackups
             if (curSrvInstanceToConnect == "LocalHost")
             {
                 selectedServer = new Microsoft.SqlServer.Management.Smo.Server();
+
+                if (selectedServer.InstanceName == "")
+                {
+                    ManagedComputer mc = new ManagedComputer();
+
+                    foreach (ServerInstance si in mc.ServerInstances)
+                    {
+                        lbl_Output.Text += "Connected to " + si.Name + " successfully.\n";
+                    }
+                }
                // lbl_Output.Text += "Connected to " + selectedServer.InstanceName + " successfully.\n";
             }
             else
