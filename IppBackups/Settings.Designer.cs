@@ -182,6 +182,7 @@
             this.tBox_Password.Name = "tBox_Password";
             this.tBox_Password.Size = new System.Drawing.Size(181, 22);
             this.tBox_Password.TabIndex = 7;
+            this.tBox_Password.UseSystemPasswordChar = true;
             this.tBox_Password.TextChanged += new System.EventHandler(this.tBox_Password_TextChanged);
             // 
             // tBox_Username
@@ -321,7 +322,7 @@
             // btn_Close
             // 
             this.btn_Close.Location = new System.Drawing.Point(444, 509);
-            this.btn_Close.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btn_Close.Margin = new System.Windows.Forms.Padding(4);
             this.btn_Close.Name = "btn_Close";
             this.btn_Close.Size = new System.Drawing.Size(100, 28);
             this.btn_Close.TabIndex = 6;
@@ -339,7 +340,7 @@
             // btn_Apply
             // 
             this.btn_Apply.Location = new System.Drawing.Point(268, 509);
-            this.btn_Apply.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btn_Apply.Margin = new System.Windows.Forms.Padding(4);
             this.btn_Apply.Name = "btn_Apply";
             this.btn_Apply.Size = new System.Drawing.Size(100, 28);
             this.btn_Apply.TabIndex = 7;

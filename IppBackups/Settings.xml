@@ -14,6 +14,9 @@
     <Instance instance="DEV_SQL2K12" port="1433" user="dev-admin" password="Password1" backups="D:\Backups\SQL2012">
       <Environment name="DEV" data="D:\SQL\SQL2K12\DATA" log="D:\SQL\SQL2K12\LOG">DEV</Environment>
     </Instance>
+    <Instance instance="DEV_SQL2K14" port="1433" user="dev-admin" password="Password1" backups="D:\Backups\SQL2014">
+      <Environment name="TEST" data="D:\SQL\SQL2K14\Data" log="D:\SQL\SQL2K14\Logs">TEST</Environment>
+    </Instance>
   </Server>
   <Server name="CHI-7S45842" ip="127.0.0.1">
     <Instance instance="Default" port="1433" user="BSI-GLOBAL\OyefesoA" password="zorfe1243210" backups="C:\Backups">

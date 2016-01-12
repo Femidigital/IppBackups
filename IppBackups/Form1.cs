@@ -241,7 +241,7 @@ namespace IppBackups
             if (curSrvInstanceToConnect == "LocalHost")
             {
                 selectedServer = new Microsoft.SqlServer.Management.Smo.Server();
-                lbl_Output.Text += "Connected to " + selectedServer.InstanceName + " successfully.\n";
+               // lbl_Output.Text += "Connected to " + selectedServer.InstanceName + " successfully.\n";
             }
             else
             {
@@ -255,6 +255,7 @@ namespace IppBackups
 
                 try
                 {
+                    lbl_Output.Text += "Connected to " + selectedServer.InstanceName.ToString() + " successfully.\n";
                     int selectedDb = 0;
                     int columnCount = 1;
                     int rowSize = 15;
@@ -396,7 +397,9 @@ namespace IppBackups
             lbl_Output.Text += "Before connecting to : " + serverInstance + " by : " + userName + " \n";
 
 
-            ServerConnection connection = new ServerConnection(serverInstance);
+            string serverInstanceToRestoreTo = serverName + "\\" + serverInstance;
+            //ServerConnection connection = new ServerConnection(serverInstance);
+            ServerConnection connection = new ServerConnection(serverInstanceToRestoreTo);
             Server sqlServer = new Server(connection);
 
             Database db = sqlServer.Databases[databaseName];
@@ -802,10 +805,10 @@ namespace IppBackups
 
                 foreach (var inst in _selectedDestServer.Instances)
                 {
-                    lbl_Output.Text += "Going through Instances on the Server... \n ";
+                    lbl_Output.Text += "Going through Instances on the destination Server... \n ";
                     for (int i = 0; i < inst.Environments.Count; i++)
                     {
-                        lbl_Output.Text += "Looping through Environments..." + inst.Environments.ElementAt(i).Name + "\n ";
+                        lbl_Output.Text += "Looping through destination Environments..." + inst.Environments.ElementAt(i).Name + "\n ";
                         if (inst.Environments.ElementAt(i).Name == cBox_DestEnvironment.SelectedItem)
                         {
                             lbl_Output.Text += "Setting user and password ... \n ";
