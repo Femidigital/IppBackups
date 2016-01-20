@@ -405,10 +405,13 @@ namespace IppBackups
             BackupDeviceItem deviceItem = new BackupDeviceItem(targetCopy, DeviceType.File);
             sqlRestore.Devices.Add(deviceItem);
             sqlRestore.Database = databaseName;
-            lbl_Output.Text += "Before connecting to : " + serverInstance + " by : " + userName + " \n";
+            lbl_Output.Text += "Before connecting to : " + serverName + " by : " + userName + " \n";
 
 
-            string serverInstanceToRestoreTo = serverName + "\\" + serverInstance;
+            string serverInstanceToRestoreTo = serverName;
+            
+            if(serverInstance != "Default")
+                serverInstanceToRestoreTo = serverName + "\\" + serverInstance;
             //ServerConnection connection = new ServerConnection(serverInstance);
             ServerConnection connection = new ServerConnection(serverInstanceToRestoreTo);
             Server sqlServer = new Server(connection);
@@ -816,7 +819,6 @@ namespace IppBackups
 
                 foreach (var inst in _selectedDestServer.Instances)
                 {
-                    lbl_Output.Text += "Going through Instances on the destination Server... \n ";
                     for (int i = 0; i < inst.Environments.Count; i++)
                     {
                         lbl_Output.Text += "Looping through destination Environments..." + inst.Environments.ElementAt(i).Name + "\n ";
@@ -868,15 +870,11 @@ namespace IppBackups
 
                 foreach (string db in databaseList)
                 {
-                    lbl_Output.Text += "Going into the foreach loop... \n ";
-                    lbl_Output.Text += "Items in the selected database list :" + databaseList.Count.ToString() + "\n";
                     if (backStatus.ContainsKey(db) || rBtn_Restore.Checked)
                     {
-                        lbl_Output.Text += "Got this far first... \n ";
                         if (backStatus[db] || rBtn_Restore.Checked)
                         //if (rBtn_Restore.Checked)
                         {
-                            lbl_Output.Text += "Got this far... \n ";
                             try
                             {
                                 string restore_db = db.Replace(cBox_Environment.Text, cBox_DestEnvironment.Text);
@@ -888,7 +886,7 @@ namespace IppBackups
                                 lbl_Output.Text += "User : " + r_sUsername + "'\n";
                                 lbl_Output.Text += "Selected destination server  : " + cBox_DestServer.Text + "\n";
                                 // TODO: Workout how to identify which domain the server is under
-                                if (cBox_DestServer.Text == "UK-CHFMIGSQL" || cBox_DestServer.Text == "UK-CHDEVSQL01" || cBox_DestServer.Text == "UK-CHDEVSQL02" || cBox_DestServer.Text == "FDC_TAB")
+                                if (cBox_DestServer.Text == "UK-CHFMIGSQL" || cBox_DestServer.Text == "UK-CHDEVSQL01" || cBox_DestServer.Text == "UK-CHDEVSQL02" || cBox_DestServer.Text == "FDC_TAB" || cBox_DestServer.Text == "CHI-7S45842")
                                 {
                                     lbl_Output.Text += "Restoring database to OSCAR domain.\n";
                                     RestoreDatabaseToOscar(restore_db, filePath, srvName, srvInstance, r_sUsername, r_sPassword, restore_dataFilePath, restore_logFilePath, localcopy);
@@ -903,14 +901,16 @@ namespace IppBackups
                                 //if (restore_db.Contains("BSOL") || restore_db.Contains("CloudAdmin"))
                                 if (restore_db == (cBox_DestEnvironment.Text + "-BSOL") || restore_db == (cBox_DestEnvironment.Text + "-CloudAdmin"))
                                 {
-                                    Server myServer = new Server(srvInstance);
+                                    //Server myServer = new Server(srvInstance);
+                                    Server myServer = new Server(srvName);
                                     GenerateViewScript(myServer, restore_db);
                                 }
 
                                 //if (restore_db.Contains("CloudAdmin") || restore_db.Contains("PersonalData"))
                                 if (restore_db == (cBox_DestEnvironment.Text + "-CloudAdmin") || restore_db == (cBox_DestEnvironment.Text + "-PersonalData") || restore_db == (cBox_DestEnvironment.Text + "-Ecommerce"))
                                 {
-                                    update_DatabaseEntries(srvInstance, cBox_DestEnvironment.Text, restore_db);
+                                    //update_DatabaseEntries(srvInstance, cBox_DestEnvironment.Text, restore_db);
+                                    update_DatabaseEntries(srvName, cBox_DestEnvironment.Text, restore_db);
                                 }
                                 //worker.ReportProgress();
                             }

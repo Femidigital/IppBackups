@@ -19,7 +19,7 @@
     </Instance>
   </Server>
   <Server name="CHI-7S45842" ip="127.0.0.1">
-    <Instance instance="Default" port="1433" user="BSI-GLOBAL\OyefesoA" password="zorfe1243210" backups="C:\Backups">
+    <Instance instance="Default" port="1433" user="dev-admin" password="Password1" backups="C:\SQLBackups">
       <Environment name="DEV" data="C:\SQLData" log="C:\SQLLogs">DEV</Environment>
     </Instance>
   </Server>

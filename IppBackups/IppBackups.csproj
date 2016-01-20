@@ -207,6 +207,9 @@
     <Content Include="UpdateDatabaseEntries-QA.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="UpdateDatabaseEntriesCloudAdmin-DEV.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="UpdateDatabaseEntriesCloudAdmin-MIG.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -214,9 +217,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="UpdateDatabaseEntriesCloudAdmin-QA.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="UpdateDatabaseEntriesCloudAdmin-TEST.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="UpdateDatabaseEntriesCloudAdmin-UAT.sql">
@@ -234,6 +234,9 @@
     <Content Include="UpdateDatabaseEntriesEcommerce-UAT.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="UpdateDatabaseEntriesPersonalData-DEV.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="UpdateDatabaseEntriesPersonalData-MIG.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -241,9 +244,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="UpdateDatabaseEntriesPersonalData-QA.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="UpdateDatabaseEntriesPersonalData-TEST.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="UpdateDatabaseEntriesPersonalData-UAT.sql">

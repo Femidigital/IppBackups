@@ -229,7 +229,7 @@ namespace IppBackups
                 }
                 else
                 {
-                    nNode = doc.SelectSingleNode("/Servers/Server/Instance/Environment[@name='" + e.Node.Text + "']");
+                    nNode = doc.SelectSingleNode("/Servers/Server[@name='" + e.Node.Parent.Parent.Text + "']/Instance[@instance='" + e.Node.Parent.Text + "']/Environment[@name='" + e.Node.Text + "']");
                     pNode = nNode.ParentNode;
                     sNode = pNode.ParentNode;
 
