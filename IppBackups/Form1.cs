@@ -284,19 +284,23 @@ namespace IppBackups
                             selectedDb = 0;
                             columnCount++;
                         }
-                        //columnCount = (selectedDb / rowSize);
-                        //cBox_Server.Items.Add(db.Name);
-                        CheckBox box = new CheckBox();
-                        box.CheckedChanged += box_CheckedChanged;
-                        box.Tag = db.Name.ToString();
-                        box.Text = db.Name.ToString();
-                        box.AutoSize = true;
-                        //box.Location = new Point(10 + (columnCount * 150) , (selectedDb % rowSize) * 20);
-                        //box.Location = new Point(10 + (columnCount * 150), (grpBox_Databases.DisplayRectangle.Top + 10) + (selectedDb % rowSize) * 20);
-                        box.Location = new Point(10 + (columnCount * 150), (grpBox_Databases.DisplayRectangle.Top + 10) + (selectedDb % rowSize) * 20);
-                        grpBox_Databases.Controls.Add(box);
 
-                        selectedDb++;
+                        if (db.Name.Contains(cBox_Environment.Text + "-"))
+                        {
+                            //columnCount = (selectedDb / rowSize);
+                            //cBox_Server.Items.Add(db.Name);
+                            CheckBox box = new CheckBox();
+                            box.CheckedChanged += box_CheckedChanged;
+                            box.Tag = db.Name.ToString();
+                            box.Text = db.Name.ToString();
+                            box.AutoSize = true;
+                            //box.Location = new Point(10 + (columnCount * 150) , (selectedDb % rowSize) * 20);
+                            //box.Location = new Point(10 + (columnCount * 150), (grpBox_Databases.DisplayRectangle.Top + 10) + (selectedDb % rowSize) * 20);
+                            box.Location = new Point(10 + (columnCount * 150), (grpBox_Databases.DisplayRectangle.Top + 10) + (selectedDb % rowSize) * 20);
+                            grpBox_Databases.Controls.Add(box);
+
+                            selectedDb++;
+                        }
                     }
                     lbl_Output.Text += "Connected to " + sName + " on " + curSrv + " successfully.\n";
                 }
@@ -681,8 +685,29 @@ namespace IppBackups
             else if (rBtn_Restore.Checked)
             {
                 //lbl_Output.Text += "Restored... '\n";
-                lbl_Output.Text += "Restoring " + cBox_DestEnvironment.Text + " environment with selected database(s)... \n";
-                restorebackgroundWorker.RunWorkerAsync();
+                /* Check the Destination Backup directory for the Source Backup file */
+                foreach (string db in databaseList)
+                {
+                    string restorePath = _servers2[cBox_DestServer.SelectedIndex].Instances[0].Backups;
+                    string destPath = restorePath + "\\" + db + ".bak";
+
+                    if (File.Exists(destPath))
+                    {
+                        lbl_Output.Text += "Backup file exists for the source database at " + destPath + " ...\n";
+                        //File.Delete(destPath);
+                        backStatus.Add(db, true);
+                        lbl_Output.Text += "Restoring " + cBox_DestEnvironment.Text + " environment with selected database(s)... \n";
+                        restorebackgroundWorker.RunWorkerAsync();
+                    }        
+                    else
+                    {
+                        lbl_Output.Text += "Missing backup file to restore...\n";
+                    }
+                }
+
+
+                //lbl_Output.Text += "Restoring " + cBox_DestEnvironment.Text + " environment with selected database(s)... \n";
+                //restorebackgroundWorker.RunWorkerAsync();
             }
             else if (rBtn_Refresh.Checked)
             {
@@ -725,7 +750,12 @@ namespace IppBackups
                 // TODO: Fix deleting or relacing existing backup file
                 foreach (string db in databaseList)
                 {
-                    string destPath = backupDestination + "\\" + db + ".bak";
+                    //string destPath = backupDestination + "\\" + db + ".bak";
+                    string destPath = "\\\\" + cBox_Server.Text + "\\" + backupDestination + "\\" + db + ".bak";
+                    destPath = destPath.Replace(':', '$');
+                    
+                    /* Trace Comments */
+                    lbl_Output.Text += "Backing up to " + destPath + "\n";
 
                     if (File.Exists(destPath))
                     {

@@ -38,6 +38,7 @@ namespace IppBackups
             //sXmlFile = ConfigFileName;
 
             tView_Servers.ImageList = tvServers_imageList;
+            tView_Servers.SelectedImageIndex = 1;
             //tView_Servers.SetBounds(5, 18, 140, 280);
             tView_Servers.SetBounds(5, 18, 160, 350);
 
@@ -55,6 +56,7 @@ namespace IppBackups
 
                 TreeNode tNode = new TreeNode();
                 tNode = tView_Servers.Nodes[0];
+
 
                 AddNode(doc.DocumentElement, tNode);
                 tView_Servers.ExpandAll();
@@ -85,12 +87,21 @@ namespace IppBackups
                 {
                     xNode = inXmlNode.ChildNodes[i];
 
-                    if (xNode.Name == "Server")
+                    if (xNode.Name == "Servers")
                     {
                         inTreeNode.Nodes.Add(new TreeNode(xNode.Attributes["name"].Value));
 
                         tNode = inTreeNode.Nodes[i];
                         tNode.ImageIndex = 1;
+                        tNode.Tag = "Servers";
+                        AddNode(xNode, tNode);
+                    }
+                    if (xNode.Name == "Server")
+                    {
+                        inTreeNode.Nodes.Add(new TreeNode(xNode.Attributes["name"].Value));
+
+                        tNode = inTreeNode.Nodes[i];
+                        tNode.ImageIndex = 2;
                         tNode.Tag = "Server";
                         AddNode(xNode, tNode);
                     }
@@ -98,7 +109,7 @@ namespace IppBackups
                     {
                         inTreeNode.Nodes.Add(new TreeNode(xNode.Attributes["instance"].Value));
                         tNode = inTreeNode.Nodes[i];
-                        tNode.ImageIndex = 2;
+                        tNode.ImageIndex = 3;
                         tNode.Tag = "Instance";
                         AddNode(xNode, tNode);
                     }
@@ -111,7 +122,7 @@ namespace IppBackups
                             //inTreeNode.ImageIndex = 0;
                             //tView_Servers.SelectedNode.ImageIndex = 0;
                             tNode = inTreeNode.Nodes[i];
-                            tNode.ImageIndex = 3;
+                            tNode.ImageIndex = 4;
                             tNode.Tag = "Environment";
                             //AddNode(xNode, tNode);
                         }

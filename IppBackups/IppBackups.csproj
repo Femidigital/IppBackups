@@ -135,6 +135,8 @@
     <Content Include="Gear.ico" />
     <Content Include="Resources\Images\big_tree.jpg" />
     <Content Include="Resources\Images\gear03.png" />
+    <Content Include="Resources\Images\green_play.png" />
+    <Content Include="Resources\Images\Player Play.png" />
     <Content Include="Resources\Images\server.jpg" />
     <Content Include="Resources\Images\server_2.jpg" />
     <Content Include="Scripts\KillAllConnectionsToDb.sql">

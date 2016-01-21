@@ -8,6 +8,7 @@
   <Server name="UK-CHDEVSQL01" ip="10.103.109.45">
     <Instance instance="Default" port="1433" user="qa-cloudadmin" password="Password1" backups="S:\CBS">
       <Environment name="QA" data="E:\SQLData" log="L:\SQLLogs">QA</Environment>
+      <Environment name="CI" data="E:\SQLData" log="L:\SQLLogs">CI</Environment>
     </Instance>
   </Server>
   <Server name="FDC_TAB" ip="127.0.0.1">
