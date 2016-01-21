@@ -285,7 +285,7 @@ namespace IppBackups
                             columnCount++;
                         }
 
-                        if (db.Name.Contains(cBox_Environment.Text + "-"))
+                        if (db.Name.Contains(cBox_Environment.Text + "-") || chkBox_ShowAll.Checked)
                         {
                             //columnCount = (selectedDb / rowSize);
                             //cBox_Server.Items.Add(db.Name);
@@ -623,6 +623,7 @@ namespace IppBackups
             //var environment = doc.SelectSingleNode("/Servers/Server[@name='" + cBox_Server.SelectedItem.ToString() + "']");
             //var environment = doc.SelectSingleNode("/Serers/Server[position()=" + cBox_Server.SelectedIndex + "]");
             //var environment = doc.SelectSingleNode("/Servers/Server[" + cBox_Server.SelectedIndex + /*"][@name='" + cBox_Server.SelectedItem.ToString() +*/ "']");
+            //cBox_Environment.Items.Add("All");
 
             var si = cBox_Server.SelectedItem as ServerX;
             _selectedServer = si;
@@ -1210,6 +1211,14 @@ namespace IppBackups
             {
                 lbl_Output.Text += e.InnerException + "\n";
             }
+        }
+
+        private void chkBox_ShowAll_CheckedChanged(object sender, EventArgs e)
+        {
+            grpBox_Databases.Controls.Clear();
+            string newEnv = (string)cBox_Environment.SelectedItem;
+            //comboBox1.Items.Clear();
+            getAllDatabases(newEnv);
         }
     }
 
