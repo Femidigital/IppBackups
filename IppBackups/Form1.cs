@@ -386,8 +386,14 @@ namespace IppBackups
                 Directory.CreateDirectory(dbLogSubFolderPath);
             }
 
-            if (!File.Exists(targetCopy))
+            if (rBtn_Refresh.Checked)
             {
+                if (File.Exists(targetCopy))
+                {
+                    lbl_Output.Text += "Deleting old backup file... \n";
+                    File.Delete(targetCopy);
+                }
+
                 int position = targetCopy.LastIndexOf('\\');
                 string targetDir = targetCopy.Substring(0, position);
                 lbl_Output.Text += "Copying backup file locally \n";
@@ -396,11 +402,8 @@ namespace IppBackups
                 //lbl_Output.Text += "Copying to : " + targetDir + "\n";
                 System.IO.File.Copy(filePath, targetCopy, true);
 
-                lbl_Output.Text += "Copyied backup file locally \n";
+                lbl_Output.Text += "Copyied backup file locally \n";                
             }
-
-
-
 
             targetCopy = localiseUNCPath(targetCopy);
 
@@ -451,9 +454,14 @@ namespace IppBackups
                 // TODO: Change font color
                 lbl_Output.Text += ex.InnerException.Message + "'\n";
             }
+
             db = sqlServer.Databases[databaseName];
-            db.FileGroups[0].Files[0].Rename(databaseName);
-            db.LogFiles[0].Rename(databaseName + "_log");
+            if (db.FileGroups[0].Files[0].Name != databaseName)
+            {
+                lbl_Output.Text += "Renaming Logical files... '\n";
+                db.FileGroups[0].Files[0].Rename(databaseName);
+                db.LogFiles[0].Rename(databaseName + "_log");
+            }
             db.SetOnline();
             sqlServer.Refresh();
 
