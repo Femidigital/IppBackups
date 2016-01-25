@@ -243,7 +243,7 @@ namespace IppBackups
             {
                 selectedServer = new Microsoft.SqlServer.Management.Smo.Server();
 
-                if (selectedServer.InstanceName == "")
+                if (selectedServer == null)
                 {
                     ManagedComputer mc = new ManagedComputer();
 
@@ -443,7 +443,7 @@ namespace IppBackups
                 sqlRestore.PercentComplete += new PercentCompleteEventHandler(sqlRestore_PercentComplete);
                 lbl_Output.Text += "About to restore... '\n";
 
-
+                //KillAllConnectionsToDb(serverInstanceToRestoreTo, cBox_DestEnvironment.Text, databaseName);
                 sqlRestore.SqlRestore(sqlServer);
             }
             catch (Exception ex)
@@ -689,20 +689,32 @@ namespace IppBackups
                 /* Check the Destination Backup directory for the Source Backup file */
                 foreach (string db in databaseList)
                 {
-                    string restorePath = _servers2[cBox_DestServer.SelectedIndex].Instances[0].Backups;
-                    string destPath = restorePath + "\\" + db + ".bak";
+                    string restorePath = "";
+                    string destPath = "";
+
+                    for (int i = 0; i < _servers[cBox_Server.SelectedIndex].Instances.Count; i++ )
+                    {
+                        for (int j = 0; j < _servers[cBox_Server.SelectedIndex].Instances[i].Environments.Count; j++)
+                        {
+                            if (cBox_Environment.Text == _servers[cBox_Server.SelectedIndex].Instances[i].Environments[j].Name)
+                            {
+                                restorePath = _servers[cBox_Server.SelectedIndex].Instances[i].Backups;
+                                destPath = restorePath + "\\" + db + ".bak";
+                            }
+                        }
+                    }
 
                     if (File.Exists(destPath))
                     {
                         lbl_Output.Text += "Backup file exists for the source database at " + destPath + " ...\n";
                         //File.Delete(destPath);
                         backStatus.Add(db, true);
-                        lbl_Output.Text += "Restoring " + cBox_DestEnvironment.Text + " environment with selected database(s)... \n";
+                        lbl_Output.Text += "Restoring " + cBox_Environment.Text + " environment with selected database(s)... \n";
                         restorebackgroundWorker.RunWorkerAsync();
                     }        
                     else
                     {
-                        lbl_Output.Text += "Missing backup file to restore...\n";
+                        lbl_Output.Text += "Missing backup file to restore at " + destPath + "...\n";
                     }
                 }
 
@@ -714,8 +726,10 @@ namespace IppBackups
             {
                 if ((Environment)Enum.Parse(typeof(Environment), cBox_Environment.Text) >= (Environment)Enum.Parse(typeof(Environment), cBox_DestEnvironment.Text))
                 {
+                    lbl_Output.Text += "Refresh hierarchy correct.. '\n";
                     if (backupbackgroundWorker.IsBusy != true)
                     {
+                        lbl_Output.Text += "Refresh about to take backup... '\n";
                         // Start the asynchronous operation.
                         backupbackgroundWorker.RunWorkerAsync();
                     }
@@ -739,6 +753,8 @@ namespace IppBackups
         // This event handler is where the time-consuming work is done.
         private void backupbackgroundWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
+
+            lbl_Output.Text += "In the backup function...'\n";
             BackgroundWorker worker = sender as BackgroundWorker;
 
             if (worker.CancellationPending == true)
@@ -751,9 +767,9 @@ namespace IppBackups
                 // TODO: Fix deleting or relacing existing backup file
                 foreach (string db in databaseList)
                 {
-                    //string destPath = backupDestination + "\\" + db + ".bak";
-                    string destPath = "\\\\" + cBox_Server.Text + "\\" + backupDestination + "\\" + db + ".bak";
-                    destPath = destPath.Replace(':', '$');
+                    string destPath = backupDestination + "\\" + db + ".bak";
+                    //string destPath = "\\\\" + cBox_Server.Text + "\\" + backupDestination + "\\" + db + ".bak";
+                    //destPath = destPath.Replace(':', '$');
                     
                     /* Trace Comments */
                     lbl_Output.Text += "Backing up to " + destPath + "\n";
@@ -842,8 +858,22 @@ namespace IppBackups
                 string restore_dataFilePath = "";
                 string restore_logFilePath = "";
                 string localcopy = "";
+                string restoreToSrv = "";
+                string restoreToEnv = "";
 
-                var si2 = cBox_DestServer.SelectedItem as ServerX;
+                ServerX si2 = new ServerX();
+                if (rBtn_Refresh.Checked)
+                {
+                    si2 = cBox_DestServer.SelectedItem as ServerX;
+                    restoreToSrv = cBox_DestServer.Text;
+                    restoreToEnv = cBox_DestEnvironment.SelectedItem.ToString();
+                }
+                else if (rBtn_Restore.Checked)
+                {
+                    si2 = cBox_Server.SelectedItem as ServerX;
+                    restoreToSrv = cBox_Server.Text;
+                    restoreToEnv = cBox_Environment.SelectedItem.ToString();
+                }
                 _selectedDestServer = si2;
 
                 string srvName = _selectedDestServer.Name;
@@ -853,7 +883,7 @@ namespace IppBackups
                     for (int i = 0; i < inst.Environments.Count; i++)
                     {
                         lbl_Output.Text += "Looping through destination Environments..." + inst.Environments.ElementAt(i).Name + "\n ";
-                        if (inst.Environments.ElementAt(i).Name == cBox_DestEnvironment.SelectedItem)
+                        if (inst.Environments.ElementAt(i).Name == restoreToEnv)
                         {
                             lbl_Output.Text += "Setting user and password ... \n ";
                             string sServer = inst.xInstance;
@@ -863,34 +893,12 @@ namespace IppBackups
                             r_sPassword = inst.Password;
                             dataFilePath = inst.Environments.ElementAt(i).data;
                             logFilePath = inst.Environments.ElementAt(i).log;
-                            restore_dataFilePath = "\\\\" + cBox_DestServer.Text + "\\" + dataFilePath.Replace(":", "$");
-                            restore_logFilePath = "\\\\" + cBox_DestServer.Text + "\\" + logFilePath.Replace(":", "$");
+                            restore_dataFilePath = "\\\\" + restoreToSrv + "\\" + dataFilePath.Replace(":", "$");
+                            restore_logFilePath = "\\\\" + restoreToSrv + "\\" + logFilePath.Replace(":", "$");
                             localcopy = inst.Backups;
                         }
                     }
                 }
-                //iLastDestIndexSelected = cBox_Server.SelectedIndex;
-                /*
-                XmlDocument doc = new XmlDocument();
-                doc.Load(sXmlFile);
-                // Find out why the following line is throwing exception on cBox_DestServer.SelectedItem.ToString().
-                var sServer = doc.SelectSingleNode("/Servers/Server[@name='" + cBox_DestServer.SelectedItem.ToString() + "']");
-                var environment = doc.SelectSingleNode("/Servers/Server/Environment[@name='" + cBox_DestEnvironment.SelectedItem.ToString() + "']");
-                string srvName = sServer.Attributes["name"].Value;
-                string srvInstance = sServer.Attributes["instance"].Value;
-                string dataFilePath = environment.Attributes["data"].Value;
-                string logFilePath = environment.Attributes["log"].Value;
-                string restore_dataFilePath = "\\\\" + cBox_DestServer.Text + "\\" + dataFilePath.Replace(":", "$");
-                string restore_logFilePath = "\\\\" + cBox_DestServer.Text + "\\" + logFilePath.Replace(":", "$");
-                string localcopy = sServer.Attributes["backups"].Value;
-                 
-             
-                // try another connection method
-                r_sUsername = sServer.Attributes["user"].Value;
-                r_sPassword = sServer.Attributes["password"].Value;
-                 */
-
-
 
                 // try another connection method
                 Microsoft.SqlServer.Management.Smo.Server selectedRestoreServer = new Microsoft.SqlServer.Management.Smo.Server(srvName);
@@ -908,16 +916,24 @@ namespace IppBackups
                         {
                             try
                             {
-                                string restore_db = db.Replace(cBox_Environment.Text, cBox_DestEnvironment.Text);
+                                string restore_db = "";
+                                if (rBtn_Refresh.Checked)
+                                {
+                                    restore_db = db.Replace(cBox_Environment.Text, cBox_DestEnvironment.Text);
+                                }
+                                else if (rBtn_Restore.Checked)
+                                {
+                                    restore_db = db;
+                                }
                                 string filePath = "\\\\" + curSrv + "\\" + backupDestination.Replace(":", "$") + "\\" + db + ".bak";
                                 lbl_Output.Text += "Starting restore for " + db + ".'\n";
 
                                 // Perform a time consuming operation and report progress
                                 lbl_Output.Text += "Restore : " + db + " database to " + restore_db + " database on : " + filePath + " to : " + restore_dataFilePath + " and : " + restore_logFilePath + "'\n";
                                 lbl_Output.Text += "User : " + r_sUsername + "'\n";
-                                lbl_Output.Text += "Selected destination server  : " + cBox_DestServer.Text + "\n";
+                                lbl_Output.Text += "Selected destination server  : " + restoreToSrv + "\n";
                                 // TODO: Workout how to identify which domain the server is under
-                                if (cBox_DestServer.Text == "UK-CHFMIGSQL" || cBox_DestServer.Text == "UK-CHDEVSQL01" || cBox_DestServer.Text == "UK-CHDEVSQL02" || cBox_DestServer.Text == "FDC_TAB" || cBox_DestServer.Text == "CHI-7S45842")
+                                if (restoreToSrv == "UK-CHFMIGSQL" || restoreToSrv == "UK-CHDEVSQL01" || restoreToSrv == "UK-CHDEVSQL02" || restoreToSrv == "FDC_TAB" || restoreToSrv == "CHI-7S45842")
                                 {
                                     lbl_Output.Text += "Restoring database to OSCAR domain.\n";
                                     RestoreDatabaseToOscar(restore_db, filePath, srvName, srvInstance, r_sUsername, r_sPassword, restore_dataFilePath, restore_logFilePath, localcopy);
@@ -930,7 +946,7 @@ namespace IppBackups
                                 }
 
                                 //if (restore_db.Contains("BSOL") || restore_db.Contains("CloudAdmin"))
-                                if (restore_db == (cBox_DestEnvironment.Text + "-BSOL") || restore_db == (cBox_DestEnvironment.Text + "-CloudAdmin"))
+                                if (restore_db == (restoreToEnv + "-BSOL") || restore_db == (restoreToEnv + "-CloudAdmin"))
                                 {
                                     //Server myServer = new Server(srvInstance);
                                     Server myServer = new Server(srvName);
@@ -938,10 +954,10 @@ namespace IppBackups
                                 }
 
                                 //if (restore_db.Contains("CloudAdmin") || restore_db.Contains("PersonalData"))
-                                if (restore_db == (cBox_DestEnvironment.Text + "-CloudAdmin") || restore_db == (cBox_DestEnvironment.Text + "-PersonalData") || restore_db == (cBox_DestEnvironment.Text + "-Ecommerce"))
+                                if (restore_db == (restoreToEnv + "-CloudAdmin") || restore_db == (restoreToEnv + "-PersonalData") || restore_db == (restoreToEnv + "-Ecommerce"))
                                 {
                                     //update_DatabaseEntries(srvInstance, cBox_DestEnvironment.Text, restore_db);
-                                    update_DatabaseEntries(srvName, cBox_DestEnvironment.Text, restore_db);
+                                    update_DatabaseEntries(srvName, restoreToEnv, restore_db);
                                 }
                                 //worker.ReportProgress();
                             }
@@ -1001,15 +1017,20 @@ namespace IppBackups
         {
             if (rBtn_Restore.Checked == true)
             {
-                cBox_DestServer.DataSource = _servers2;
-                cBox_DestServer.Enabled = true;
-                cBox_DestEnvironment.Enabled = true;
-            }
-            else
-            {
+                //cBox_DestServer.DataSource = _servers2;
+                //cBox_DestServer.Enabled = true;
+                //cBox_DestEnvironment.Enabled = true;
+                cBox_Server.DataSource = _servers;                
                 cBox_DestServer.Enabled = false;
                 cBox_DestEnvironment.Enabled = false;
             }
+           /* else
+            {
+                //cBox_DestServer.Enabled = false;
+                //cBox_DestEnvironment.Enabled = false;
+                cBox_DestServer.Enabled = true;
+                cBox_DestEnvironment.Enabled = true;
+            }*/
         }
 
         private void rBtn_Refresh_CheckedChanged(object sender, EventArgs e)

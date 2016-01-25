@@ -7,4 +7,4 @@ Order by [Id] ASC)
 SELECT @currentIdentity = SUBSTRING(@currentIdentity,0,PATINDEX('%.com%',@currentIdentity))
 
 UPDATE	[MIG-PersonalData].[dbo].[Identity]
-SET		ClaimIdentifier = REPLACE([ClaimIdentifier], '@currentIdentity', 'https://identityplusmig')
+SET		ClaimIdentifier = REPLACE([ClaimIdentifier], @currentIdentity, 'https://identityplusmig')

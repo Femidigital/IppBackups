@@ -52,6 +52,9 @@
             this.chkBox_ShowAll = new System.Windows.Forms.CheckBox();
             this.btn_Execute = new System.Windows.Forms.Button();
             this.backupbackgroundWorker = new System.ComponentModel.BackgroundWorker();
+            this.backupbackgroundWorker.DoWork += backupbackgroundWorker_DoWork;
+            this.backupbackgroundWorker.ProgressChanged += backupbackgroundWorker_ProgressChanged;
+            this.backupbackgroundWorker.RunWorkerCompleted += backupbackgroundWorker_RunWorkerCompleted;
             this.startAsynButton = new System.Windows.Forms.Button();
             this.cancelAsynButton = new System.Windows.Forms.Button();
             this.lbl_DestServer = new System.Windows.Forms.Label();
@@ -59,6 +62,9 @@
             this.lbl_DestEnvironment = new System.Windows.Forms.Label();
             this.cBox_DestEnvironment = new System.Windows.Forms.ComboBox();
             this.restorebackgroundWorker = new System.ComponentModel.BackgroundWorker();
+            this.restorebackgroundWorker.DoWork += restorebackgroundWorker_DoWork;
+            this.restorebackgroundWorker.ProgressChanged += restorebackgroundWorker_ProgressChanged;
+            this.restorebackgroundWorker.RunWorkerCompleted += restorebackgroundWorker_RunWorkerCompleted;
             this.menuStrip1.SuspendLayout();
             this.grpBox_Output.SuspendLayout();
             this.panel2.SuspendLayout();
