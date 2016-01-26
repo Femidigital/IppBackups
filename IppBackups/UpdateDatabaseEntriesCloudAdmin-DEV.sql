@@ -1,7 +1,7 @@
 ﻿USE [DEV-CloudAdmin]
 
 UPDATE	[DEV-CloudAdmin].dbo.[Credential]
-SET		UserName = 'DEV-cloudadmin',
+SET		UserName = 'dev-cloudadmin',
 		[Password] = 'Password1'
 WHERE Name = 'admin'
 
@@ -11,7 +11,7 @@ SET		UserName = '363a5e31aa0f4d7894e95d95df875137',
 WHERE	[id] = 1
 
 UPDATE	[DEV-CloudAdmin].[dbo].[DatabasePool]
-SET		Name = 'DEV-DAR'
+SET		Name = 'DAR-DEV'
 WHERE	[id] = 3
 
 UPDATE	[DEV-CloudAdmin].[dbo].[DatabasePool]
@@ -19,18 +19,18 @@ SET		Name = 'DEV-Eurocodes'
 WHERE	[id] = 10
 
 UPDATE	[DEV-CloudAdmin].[dbo].[DatabaseNode]
-SET		Host = '10.103.109.82',
-		Port = 5400
+SET		Host = '127.0.0.1',
+		Port = 8003
 WHERE	[ID] = 5
 
 UPDATE	[DEV-CloudAdmin].[dbo].[DatabaseNode]
-SET		Host = '10.103.109.45\Cloud',
-		Port = 1500
+SET		Host = '127.0.0.1',
+		Port = 1433
 WHERE	[ID] = 8
 
 UPDATE	[DEV-CloudAdmin].[dbo].[DatabaseNode]
-SET		Host = '10.103.109.21',
-		Port = 9001
+SET		Host = '127.0.0.1',
+		Port = 8004
 WHERE	[ID] = 9
 
 UPDATE	[DEV-CloudAdmin].[dbo].[Product]
@@ -62,5 +62,5 @@ SET		Value = 'True'
 WHERE	[id] = 5
 
 UPDATE	[DEV-CloudAdmin].[dbo].[TrustedIssuer]
-SET		IssuerUri = 'https://identityplusdev.bsiuat.com'
+SET		IssuerUri = 'https://identitydev.bsiuat.com'
 WHERE	[id] = 1
