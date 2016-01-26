@@ -8,4 +8,4 @@ Order by [Id] ASC)
 SELECT @currentIdentity = SUBSTRING(@currentIdentity,0,PATINDEX('%.com%',@currentIdentity))
 
 UPDATE	[UAT-PersonalData].[dbo].[Identity]
-SET		ClaimIdentifier = REPLACE([ClaimIdentifier], '@currentIdentity', 'https://identityplusuat')
+SET		ClaimIdentifier = REPLACE([ClaimIdentifier], @currentIdentity, 'https://identity')

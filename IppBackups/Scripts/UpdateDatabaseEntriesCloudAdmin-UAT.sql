@@ -19,45 +19,34 @@ SET		Name = 'UAT-Eurocodes'
 WHERE	[id] = 10
 
 UPDATE	[UAT-CloudAdmin].[dbo].[DatabaseNode]
-SET		Host = '172.16.87.41',
+SET		Host = '172.16.87.43',
 		Port = 5500
 WHERE	[ID] = 5
 
 UPDATE	[UAT-CloudAdmin].[dbo].[DatabaseNode]
-SET		Host = '172.16.87.42',
-		Port = 1500
+SET		Host = '10.103.109.46',
+		Port = 1433
 WHERE	[ID] = 8
 
-UPDATE	[UAT-CloudAdmin].[dbo].[Product]
-SET		Url = 'https://infrastructure.local.bsiuat.com'
-WHERE	[ID] = 1
-
-UPDATE	[UAT-CloudAdmin].[dbo].[Product]
-SET		Url = 'https://platform.local.bsiuat.com'
-WHERE	[ID] = 2
+UPDATE	[UAT-CloudAdmin].[dbo].[DatabaseNode]
+SET		Host = '10.103.109.24',
+		Port = 9001
+WHERE	[ID] = 9
 
 UPDATE	[UAT-CloudAdmin].[dbo].[Product]
 SET		Url = 'https://eurocodesplus.bsiuat.com'
 WHERE	[ID] = 3
 
 UPDATE	[UAT-CloudAdmin].[dbo].[Product]
-SET		Url = 'https://bsoluat.bsiuat.com'
+SET		Url = 'https://bsol.bsiuat.com'
 WHERE	[ID] = 4
-
-UPDATE	[UAT-CloudAdmin].[dbo].[Product]
-SET		Url = 'https://dar.local.bsiuat.com'
-WHERE	[ID] = 5
 
 UPDATE	[UAT-CloudAdmin].[dbo].[Product]
 SET		Url = 'https://mc.bsiuat.com'
 WHERE	[ID] = 6
 
 UPDATE	[UAT-CloudAdmin].[dbo].[Product]
-SET		Url = 'https://ecommerce.local.bsiuat.com'
-WHERE	[ID] = 7
-
-UPDATE	[UAT-CloudAdmin].[dbo].[Product]
-SET		Url = 'https://shopuat.bsiuat.com'
+SET		Url = 'https://shop.bsiuat.com'
 WHERE	[ID] = 8
 
 UPDATE	[UAT-CloudAdmin].[dbo].[Product]
@@ -73,5 +62,5 @@ SET		Value = 'True'
 WHERE	[id] = 5
 
 UPDATE	[UAT-CloudAdmin].[dbo].[TrustedIssuer]
-SET		IssuerUri = 'https://identityuat.bsiuat.com'
+SET		IssuerUri = 'https://identity.bsiuat.com'
 WHERE	[id] = 1

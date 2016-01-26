@@ -19,17 +19,17 @@ SET		Name = 'PPD-Eurocodes'
 WHERE	[id] = 10
 
 UPDATE	[PPD-CloudAdmin].[dbo].[DatabaseNode]
-SET		Host = '10.65.87.42',
+SET		Host = '10.33.201.21',
 		Port = 20101
 WHERE	[ID] = 5
 
 UPDATE	[PPD-CloudAdmin].[dbo].[DatabaseNode]
-SET		Host = '10.45.87.43',
+SET		Host = '10.33.203.33',
 		Port = 1433
 WHERE	[ID] = 8
 
 UPDATE	[PPD-CloudAdmin].[dbo].[DatabaseNode]
-SET		Host = '10.45.87.52',
+SET		Host = '10.33.207.24',
 		Port = 9051
 WHERE	[ID] = 9
 

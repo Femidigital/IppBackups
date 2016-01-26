@@ -145,21 +145,35 @@
     <Content Include="Scripts\UpdataDatabaseEntriesEcommerce-MIG.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Scripts\UpdateDatabaseEntries-DEV.sql" />
+    <Content Include="Scripts\UpdateDatabaseEntriesCloudAdmin-CI.sql" />
+    <Content Include="Scripts\UpdateDatabaseEntriesCloudAdmin-DEV.sql" />
     <Content Include="Scripts\UpdateDatabaseEntriesCloudAdmin-MIG.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Scripts\UpdateDatabaseEntriesCloudAdmin-PPD.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Scripts\UpdateDatabaseEntriesCloudAdmin-TEST.sql" />
+    <Content Include="Scripts\UpdateDatabaseEntriesEcommerce-CI.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\UpdateDatabaseEntriesEcommerce-DEV.sql" />
     <Content Include="Scripts\UpdateDatabaseEntriesEcommerce-PPD.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Scripts\UpdateDatabaseEntriesEcommerce-TEST.sql" />
+    <Content Include="Scripts\UpdateDatabaseEntriesPersonalData-CI.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\UpdateDatabaseEntriesPersonalData-DEV.sql" />
     <Content Include="Scripts\UpdateDatabaseEntriesPersonalData-MIG.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Scripts\UpdateDatabaseEntriesPersonalData-PPD.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Scripts\UpdateDatabaseEntriesPersonalData-TEST.sql" />
     <Content Include="Scripts\UpdateDatabaseEntriesPersonalData-UAT.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -172,16 +186,10 @@
     <Content Include="Scripts\UpdateDatabaseEntries-QA.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\UpdateDatabaseEntries-TEST.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Scripts\UpdateDatabaseEntries-UAT.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Scripts\UpdateDatabaseEntriesCloudAdmin-QA.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Scripts\UpdateDatabaseEntriesCloudAdmin-TEST.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Scripts\UpdateDatabaseEntriesCloudAdmin-UAT.sql">
@@ -190,16 +198,10 @@
     <Content Include="Scripts\UpdateDatabaseEntriesEcommerce-QA.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\UpdateDatabaseEntriesEcommerce-TEST.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Scripts\UpdateDatabaseEntriesEcommerce-UAT.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Scripts\UpdateDatabaseEntriesPersonalData-QA.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Scripts\UpdateDatabaseEntriesPersonalData-TEST.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Settings.xml">

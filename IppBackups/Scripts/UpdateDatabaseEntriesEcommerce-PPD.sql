@@ -9,5 +9,5 @@ SET ApplicationPrefix = 'SPPD'
 WHERE [id] = 2
 
 UPDATE [PPD-Ecommerce].[dbo].[Application]
-SET ApplicationPrefix = 'SPPD'
+SET ApplicationPrefix = 'MPPD'
 WHERE [id] = 3

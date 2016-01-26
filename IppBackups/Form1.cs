@@ -248,7 +248,7 @@ namespace IppBackups
                     ManagedComputer mc = new ManagedComputer();
 
                     foreach (ServerInstance si in mc.ServerInstances)
-                    {
+                    {                        
                         lbl_Output.Text += "Connected to " + si.Name + " successfully.\n";
                     }
                 }
@@ -712,9 +712,12 @@ namespace IppBackups
                         }
                     }
 
-                    if (File.Exists(destPath))
+                    string destFilePath = "\\\\" + cBox_Server.Text + "\\" + destPath;
+                    destFilePath = destFilePath.Replace(':', '$');
+
+                    if (File.Exists(destFilePath))
                     {
-                        lbl_Output.Text += "Backup file exists for the source database at " + destPath + " ...\n";
+                        lbl_Output.Text += "Backup file exists for the source database at " + destFilePath + " ...\n";
                         //File.Delete(destPath);
                         backStatus.Add(db, true);
                         lbl_Output.Text += "Restoring " + cBox_Environment.Text + " environment with selected database(s)... \n";
@@ -722,7 +725,7 @@ namespace IppBackups
                     }        
                     else
                     {
-                        lbl_Output.Text += "Missing backup file to restore at " + destPath + "...\n";
+                        lbl_Output.Text += "Missing backup file to restore at " + destFilePath + "...\n";
                     }
                 }
 
@@ -761,8 +764,6 @@ namespace IppBackups
         // This event handler is where the time-consuming work is done.
         private void backupbackgroundWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-
-            lbl_Output.Text += "In the backup function...'\n";
             BackgroundWorker worker = sender as BackgroundWorker;
 
             if (worker.CancellationPending == true)
@@ -776,16 +777,16 @@ namespace IppBackups
                 foreach (string db in databaseList)
                 {
                     string destPath = backupDestination + "\\" + db + ".bak";
-                    //string destPath = "\\\\" + cBox_Server.Text + "\\" + backupDestination + "\\" + db + ".bak";
-                    //destPath = destPath.Replace(':', '$');
+                    string destFilePath = "\\\\" + cBox_Server.Text + "\\" + backupDestination + "\\" + db + ".bak";
+                    destFilePath = destFilePath.Replace(':', '$');
                     
                     /* Trace Comments */
                     lbl_Output.Text += "Backing up to " + destPath + "\n";
 
-                    if (File.Exists(destPath))
+                    if (File.Exists(destFilePath))
                     {
                         lbl_Output.Text += "Deleting existing backup file ...\n";
-                        File.Delete(destPath);
+                        File.Delete(destFilePath);
                     }
 
                     try
