@@ -248,6 +248,9 @@
     <Content Include="UpdateDatabaseEntriesPersonalData-QA.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="UpdateDatabaseEntriesPersonalData-TEST.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="UpdateDatabaseEntriesPersonalData-UAT.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

@@ -458,7 +458,7 @@ namespace IppBackups
             db = sqlServer.Databases[databaseName];
             if (db.FileGroups[0].Files[0].Name != databaseName)
             {
-                lbl_Output.Text += "Renaming Logical files... '\n";
+                lbl_Output.Text += "Renaming Logical files from " + db.FileGroups[0].Files[0].Name + "... '\n";
                 db.FileGroups[0].Files[0].Rename(databaseName);
                 db.LogFiles[0].Rename(databaseName + "_log");
             }
