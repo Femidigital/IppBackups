@@ -891,10 +891,8 @@ namespace IppBackups
                 {
                     for (int i = 0; i < inst.Environments.Count; i++)
                     {
-                        lbl_Output.Text += "Looping through destination Environments..." + inst.Environments.ElementAt(i).Name + "\n ";
                         if (inst.Environments.ElementAt(i).Name == restoreToEnv)
                         {
-                            lbl_Output.Text += "Setting user and password ... \n ";
                             string sServer = inst.xInstance;
 
                             srvInstance = inst.xInstance;
