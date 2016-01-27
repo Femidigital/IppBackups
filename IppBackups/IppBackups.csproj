@@ -242,6 +242,7 @@
     <Content Include="UpdateDatabaseEntriesCloudAdmin-UAT.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="UpdateDatabaseEntriesEcommerce-DEV.sql" />
     <Content Include="UpdateDatabaseEntriesEcommerce-PPD.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
