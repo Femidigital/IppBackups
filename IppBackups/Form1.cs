@@ -1136,11 +1136,13 @@ namespace IppBackups
             ScriptingOptions scriptOptions = new ScriptingOptions();
             scriptOptions.ScriptDrops = true;
             scriptOptions.IncludeIfNotExists = true;
+            scriptOptions.WithDependencies = true;  // Check this line
 
             ScriptingOptions scriptOptionsForCreate = new ScriptingOptions();
             scriptOptionsForCreate.AnsiPadding = true;
             scriptOptionsForCreate.ExtendedProperties = true;
             scriptOptionsForCreate.IncludeIfNotExists = true;
+            scriptOptionsForCreate.WithDependencies = true;  // Check this line
 
             foreach (Microsoft.SqlServer.Management.Smo.View myView in restoreDb.Views)
             {
