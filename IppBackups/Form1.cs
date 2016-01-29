@@ -17,6 +17,7 @@ using System.Collections.Specialized;
 using Microsoft.SqlServer.Management.Smo;
 using Microsoft.SqlServer.Management.Smo.Wmi;
 using Microsoft.SqlServer.Management.Common;
+using Microsoft.SqlServer.Management.Sdk.Sfc;
 using System.IO;
 using Tools;
 
@@ -737,10 +738,9 @@ namespace IppBackups
             {
                 if ((Environment)Enum.Parse(typeof(Environment), cBox_Environment.Text) >= (Environment)Enum.Parse(typeof(Environment), cBox_DestEnvironment.Text))
                 {
-                    lbl_Output.Text += "Refresh hierarchy correct.. '\n";
                     if (backupbackgroundWorker.IsBusy != true)
                     {
-                        lbl_Output.Text += "Refresh about to take backup... '\n";
+                        lbl_Output.Text += "Backing up source database... '\n";
                         // Start the asynchronous operation.
                         backupbackgroundWorker.RunWorkerAsync();
                     }
@@ -957,7 +957,8 @@ namespace IppBackups
                                 {
                                     //Server myServer = new Server(srvInstance);
                                     Server myServer = new Server(srvName);
-                                    GenerateViewScript(myServer, restore_db);
+                                    //GenerateViewScript(myServer, restore_db);
+                                    GenerateViewScriptWithDependencies(myServer, restore_db);
                                 }
 
                                 //if (restore_db.Contains("CloudAdmin") || restore_db.Contains("PersonalData"))
@@ -1170,6 +1171,94 @@ namespace IppBackups
 
 
             }
+            lbl_Output.Text += "View Scripts completed...\n";
+            sqlFile.Close();
+            UpdateView(rServer.ToString(), cBox_DestEnvironment.Text, db);
+        }
+
+        private void GenerateViewScriptWithDependencies(Server rServer, string db)
+        {
+            System.IO.StreamWriter sqlFile = new StreamWriter("CreateView_" + db + ".sql");
+
+            // Connect to the specified instance of SQL Server.
+            Server srv = new Server();
+
+            // Reference the database.
+            Database restoreDb = srv.Databases[db];
+
+            // Define a Scripter object and set the required scripting options.
+            Scripter scrp = new Scripter(srv);
+            scrp.Options.ScriptDrops = true;
+            scrp.Options.IncludeIfNotExists = true;
+            scrp.Options.WithDependencies = true;
+
+            ScriptingOptions scriptOptions = new ScriptingOptions();
+            scriptOptions.ScriptDrops = true;
+            scriptOptions.IncludeIfNotExists = true;
+
+            ScriptingOptions scriptOptionsForCreate = new ScriptingOptions();
+            scriptOptionsForCreate.AnsiPadding = true;
+            scriptOptionsForCreate.ExtendedProperties = true;
+            scriptOptionsForCreate.IncludeIfNotExists = true;
+
+            UrnCollection udvObjs = new UrnCollection();
+
+            // Iterate through the views in database and script each one. Display the script.
+            lbl_Output.Text += "Collating all views for this database...'\n";
+            foreach( Microsoft.SqlServer.Management.Smo.View view in restoreDb.Views)
+            {
+                // Check if the view is not a system view            
+                if (!view.IsSystemObject)
+                {
+                    //lbl_Output.Text += "Adding " + view + " to the collection '\n";
+                    udvObjs.Add(view.Urn);
+                }
+            }
+
+
+            // Creating Dependency Tree
+            DependencyTree dtree = scrp.DiscoverDependencies(udvObjs, true);
+            DependencyWalker dwalker = new DependencyWalker();
+            DependencyCollection dcollect = dwalker.WalkDependencies(dtree);
+
+            StringBuilder sb = new StringBuilder();
+
+            lbl_Output.Text += "Building Dependencies tree for all views...'\n";
+
+            foreach(DependencyCollectionNode dcoln in dcollect)
+            {
+                foreach (Microsoft.SqlServer.Management.Smo.View myView in restoreDb.Views)
+                {
+                if (myView.Name == dcoln.Urn.GetAttribute("Name"))
+                {
+                    if (dcoln.Urn.Type == "View")
+                    {
+                        lbl_Output.Text += dcoln.Urn.GetAttribute("Name") + " will be scripted. '\n";
+
+                        /* Generating IF EXISTS and DROP command for views */
+                        StringCollection viewScripts = myView.Script(scriptOptions);
+
+                        foreach (string script in viewScripts)
+                        {
+                            var updatedScript = Regex.Replace(script, cBox_Environment.Text + "-", cBox_DestEnvironment.Text + "-", RegexOptions.IgnoreCase);
+
+                            sqlFile.WriteLine(updatedScript);
+                        }
+
+                        /* Generating CREATE VIEW command */
+                        viewScripts = myView.Script(scriptOptionsForCreate);
+                        foreach (string create_script in viewScripts)
+                        {
+                            var updatedScript = Regex.Replace(create_script, cBox_Environment.Text + "-", cBox_DestEnvironment.Text + "-", RegexOptions.IgnoreCase);
+
+                            sqlFile.WriteLine(updatedScript);
+                        }
+                    }
+                }
+                }
+            }
+
+            sqlFile.Write(sb);
             lbl_Output.Text += "View Scripts completed...\n";
             sqlFile.Close();
             UpdateView(rServer.ToString(), cBox_DestEnvironment.Text, db);
