@@ -48,6 +48,7 @@ namespace IppBackups
         string r_serverName = "";
         string r_sUsername = "";
         string r_sPassword = "";
+        string serverInstanceToRestoreTo = "";
         Dictionary<string, bool> backStatus = new Dictionary<string, bool>();
 
         enum Environment
@@ -416,7 +417,7 @@ namespace IppBackups
             lbl_Output.Text += "Before connecting to : " + serverName + " by : " + userName + " \n";
 
 
-            string serverInstanceToRestoreTo = serverName;
+            serverInstanceToRestoreTo = serverName;
             
             if(serverInstance != "Default")
                 serverInstanceToRestoreTo = serverName + "\\" + serverInstance;
@@ -462,6 +463,7 @@ namespace IppBackups
                 lbl_Output.Text += "Renaming Logical files from " + db.FileGroups[0].Files[0].Name + "... '\n";
                 db.FileGroups[0].Files[0].Rename(databaseName);
                 db.LogFiles[0].Rename(databaseName + "_log");
+                lbl_Output.Text += "Successfully renamed Logical files to " + db.FileGroups[0].Files[0].Name + "... '\n";
             }
             db.SetOnline();
             sqlServer.Refresh();
@@ -957,6 +959,7 @@ namespace IppBackups
                                 {
                                     //Server myServer = new Server(srvInstance);
                                     Server myServer = new Server(srvName);
+                                    lbl_Output.Text += "Calling GenerateViewScriptWithDependencies " + srvName +" ...'\n";
                                     //GenerateViewScript(myServer, restore_db);
                                     GenerateViewScriptWithDependencies(myServer, restore_db);
                                 }
@@ -1180,8 +1183,19 @@ namespace IppBackups
         {
             System.IO.StreamWriter sqlFile = new StreamWriter("CreateView_" + db + ".sql");
 
-            // Connect to the specified instance of SQL Server.
-            Server srv = new Server();
+            Server srv;
+            if (serverInstanceToRestoreTo != "Default")
+            {
+                // Connect to the specified instance of SQL Server.
+                srv = new Server(serverInstanceToRestoreTo);
+                lbl_Output.Text += "Connected to " + serverInstanceToRestoreTo + " specied instance...'\n";
+            }
+            else
+            {
+                // Connect to the default instance of SQL Server.
+                srv = new Server();
+                lbl_Output.Text += "Connected to default instance...'\n";
+            }            
 
             // Reference the database.
             Database restoreDb = srv.Databases[db];
@@ -1266,7 +1280,8 @@ namespace IppBackups
 
         private void UpdateView(string serverInstance, string env, string db)
         {
-            string sqlConnectionString = "Data Source=" + cBox_DestServer.Text + "; Initial Catalog=" + db + "; Integrated Security=SSPI;";
+            //string sqlConnectionString = "Data Source=" + cBox_DestServer.Text + "; Initial Catalog=" + db + "; Integrated Security=SSPI;";
+            string sqlConnectionString = "Data Source=" + serverInstanceToRestoreTo + "; Initial Catalog=" + db + "; Integrated Security=SSPI;";
             string scriptFile = "CreateView_" + db + ".sql";
             FileInfo file = new FileInfo(scriptFile);
             string script = file.OpenText().ReadToEnd();
