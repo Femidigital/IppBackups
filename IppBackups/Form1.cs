@@ -1275,31 +1275,54 @@ namespace IppBackups
             conn.Open();
             SqlCommand cmd = new SqlCommand(script, conn);
             lbl_Output.Text += "Loading Viewupdate file from: " + scriptFile + "\n";
-            for (int i = 0; i < 2; i++)
+            //for (int i = 0; i < 2; i++)
+            //{
+            //    try
+            //    {
+            //        int resultSet = 0;
+            //        resultSet = cmd.ExecuteNonQuery();
+            //        conn.Close();
+            //    }
+            //    catch (SqlServerManagementException ex)
+            //    {
+            //        // TODO: Change font color
+            //        lbl_Output.Text += "SME " + ex.Message + "\n";
+            //    }
+            //    catch (SqlException ex)
+            //    {
+            //        // TODO: Change font color
+            //        //lbl_Output.ForeColor = Color.Red;
+            //        //lbl_Output.Text += ex.Message + "\n";
+            //        continue;
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        // TODO: Change font color
+            //        lbl_Output.Text += "E " + ex.Message + "\n";
+            //    }
+            //}
+
+            try
             {
-                try
-                {
-                    int resultSet = 0;
-                    resultSet = cmd.ExecuteNonQuery();
-                    conn.Close();
-                }
-                catch (SqlServerManagementException ex)
-                {
-                    // TODO: Change font color
-                    lbl_Output.Text += "SME " + ex.Message + "\n";
-                }
-                catch (SqlException ex)
-                {
-                    // TODO: Change font color
-                    //lbl_Output.ForeColor = Color.Red;
-                    //lbl_Output.Text += ex.Message + "\n";
-                    continue;
-                }
-                catch (Exception ex)
-                {
-                    // TODO: Change font color
-                    lbl_Output.Text += "E " + ex.Message + "\n";
-                }
+                int resultSet = 0;
+                resultSet = cmd.ExecuteNonQuery();
+                conn.Close();
+            }
+            catch (SqlServerManagementException ex)
+            {
+                // TODO: Change font color
+                lbl_Output.Text += "SME " + ex.Message + "\n";
+            }
+            catch (SqlException ex)
+            {
+                // TODO: Change font color
+                //lbl_Output.ForeColor = Color.Red;
+                lbl_Output.Text += ex.Message + "\n";
+            }
+            catch (Exception ex)
+            {
+                // TODO: Change font color
+                lbl_Output.Text += "E " + ex.Message + "\n";
             }
         }
 
