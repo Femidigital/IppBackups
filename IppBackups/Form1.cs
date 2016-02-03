@@ -44,6 +44,7 @@ namespace IppBackups
         string sUsername = "";
         string sPassword = "";
         string r_curSrv = "";
+        string r_env = "";
         string r_curSrvInstance = "";
         string r_serverName = "";
         string r_sUsername = "";
@@ -465,7 +466,16 @@ namespace IppBackups
                 db.LogFiles[0].Rename(databaseName + "_log");
                 lbl_Output.Text += "Successfully renamed Logical files to " + db.FileGroups[0].Files[0].Name + "... '\n";
             }
-            db.SetOnline();
+
+            lbl_Output.Text += "Resfresh environment is " + r_env + "...'\n";
+            if (r_env != "PROD")
+            {
+                lbl_Output.Text += "Setting non production database to Simple mode...'\n";
+                db.RecoveryModel = RecoveryModel.Simple;
+                db.Alter();
+            }
+
+            db.SetOnline();            
             sqlServer.Refresh();
 
         }
@@ -702,6 +712,7 @@ namespace IppBackups
                 {
                     string restorePath = "";
                     string destPath = "";
+                    r_env = cBox_Environment.SelectedItem.ToString();
 
                     for (int i = 0; i < _servers[cBox_Server.SelectedIndex].Instances.Count; i++ )
                     {
@@ -740,6 +751,7 @@ namespace IppBackups
             {
                 if ((Environment)Enum.Parse(typeof(Environment), cBox_Environment.Text) >= (Environment)Enum.Parse(typeof(Environment), cBox_DestEnvironment.Text))
                 {
+                    r_env = cBox_DestEnvironment.SelectedItem.ToString();
                     if (backupbackgroundWorker.IsBusy != true)
                     {
                         lbl_Output.Text += "Backing up source database... '\n";

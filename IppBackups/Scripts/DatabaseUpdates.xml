@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Environments>
+  <Environment name="PROD">
+    <Databases>
+      <Database name="PersonalData">
+        <Tables>
+          <Table name="Identity"></Table>
+          <Tokens>
+            <Token type="ColumnToken">
+              <Token columnName="" value="https://identity.bsigroup.com"></Token>
+            </Token>
+            <Token type="FilterToken">
+              <Token columnName="" value=""></Token>
+            </Token>
+          </Tokens>
+        </Tables>
+      </Database>
+      <Database name="CloudAdmin">
+        <Tables>
+          <Table name="Credential"></Table>
+          <Tokens>
+            <Token type="ColumnToken">
+              <Token columnName="UserName" value="prod-cloudadmin"></Token>
+              <Token columnName="Password" value="Password1"></Token>
+            </Token>
+            <Token type="FilterToken">
+              <Token columnName="Name" value="admin"></Token>
+            </Token>
+            <Token type="ColumnToken">
+              <Token columnName="UserName" value="363a5e31aa0f4d7894e95d95df875137"></Token>
+              <Token columnName="Password" value="363a5e31aa0f4d7894e95d95df875137"></Token>
+            </Token>
+            <Token type="FilterToken">
+              <Token columnName="id" value="1"></Token>
+            </Token>
+          </Tokens>
+        </Tables>
+      </Database>
+      <Database name="DatabasePool">
+        <Tables>
+          <Table name="Identity"></Table>
+          <Tokens>
+            <Token type="ColumnToken">
+              <Token columnName="" value="https://identity.bsigroup.com"></Token>
+            </Token>
+            <Token type="FilterToken">
+              <Token columnName="" value=""></Token>
+            </Token>
+          </Tokens>
+        </Tables>
+      </Database>
+    </Databases>
+  </Environment>
+</Environments>
+</xml>
