@@ -1418,7 +1418,7 @@ namespace IppBackups
                 }
                 else
                 {
-                    DatabaseUpdates new_entry = new DatabaseUpdates(curDb, curEnv);
+                    DatabaseUpdates new_entry = new DatabaseUpdates(curSrvInstanceToConnect, curDb, curEnv);
                     new_entry.Show();
                 }
             }
