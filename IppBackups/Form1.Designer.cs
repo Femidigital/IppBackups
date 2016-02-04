@@ -35,8 +35,10 @@
             this.oneOffBackupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.restoreToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.refreshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.releaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.serversToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.databaseUpdatesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lbl_Environment = new System.Windows.Forms.Label();
             this.cBox_Environment = new System.Windows.Forms.ComboBox();
             this.grpBox_Databases = new System.Windows.Forms.GroupBox();
@@ -55,7 +57,7 @@
             this.backupbackgroundWorker.DoWork += backupbackgroundWorker_DoWork;
             this.backupbackgroundWorker.ProgressChanged += backupbackgroundWorker_ProgressChanged;
             this.backupbackgroundWorker.RunWorkerCompleted += backupbackgroundWorker_RunWorkerCompleted;
-            this.startAsynButton = new System.Windows.Forms.Button();
+            this.btn_ClearLogs = new System.Windows.Forms.Button();
             this.cancelAsynButton = new System.Windows.Forms.Button();
             this.lbl_DestServer = new System.Windows.Forms.Label();
             this.cBox_DestServer = new System.Windows.Forms.ComboBox();
@@ -65,6 +67,7 @@
             this.restorebackgroundWorker.DoWork += restorebackgroundWorker_DoWork;
             this.restorebackgroundWorker.ProgressChanged += restorebackgroundWorker_ProgressChanged;
             this.restorebackgroundWorker.RunWorkerCompleted += restorebackgroundWorker_RunWorkerCompleted;
+            this.btn_Exit = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.grpBox_Output.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -80,8 +83,7 @@
             this.settingsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Padding = new System.Windows.Forms.Padding(8, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(992, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(744, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -90,13 +92,13 @@
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(44, 24);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(102, 24);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(92, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -105,71 +107,83 @@
             this.taskToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.oneOffBackupToolStripMenuItem,
             this.restoreToolStripMenuItem,
-            this.refreshToolStripMenuItem});
+            this.refreshToolStripMenuItem,
+            this.releaseToolStripMenuItem});
             this.taskToolStripMenuItem.Name = "taskToolStripMenuItem";
-            this.taskToolStripMenuItem.Size = new System.Drawing.Size(50, 24);
+            this.taskToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
             this.taskToolStripMenuItem.Text = "Task";
             // 
             // oneOffBackupToolStripMenuItem
             // 
             this.oneOffBackupToolStripMenuItem.Name = "oneOffBackupToolStripMenuItem";
-            this.oneOffBackupToolStripMenuItem.Size = new System.Drawing.Size(128, 24);
+            this.oneOffBackupToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
             this.oneOffBackupToolStripMenuItem.Text = "Backup";
             // 
             // restoreToolStripMenuItem
             // 
             this.restoreToolStripMenuItem.Name = "restoreToolStripMenuItem";
-            this.restoreToolStripMenuItem.Size = new System.Drawing.Size(128, 24);
+            this.restoreToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
             this.restoreToolStripMenuItem.Text = "Restore";
             // 
             // refreshToolStripMenuItem
             // 
             this.refreshToolStripMenuItem.Name = "refreshToolStripMenuItem";
-            this.refreshToolStripMenuItem.Size = new System.Drawing.Size(128, 24);
+            this.refreshToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
             this.refreshToolStripMenuItem.Text = "Refresh";
+            // 
+            // releaseToolStripMenuItem
+            // 
+            this.releaseToolStripMenuItem.Name = "releaseToolStripMenuItem";
+            this.releaseToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
+            this.releaseToolStripMenuItem.Text = "Release...";
+            this.releaseToolStripMenuItem.Click += new System.EventHandler(this.releaseToolStripMenuItem_Click);
             // 
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.serversToolStripMenuItem});
+            this.serversToolStripMenuItem,
+            this.databaseUpdatesToolStripMenuItem});
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(74, 24);
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.settingsToolStripMenuItem.Text = "Settings";
             // 
             // serversToolStripMenuItem
             // 
             this.serversToolStripMenuItem.Name = "serversToolStripMenuItem";
-            this.serversToolStripMenuItem.Size = new System.Drawing.Size(134, 24);
+            this.serversToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
             this.serversToolStripMenuItem.Text = "Servers...";
             this.serversToolStripMenuItem.Click += new System.EventHandler(this.serversToolStripMenuItem_Click);
+            // 
+            // databaseUpdatesToolStripMenuItem
+            // 
+            this.databaseUpdatesToolStripMenuItem.Name = "databaseUpdatesToolStripMenuItem";
+            this.databaseUpdatesToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+            this.databaseUpdatesToolStripMenuItem.Text = "Database Updates...";
+            this.databaseUpdatesToolStripMenuItem.Click += new System.EventHandler(this.databaseUpdatesToolStripMenuItem_Click);
             // 
             // lbl_Environment
             // 
             this.lbl_Environment.AutoSize = true;
-            this.lbl_Environment.Location = new System.Drawing.Point(228, 54);
-            this.lbl_Environment.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lbl_Environment.Location = new System.Drawing.Point(171, 44);
             this.lbl_Environment.Name = "lbl_Environment";
-            this.lbl_Environment.Size = new System.Drawing.Size(87, 17);
+            this.lbl_Environment.Size = new System.Drawing.Size(66, 13);
             this.lbl_Environment.TabIndex = 1;
             this.lbl_Environment.Text = "Environment";
             // 
             // cBox_Environment
             // 
             this.cBox_Environment.FormattingEnabled = true;
-            this.cBox_Environment.Location = new System.Drawing.Point(324, 50);
-            this.cBox_Environment.Margin = new System.Windows.Forms.Padding(4);
+            this.cBox_Environment.Location = new System.Drawing.Point(243, 41);
             this.cBox_Environment.Name = "cBox_Environment";
-            this.cBox_Environment.Size = new System.Drawing.Size(127, 24);
+            this.cBox_Environment.Size = new System.Drawing.Size(96, 21);
             this.cBox_Environment.TabIndex = 2;
             this.cBox_Environment.SelectedIndexChanged += new System.EventHandler(this.cBox_Environment_SelectedIndexChanged);
             // 
             // grpBox_Databases
             // 
-            this.grpBox_Databases.Location = new System.Drawing.Point(20, 135);
-            this.grpBox_Databases.Margin = new System.Windows.Forms.Padding(4);
+            this.grpBox_Databases.Location = new System.Drawing.Point(15, 110);
             this.grpBox_Databases.Name = "grpBox_Databases";
-            this.grpBox_Databases.Padding = new System.Windows.Forms.Padding(4);
-            this.grpBox_Databases.Size = new System.Drawing.Size(956, 423);
+            this.grpBox_Databases.Size = new System.Drawing.Size(717, 344);
             this.grpBox_Databases.TabIndex = 3;
             this.grpBox_Databases.TabStop = false;
             this.grpBox_Databases.Text = "Databases:";
@@ -177,11 +191,9 @@
             // grpBox_Output
             // 
             this.grpBox_Output.Controls.Add(this.panel2);
-            this.grpBox_Output.Location = new System.Drawing.Point(20, 566);
-            this.grpBox_Output.Margin = new System.Windows.Forms.Padding(4);
+            this.grpBox_Output.Location = new System.Drawing.Point(15, 460);
             this.grpBox_Output.Name = "grpBox_Output";
-            this.grpBox_Output.Padding = new System.Windows.Forms.Padding(4);
-            this.grpBox_Output.Size = new System.Drawing.Size(956, 214);
+            this.grpBox_Output.Size = new System.Drawing.Size(717, 174);
             this.grpBox_Output.TabIndex = 4;
             this.grpBox_Output.TabStop = false;
             this.grpBox_Output.Text = "Output";
@@ -190,48 +202,43 @@
             // 
             this.panel2.AutoScroll = true;
             this.panel2.Controls.Add(this.lbl_Output);
-            this.panel2.Location = new System.Drawing.Point(4, 23);
-            this.panel2.Margin = new System.Windows.Forms.Padding(4);
+            this.panel2.Location = new System.Drawing.Point(3, 19);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(944, 183);
+            this.panel2.Size = new System.Drawing.Size(708, 149);
             this.panel2.TabIndex = 8;
             // 
             // lbl_Output
             // 
             this.lbl_Output.AutoSize = true;
-            this.lbl_Output.Location = new System.Drawing.Point(8, 20);
-            this.lbl_Output.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lbl_Output.Location = new System.Drawing.Point(6, 16);
             this.lbl_Output.Name = "lbl_Output";
-            this.lbl_Output.Size = new System.Drawing.Size(0, 17);
+            this.lbl_Output.Size = new System.Drawing.Size(0, 13);
             this.lbl_Output.TabIndex = 7;
             // 
             // cBox_Server
             // 
             this.cBox_Server.FormattingEnabled = true;
-            this.cBox_Server.Location = new System.Drawing.Point(79, 50);
-            this.cBox_Server.Margin = new System.Windows.Forms.Padding(4);
+            this.cBox_Server.Location = new System.Drawing.Point(59, 41);
             this.cBox_Server.Name = "cBox_Server";
-            this.cBox_Server.Size = new System.Drawing.Size(128, 24);
+            this.cBox_Server.Size = new System.Drawing.Size(97, 21);
             this.cBox_Server.TabIndex = 5;
             this.cBox_Server.SelectedIndexChanged += new System.EventHandler(this.cBox_Server_SelectedIndexChanged);
             // 
             // lbl_Server
             // 
             this.lbl_Server.AutoSize = true;
-            this.lbl_Server.Location = new System.Drawing.Point(20, 54);
-            this.lbl_Server.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lbl_Server.Location = new System.Drawing.Point(15, 44);
             this.lbl_Server.Name = "lbl_Server";
-            this.lbl_Server.Size = new System.Drawing.Size(50, 17);
+            this.lbl_Server.Size = new System.Drawing.Size(38, 13);
             this.lbl_Server.TabIndex = 6;
             this.lbl_Server.Text = "Server";
             // 
             // rBtn_Backup
             // 
             this.rBtn_Backup.AutoSize = true;
-            this.rBtn_Backup.Location = new System.Drawing.Point(367, 3);
-            this.rBtn_Backup.Margin = new System.Windows.Forms.Padding(4);
+            this.rBtn_Backup.Location = new System.Drawing.Point(275, 2);
             this.rBtn_Backup.Name = "rBtn_Backup";
-            this.rBtn_Backup.Size = new System.Drawing.Size(76, 21);
+            this.rBtn_Backup.Size = new System.Drawing.Size(62, 17);
             this.rBtn_Backup.TabIndex = 7;
             this.rBtn_Backup.TabStop = true;
             this.rBtn_Backup.Text = "Backup";
@@ -240,10 +247,9 @@
             // rBtn_Restore
             // 
             this.rBtn_Restore.AutoSize = true;
-            this.rBtn_Restore.Location = new System.Drawing.Point(559, 3);
-            this.rBtn_Restore.Margin = new System.Windows.Forms.Padding(4);
+            this.rBtn_Restore.Location = new System.Drawing.Point(419, 2);
             this.rBtn_Restore.Name = "rBtn_Restore";
-            this.rBtn_Restore.Size = new System.Drawing.Size(79, 21);
+            this.rBtn_Restore.Size = new System.Drawing.Size(62, 17);
             this.rBtn_Restore.TabIndex = 8;
             this.rBtn_Restore.TabStop = true;
             this.rBtn_Restore.Text = "Restore";
@@ -252,10 +258,9 @@
             // rBtn_Refresh
             // 
             this.rBtn_Refresh.AutoSize = true;
-            this.rBtn_Refresh.Location = new System.Drawing.Point(769, 3);
-            this.rBtn_Refresh.Margin = new System.Windows.Forms.Padding(4);
+            this.rBtn_Refresh.Location = new System.Drawing.Point(577, 2);
             this.rBtn_Refresh.Name = "rBtn_Refresh";
-            this.rBtn_Refresh.Size = new System.Drawing.Size(79, 21);
+            this.rBtn_Refresh.Size = new System.Drawing.Size(62, 17);
             this.rBtn_Refresh.TabIndex = 9;
             this.rBtn_Refresh.TabStop = true;
             this.rBtn_Refresh.Text = "Refresh";
@@ -268,18 +273,18 @@
             this.panel1.Controls.Add(this.rBtn_Restore);
             this.panel1.Controls.Add(this.rBtn_Refresh);
             this.panel1.Controls.Add(this.rBtn_Backup);
-            this.panel1.Location = new System.Drawing.Point(20, 100);
-            this.panel1.Margin = new System.Windows.Forms.Padding(4);
+            this.panel1.Location = new System.Drawing.Point(15, 81);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(956, 28);
+            this.panel1.Size = new System.Drawing.Size(717, 23);
             this.panel1.TabIndex = 10;
             // 
             // chkBox_ShowAll
             // 
             this.chkBox_ShowAll.AutoSize = true;
-            this.chkBox_ShowAll.Location = new System.Drawing.Point(40, 3);
+            this.chkBox_ShowAll.Location = new System.Drawing.Point(30, 2);
+            this.chkBox_ShowAll.Margin = new System.Windows.Forms.Padding(2);
             this.chkBox_ShowAll.Name = "chkBox_ShowAll";
-            this.chkBox_ShowAll.Size = new System.Drawing.Size(83, 21);
+            this.chkBox_ShowAll.Size = new System.Drawing.Size(67, 17);
             this.chkBox_ShowAll.TabIndex = 10;
             this.chkBox_ShowAll.Text = "Show All";
             this.chkBox_ShowAll.UseVisualStyleBackColor = true;
@@ -287,31 +292,29 @@
             // 
             // btn_Execute
             // 
-            this.btn_Execute.Location = new System.Drawing.Point(868, 788);
-            this.btn_Execute.Margin = new System.Windows.Forms.Padding(4);
+            this.btn_Execute.Location = new System.Drawing.Point(651, 640);
             this.btn_Execute.Name = "btn_Execute";
-            this.btn_Execute.Size = new System.Drawing.Size(100, 28);
+            this.btn_Execute.Size = new System.Drawing.Size(75, 23);
             this.btn_Execute.TabIndex = 8;
             this.btn_Execute.Text = "Execute";
             this.btn_Execute.UseVisualStyleBackColor = true;
             this.btn_Execute.Click += new System.EventHandler(this.btn_Execute_Click);
             // 
-            // startAsynButton
+            // btn_ClearLogs
             // 
-            this.startAsynButton.Location = new System.Drawing.Point(719, 788);
-            this.startAsynButton.Margin = new System.Windows.Forms.Padding(4);
-            this.startAsynButton.Name = "startAsynButton";
-            this.startAsynButton.Size = new System.Drawing.Size(100, 28);
-            this.startAsynButton.TabIndex = 11;
-            this.startAsynButton.Text = "Start";
-            this.startAsynButton.UseVisualStyleBackColor = true;
+            this.btn_ClearLogs.Location = new System.Drawing.Point(539, 640);
+            this.btn_ClearLogs.Name = "btn_ClearLogs";
+            this.btn_ClearLogs.Size = new System.Drawing.Size(75, 23);
+            this.btn_ClearLogs.TabIndex = 11;
+            this.btn_ClearLogs.Text = "Clear Logs";
+            this.btn_ClearLogs.UseVisualStyleBackColor = true;
+            this.btn_ClearLogs.Click += new System.EventHandler(this.btn_ClearLogs_Click);
             // 
             // cancelAsynButton
             // 
-            this.cancelAsynButton.Location = new System.Drawing.Point(544, 788);
-            this.cancelAsynButton.Margin = new System.Windows.Forms.Padding(4);
+            this.cancelAsynButton.Location = new System.Drawing.Point(408, 640);
             this.cancelAsynButton.Name = "cancelAsynButton";
-            this.cancelAsynButton.Size = new System.Drawing.Size(100, 28);
+            this.cancelAsynButton.Size = new System.Drawing.Size(75, 23);
             this.cancelAsynButton.TabIndex = 12;
             this.cancelAsynButton.Text = "Cancel";
             this.cancelAsynButton.UseVisualStyleBackColor = true;
@@ -320,10 +323,9 @@
             // lbl_DestServer
             // 
             this.lbl_DestServer.AutoSize = true;
-            this.lbl_DestServer.Location = new System.Drawing.Point(540, 54);
-            this.lbl_DestServer.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lbl_DestServer.Location = new System.Drawing.Point(405, 44);
             this.lbl_DestServer.Name = "lbl_DestServer";
-            this.lbl_DestServer.Size = new System.Drawing.Size(50, 17);
+            this.lbl_DestServer.Size = new System.Drawing.Size(38, 13);
             this.lbl_DestServer.TabIndex = 13;
             this.lbl_DestServer.Text = "Server";
             // 
@@ -331,20 +333,18 @@
             // 
             this.cBox_DestServer.Enabled = false;
             this.cBox_DestServer.FormattingEnabled = true;
-            this.cBox_DestServer.Location = new System.Drawing.Point(599, 50);
-            this.cBox_DestServer.Margin = new System.Windows.Forms.Padding(4);
+            this.cBox_DestServer.Location = new System.Drawing.Point(449, 41);
             this.cBox_DestServer.Name = "cBox_DestServer";
-            this.cBox_DestServer.Size = new System.Drawing.Size(129, 24);
+            this.cBox_DestServer.Size = new System.Drawing.Size(98, 21);
             this.cBox_DestServer.TabIndex = 14;
             this.cBox_DestServer.SelectedIndexChanged += new System.EventHandler(this.cBox_DestServer_SelectedIndexChanged);
             // 
             // lbl_DestEnvironment
             // 
             this.lbl_DestEnvironment.AutoSize = true;
-            this.lbl_DestEnvironment.Location = new System.Drawing.Point(737, 54);
-            this.lbl_DestEnvironment.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lbl_DestEnvironment.Location = new System.Drawing.Point(553, 44);
             this.lbl_DestEnvironment.Name = "lbl_DestEnvironment";
-            this.lbl_DestEnvironment.Size = new System.Drawing.Size(87, 17);
+            this.lbl_DestEnvironment.Size = new System.Drawing.Size(66, 13);
             this.lbl_DestEnvironment.TabIndex = 15;
             this.lbl_DestEnvironment.Text = "Environment";
             // 
@@ -352,23 +352,33 @@
             // 
             this.cBox_DestEnvironment.Enabled = false;
             this.cBox_DestEnvironment.FormattingEnabled = true;
-            this.cBox_DestEnvironment.Location = new System.Drawing.Point(833, 47);
-            this.cBox_DestEnvironment.Margin = new System.Windows.Forms.Padding(4);
+            this.cBox_DestEnvironment.Location = new System.Drawing.Point(625, 38);
             this.cBox_DestEnvironment.Name = "cBox_DestEnvironment";
-            this.cBox_DestEnvironment.Size = new System.Drawing.Size(144, 24);
+            this.cBox_DestEnvironment.Size = new System.Drawing.Size(109, 21);
             this.cBox_DestEnvironment.TabIndex = 16;
+            // 
+            // btn_Exit
+            // 
+            this.btn_Exit.Location = new System.Drawing.Point(264, 640);
+            this.btn_Exit.Name = "btn_Exit";
+            this.btn_Exit.Size = new System.Drawing.Size(75, 23);
+            this.btn_Exit.TabIndex = 17;
+            this.btn_Exit.Text = "Exit";
+            this.btn_Exit.UseVisualStyleBackColor = true;
+            this.btn_Exit.Click += new System.EventHandler(this.btn_Exit_Click);
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(992, 814);
+            this.ClientSize = new System.Drawing.Size(744, 666);
+            this.Controls.Add(this.btn_Exit);
             this.Controls.Add(this.cBox_DestEnvironment);
             this.Controls.Add(this.lbl_DestEnvironment);
             this.Controls.Add(this.cBox_DestServer);
             this.Controls.Add(this.lbl_DestServer);
             this.Controls.Add(this.cancelAsynButton);
-            this.Controls.Add(this.startAsynButton);
+            this.Controls.Add(this.btn_ClearLogs);
             this.Controls.Add(this.btn_Execute);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.lbl_Server);
@@ -379,7 +389,6 @@
             this.Controls.Add(this.lbl_Environment);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
-            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form1";
             this.Text = "Form1";
             this.menuStrip1.ResumeLayout(false);
@@ -419,7 +428,7 @@
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Button btn_Execute;
         private System.ComponentModel.BackgroundWorker backupbackgroundWorker;
-        private System.Windows.Forms.Button startAsynButton;
+        private System.Windows.Forms.Button btn_ClearLogs;
         private System.Windows.Forms.Button cancelAsynButton;
         private System.Windows.Forms.Label lbl_DestServer;
         private System.Windows.Forms.ComboBox cBox_DestServer;
@@ -427,6 +436,9 @@
         private System.Windows.Forms.ComboBox cBox_DestEnvironment;
         private System.ComponentModel.BackgroundWorker restorebackgroundWorker;
         private System.Windows.Forms.CheckBox chkBox_ShowAll;
+        private System.Windows.Forms.ToolStripMenuItem releaseToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem databaseUpdatesToolStripMenuItem;
+        private System.Windows.Forms.Button btn_Exit;
     }
 }
 

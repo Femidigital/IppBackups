@@ -39,6 +39,8 @@ namespace IppBackups
         string curSrv = "";
         string curSrvInstance = "";
         string curSrvInstanceToConnect = "";
+        string curEnv = "";
+        string curDb = "";
         string sPort = "";
         string serverName = "";
         string sUsername = "";
@@ -331,6 +333,7 @@ namespace IppBackups
         {
             grpBox_Databases.Controls.Clear();
             string newEnv = (string)cBox_Environment.SelectedItem;
+            curEnv = newEnv;
             //comboBox1.Items.Clear();
             getAllDatabases(newEnv);
         }
@@ -1388,6 +1391,51 @@ namespace IppBackups
             string newEnv = (string)cBox_Environment.SelectedItem;
             //comboBox1.Items.Clear();
             getAllDatabases(newEnv);
+        }
+
+        private void releaseToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // string srvInstance, string database, string env
+            if (curSrvInstanceToConnect == "" || curDb == "" || curEnv == "")
+            {
+                MessageBox.Show("Missing some information...");
+            }
+            else
+            {
+                Release _release = new Release(curSrvInstanceToConnect, curDb, curEnv);
+                _release.Show();
+            }
+        }
+
+        private void databaseUpdatesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (databaseList.Count == 1)
+            {
+                curDb = databaseList[0];
+                if (curDb == "" || curEnv == "")
+                {
+                    MessageBox.Show("Missing some information...");
+                }
+                else
+                {
+                    DatabaseUpdates new_entry = new DatabaseUpdates(curDb, curEnv);
+                    new_entry.Show();
+                }
+            }
+            else 
+            {
+                MessageBox.Show("Please, select only one database");
+            }
+        }
+
+        private void btn_Exit_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void btn_ClearLogs_Click(object sender, EventArgs e)
+        {
+            lbl_Output.Text = "";
         }
     }
 
