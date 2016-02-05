@@ -74,12 +74,6 @@ namespace IppBackups
             operand.Add("=");
             operand.Add("<>");
 
-            //rowLabel = new Label[max_row];
-            //cBox_Logic = new ComboBox[max_row]; 
-            //cBox_Operand = new ComboBox[max_row];
-            //cBox_Field = new ComboBox[max_row];
-            //txtBox_Value = new TextBox[max_row];
-
             for(int i = 0; i < max_row; i++)
             {
                 rowLabel[i] = new Label();
