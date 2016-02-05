@@ -21,6 +21,7 @@ namespace IppBackups
         string useStmt = "USE [";
         string tbl = "";
         int max_row = 5;
+        int min_rowCount = 2;
         List<string> logic = new List<string>();
         List<string> operand = new List<string>();
         List<string> field = new List<string>();
@@ -134,6 +135,22 @@ namespace IppBackups
         {
             UpdateScriptWindow();
             script += "\nUPDATE " + tbl + "\n";
+            for (int i = 0; i < (tlp_ScriptBuilder.RowCount - min_rowCount); i++ )
+            {
+                if ( cBox_Logic[i].SelectedItem.ToString() == "")
+                {
+                    script += "SET " + cBox_Field[i].SelectedItem.ToString() + " " + cBox_Operand[i].SelectedItem.ToString() + " " + txtBox_Value[i].Text + "'\n";
+                }
+                else if (cBox_Logic[i].SelectedItem.ToString() != "" || cBox_Logic[i].SelectedItem.ToString() == "WHERE")
+                {
+                    script += cBox_Field[i].SelectedItem.ToString() + " " + cBox_Operand[i].SelectedItem.ToString() + " " + txtBox_Value[i].Text + "'\n";
+                }
+                else
+                {
+                    script += "WHERE " + cBox_Field[i].SelectedItem.ToString() + " " + cBox_Operand[i].SelectedItem.ToString() + " " + txtBox_Value[i].Text + "'\n";
+                }
+            }
+
             rTxtBox_Script.Text = script;
         }
 
@@ -172,40 +189,35 @@ namespace IppBackups
             int row = 0;
             int verticalOffset = 0;
             int y = tlp_ScriptBuilder.RowCount;
-            int i = y - 2;
 
-            //rowLabel = new Label[max_row];
+            if (y > min_rowCount)
+            {
+                if (rBtn_Delete.Checked || rBtn_Insert.Checked || rBtn_Replace.Checked || rBtn_Update.Checked)
+                {
+                    UpdateScriptWindow();
+                }
+                else
+                {
+                    MessageBox.Show("Select a modification command");
+                }
+            }
 
-            //cBox_Logic = new ComboBox[max_row];
-            //cBox_Logic[y].Items.AddRange(logic.ToArray());
+            int i = y - min_rowCount;
 
-            //cBox_Operand = new ComboBox[max_row];
-            //cBox_Operand[y].Items.AddRange(operand.ToArray());
-
-            //cBox_Field = new ComboBox[max_row];
-            //cBox_Field[y].Items.AddRange(field.ToArray());
-
-            //txtBox_Value = new TextBox[max_row];
-
-           // rTxtBox_Script.Text += "\n" + sender.ToString() + "was clicked \n";
-           // rTxtBox_Script.Text += "\n" + e.ToString() + "was clicked \n";
             if (i < max_row)
             {
                 tlp_ScriptBuilder.RowCount++;
                 tlp_ScriptBuilder.RowStyles.Insert(tlp_ScriptBuilder.RowCount - 2, new RowStyle(SizeType.AutoSize));
-                // tlp_ScriptBuilder.Controls.Add(new Label() { Text = "", Anchor = AnchorStyles.Left, AutoSize = true }, 0, y - 1); //rowLabel
-                //rowLabel[y].AutoSize = true;
-                //rowLabel[y].Anchor = AnchorStyles.Left;
+
                 tlp_ScriptBuilder.Controls.Add(rowLabel[i], 0, y - 1);
-                if (y > 2)
+                if (y > min_rowCount)
                     tlp_ScriptBuilder.Controls.Add(cBox_Logic[i], 1, y - 1);
                 tlp_ScriptBuilder.Controls.Add(cBox_Field[i], 2, y - 1);
                 tlp_ScriptBuilder.Controls.Add(cBox_Operand[i], 3, y - 1);
-                //tlp_ScriptBuilder.Controls.Add(new TextBox() { Text = "", Anchor = AnchorStyles.None, AutoSize = true }, 4, y - 1); // txtBox_Value
+                
                 tlp_ScriptBuilder.Controls.Add(txtBox_Value[i], 4, y - 1);
 
-                //if (y > 2)
-                //    UpdateScriptWindow();
+                
             }
 
         }
@@ -239,20 +251,50 @@ namespace IppBackups
                     }
                 }
             }
+
+            for (int i = 0; i < max_row; i++)
+            {
+                cBox_Field[i].Items.AddRange(field.ToArray());
+            }
+
         }
 
         private void ClearScriptBuilder()
         {
+            int j;
             for( int i = tlp_ScriptBuilder.RowCount; i > 2; i-- )
             {
-                tlp_ScriptBuilder.Controls.Remove(rowLabel[i]);
-                tlp_ScriptBuilder.Controls.Remove(cBox_Logic[i]);
-                tlp_ScriptBuilder.Controls.Remove(cBox_Field[i]);
-                tlp_ScriptBuilder.Controls.Remove(cBox_Operand[i]);
-                tlp_ScriptBuilder.Controls.Remove(txtBox_Value[i]);
-                //tlp_ScriptBuilder.RowCount--;
-                i--;
+                j = i - min_rowCount;
+                if (j >= 1)
+                {
+                    tlp_ScriptBuilder.Controls.Remove(rowLabel[j-1]);
+                    rowLabel[j-1].Text = "";
+                    tlp_ScriptBuilder.Controls.Remove(cBox_Logic[j-1]);
+                    cBox_Logic[j-1].SelectedIndex = -1;
+                    tlp_ScriptBuilder.Controls.Remove(cBox_Field[j-1]);
+                    cBox_Field[j-1].SelectedIndex = -1;
+                    tlp_ScriptBuilder.Controls.Remove(cBox_Operand[j-1]);
+                    cBox_Operand[j-1].SelectedIndex = -1;
+                    tlp_ScriptBuilder.Controls.Remove(txtBox_Value[j-1]);
+                    txtBox_Value[j-1].Text = "";
+                    //tlp_ScriptBuilder.RowCount--;
+                    //i--;
+                }
             }
+            
+            //if (tlp_ScriptBuilder.RowCount <= 2)
+            //    tlp_ScriptBuilder.RowCount = tlp_ScriptBuilder.RowCount + 1;
+            tlp_ScriptBuilder.RowCount = min_rowCount;
+        }
+
+        private void btn_Export_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btn_Import_Click(object sender, EventArgs e)
+        {
+
         }
             
     }
