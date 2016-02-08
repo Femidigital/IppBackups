@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml;
+using System.Xml.Linq;
 using Microsoft.SqlServer.Management.Smo;
 using Microsoft.SqlServer.Management.Smo.Wmi;
 using Microsoft.SqlServer.Management.Common;
@@ -34,7 +36,8 @@ namespace IppBackups
         ComboBox[] cBox_Field = new ComboBox[5];
         Label[] rowLabel = new Label[5];
         TextBox[] txtBox_Value = new TextBox[5];
-        Label lastRowMark = new Label() { Text = "*" };        
+        Label lastRowMark = new Label() { Text = "*" };
+        string sXmlFile = "";
         
 
         public DatabaseUpdates(string curInstance, string database, string env)
@@ -405,15 +408,23 @@ namespace IppBackups
 
         private bool CanAddNewRow()
         {
-            bool LastRowCompleted = false;
+            bool LastRowCompleted = true;
 
             int currentlyUsedRow = tlp_ScriptBuilder.RowCount;
 
             for (int i = 0; i < currentlyUsedRow - 2; i++ )
             {
-                if (currentlyUsedRow > 2)
+                if (currentlyUsedRow > 1)
                 {
-                    if (cBox_Logic[i].SelectedIndex == -1 || cBox_Field[i].SelectedIndex == -1 || cBox_Operand[i].SelectedIndex == -1 || txtBox_Value[i].Text == "")
+                    if (i == 0)
+                    {
+                        if (cBox_Field[i].SelectedIndex == -1 || cBox_Operand[i].SelectedIndex == -1 || txtBox_Value[i].Text == "")
+                        {
+                            LastRowCompleted = false;
+                            break;
+                        }
+                    }
+                    else if (cBox_Logic[i].SelectedIndex == -1 || cBox_Field[i].SelectedIndex == -1 || cBox_Operand[i].SelectedIndex == -1 || txtBox_Value[i].Text == "")
                     {
                         LastRowCompleted = false;
                         break;
@@ -423,11 +434,66 @@ namespace IppBackups
                         LastRowCompleted = true;
                     }
                 }
-                LastRowCompleted = true;
+                //else
+                //{
+                //    LastRowCompleted = true;
+                //}
             }
 
             return LastRowCompleted;
         }
+
+        public void LoadValuesFromSettings()
+        {
+            
+                sXmlFile = "..\\Scripts\\DatabaseUpdates.xml";
+
+                //sXmlFile = sSettingPath + ConfigFileName;
+                XmlDocument doc = new XmlDocument();
+                doc.Load(sXmlFile);
+
+                XmlNodeList curDatabase = doc.SelectNodes("Environments/Environment/Databases[@name]");
+                _servers = new Servers();
+                _servers2 = new Servers();
+                var i = 1;
+                foreach (XmlNode xServer in server)
+                {
+                    var svr = new ServerX { Id = i, Name = xServer.Attributes["name"].Value, IP = xServer.Attributes["ip"].Value };
+                    // this needs to read the instances on this server
+                    foreach (XmlNode xInstance in xServer.ChildNodes)
+                    {
+                        var inst = new Instance();
+                        inst.xInstance = xInstance.Attributes["instance"].Value;
+                        inst.Port = xInstance.Attributes["port"].Value;
+                        inst.User = xInstance.Attributes["user"].Value;
+                        inst.Password = xInstance.Attributes["password"].Value;
+                        inst.Backups = xInstance.Attributes["backups"].Value;
+                        //svr.Instances.Add(xInstance);
+                        //svr.Instances.Add(inst);
+                        // read the envs for this server
+                        foreach (XmlNode xEnvironment in xInstance.ChildNodes)
+                        {
+                            var env = new Environments { Name = xEnvironment.InnerText, data = xEnvironment.Attributes["data"].Value, log = xEnvironment.Attributes["log"].Value };
+                            //env.Name = xEnvironment.InnerText;
+
+                            // svr.Instances.Environments.Add(xEnvironment.InnerText);
+                            //inst.Environments.Add(xEnvironment.InnerText);
+                            inst.Environments.Add(env);
+                        }
+
+                        svr.Instances.Add(inst);
+                    }
+                    _servers.Add(svr);
+                    _servers2.Add(svr);
+
+                    i++;
+                }
+
+                cBox_Server.DataSource = _servers;
+                cBox_DestServer.DataSource = _servers2;
+
+            }
+        
             
     }
 
