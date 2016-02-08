@@ -209,41 +209,44 @@ namespace IppBackups
             int verticalOffset = 0;
             int y = tlp_ScriptBuilder.RowCount;
 
-            if (y >= min_rowCount)
+            if (CanAddNewRow())
             {
-                if (rBtn_Delete.Checked || rBtn_Insert.Checked || rBtn_Replace.Checked || rBtn_Update.Checked)
+                if (y >= min_rowCount)
                 {
-                    //UpdateScriptWindow();
-                    if (tlp_ScriptBuilder.RowCount > min_rowCount)
+                    if (rBtn_Delete.Checked || rBtn_Insert.Checked || rBtn_Replace.Checked || rBtn_Update.Checked)
                     {
-                        ScriptContent();
-                    }
-                    
-                    int i = y - min_rowCount;
+                        //UpdateScriptWindow();
+                        if (tlp_ScriptBuilder.RowCount > min_rowCount)
+                        {
+                            ScriptContent();
+                        }
 
-                    if (i < max_row)
+                        int i = y - min_rowCount;
+
+                        if (i < max_row)
+                        {
+                            tlp_ScriptBuilder.RowCount++;
+                            tlp_ScriptBuilder.RowStyles.Insert(tlp_ScriptBuilder.RowCount - 2, new RowStyle(SizeType.AutoSize));
+
+                            tlp_ScriptBuilder.Controls.Add(rowLabel[i], 0, y - 1);
+                            rowLabel[i].Text = i.ToString();
+                            if (y > min_rowCount || rBtn_Delete.Checked)
+                                tlp_ScriptBuilder.Controls.Add(cBox_Logic[i], 1, y - 1);
+                            tlp_ScriptBuilder.Controls.Add(cBox_Field[i], 2, y - 1);
+                            tlp_ScriptBuilder.Controls.Add(cBox_Operand[i], 3, y - 1);
+
+                            tlp_ScriptBuilder.Controls.Add(txtBox_Value[i], 4, y - 1);
+                            TableLayoutPanelCellPosition pos = tlp_ScriptBuilder.GetCellPosition(txtBox_Value[i]);
+                            txtBox_Value[i].Width = tlp_ScriptBuilder.GetColumnWidths()[pos.Column];
+
+                            tlp_ScriptBuilder.Controls.Add(lastRowMark, 0, y);
+
+                        }
+                    }
+                    else
                     {
-                        tlp_ScriptBuilder.RowCount++;
-                        tlp_ScriptBuilder.RowStyles.Insert(tlp_ScriptBuilder.RowCount - 2, new RowStyle(SizeType.AutoSize));
-
-                        tlp_ScriptBuilder.Controls.Add(rowLabel[i], 0, y - 1);
-                        rowLabel[i].Text = i.ToString();
-                        if (y > min_rowCount || rBtn_Delete.Checked)
-                            tlp_ScriptBuilder.Controls.Add(cBox_Logic[i], 1, y - 1);
-                        tlp_ScriptBuilder.Controls.Add(cBox_Field[i], 2, y - 1);
-                        tlp_ScriptBuilder.Controls.Add(cBox_Operand[i], 3, y - 1);
-
-                        tlp_ScriptBuilder.Controls.Add(txtBox_Value[i], 4, y - 1);
-                        TableLayoutPanelCellPosition pos = tlp_ScriptBuilder.GetCellPosition(txtBox_Value[i]);
-                        txtBox_Value[i].Width = tlp_ScriptBuilder.GetColumnWidths()[pos.Column];
-
-                        tlp_ScriptBuilder.Controls.Add(lastRowMark, 0, y);
-
+                        MessageBox.Show("Select a modification command");
                     }
-                }
-                else
-                {
-                    MessageBox.Show("Select a modification command");
                 }
             }
 
@@ -398,6 +401,32 @@ namespace IppBackups
         private void btn_Import_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private bool CanAddNewRow()
+        {
+            bool LastRowCompleted = false;
+
+            int currentlyUsedRow = tlp_ScriptBuilder.RowCount;
+
+            for (int i = 0; i < currentlyUsedRow - 2; i++ )
+            {
+                if (currentlyUsedRow > 2)
+                {
+                    if (cBox_Logic[i].SelectedIndex == -1 || cBox_Field[i].SelectedIndex == -1 || cBox_Operand[i].SelectedIndex == -1 || txtBox_Value[i].Text == "")
+                    {
+                        LastRowCompleted = false;
+                        break;
+                    }
+                    else
+                    {
+                        LastRowCompleted = true;
+                    }
+                }
+                LastRowCompleted = true;
+            }
+
+            return LastRowCompleted;
         }
             
     }
