@@ -43,6 +43,7 @@ namespace IppBackups
         public DatabaseUpdates(string curInstance, string database, string env)
         {
             InitializeComponent();
+            LoadValuesFromSettings();
 
             getTables(curInstance, database);
 
@@ -446,51 +447,53 @@ namespace IppBackups
         public void LoadValuesFromSettings()
         {
             
-                sXmlFile = "..\\Scripts\\DatabaseUpdates.xml";
+                sXmlFile = ".\\Scripts\\DatabaseUpdateValues.xml";
 
                 //sXmlFile = sSettingPath + ConfigFileName;
                 XmlDocument doc = new XmlDocument();
                 doc.Load(sXmlFile);
 
-                XmlNodeList curDatabase = doc.SelectNodes("Environments/Environment/Databases[@name]");
-                _servers = new Servers();
-                _servers2 = new Servers();
+                XmlNodeList curDatabase = doc.SelectNodes("Databases/Database[@name='" + lbl_DatabaseName.Text + "']");
+                //_servers = new Servers();
+                //_servers2 = new Servers();
                 var i = 1;
-                foreach (XmlNode xServer in server)
+                foreach (XmlNode tbl in curDatabase)
                 {
-                    var svr = new ServerX { Id = i, Name = xServer.Attributes["name"].Value, IP = xServer.Attributes["ip"].Value };
+                    //var svr = new ServerX { Id = i, Name = xServer.Attributes["name"].Value, IP = xServer.Attributes["ip"].Value };
+                    label1.Text += tbl.Attributes["name"].Value + "\n";
                     // this needs to read the instances on this server
-                    foreach (XmlNode xInstance in xServer.ChildNodes)
+                    foreach (XmlNode xEnv in tbl.ChildNodes)
                     {
-                        var inst = new Instance();
+                        label1.Text += "\t" + xEnv.Attributes["names"].Value + "\n";
+                        /*var inst = new Instance();
                         inst.xInstance = xInstance.Attributes["instance"].Value;
                         inst.Port = xInstance.Attributes["port"].Value;
                         inst.User = xInstance.Attributes["user"].Value;
                         inst.Password = xInstance.Attributes["password"].Value;
-                        inst.Backups = xInstance.Attributes["backups"].Value;
+                        inst.Backups = xInstance.Attributes["backups"].Value;*/
                         //svr.Instances.Add(xInstance);
                         //svr.Instances.Add(inst);
                         // read the envs for this server
-                        foreach (XmlNode xEnvironment in xInstance.ChildNodes)
+                        /*foreach (XmlNode xEnvironment in xInstance.ChildNodes)
                         {
                             var env = new Environments { Name = xEnvironment.InnerText, data = xEnvironment.Attributes["data"].Value, log = xEnvironment.Attributes["log"].Value };
                             //env.Name = xEnvironment.InnerText;
 
                             // svr.Instances.Environments.Add(xEnvironment.InnerText);
                             //inst.Environments.Add(xEnvironment.InnerText);
-                            inst.Environments.Add(env);
-                        }
+                           // inst.Environments.Add(env);
+                        }*/
 
-                        svr.Instances.Add(inst);
+                        //svr.Instances.Add(inst);
                     }
-                    _servers.Add(svr);
-                    _servers2.Add(svr);
+                    //_servers.Add(svr);
+                    //_servers2.Add(svr);
 
                     i++;
                 }
 
-                cBox_Server.DataSource = _servers;
-                cBox_DestServer.DataSource = _servers2;
+                //cBox_Server.DataSource = _servers;
+                //cBox_DestServer.DataSource = _servers2;
 
             }
         

@@ -158,7 +158,9 @@
     <Content Include="Resources\Images\Player Play.png" />
     <Content Include="Resources\Images\server.jpg" />
     <Content Include="Resources\Images\server_2.jpg" />
-    <Content Include="Scripts\DatabaseUpdateValues.xml" />
+    <Content Include="Scripts\DatabaseUpdateValues.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Scripts\KillAllConnectionsToDb.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
