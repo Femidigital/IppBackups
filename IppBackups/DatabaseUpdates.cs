@@ -43,7 +43,7 @@ namespace IppBackups
         public DatabaseUpdates(string curInstance, string database, string env)
         {
             InitializeComponent();
-            LoadValuesFromSettings();
+            LoadValuesFromSettings(database);
 
             getTables(curInstance, database);
 
@@ -444,57 +444,35 @@ namespace IppBackups
             return LastRowCompleted;
         }
 
-        public void LoadValuesFromSettings()
+        public void LoadValuesFromSettings(string cur_Database)
         {
+            int dashPos = cur_Database.IndexOf("-") + 1;
+            string _cur_Db = cur_Database.Substring(dashPos, cur_Database.Length - dashPos);
+                
+            //label1.Text = _cur_Db + "\n";
+            TreeNode childNode;
             
-                sXmlFile = ".\\Scripts\\DatabaseUpdateValues.xml";
+            sXmlFile = ".\\Scripts\\DatabaseUpdateValues.xml";
 
-                //sXmlFile = sSettingPath + ConfigFileName;
-                XmlDocument doc = new XmlDocument();
-                doc.Load(sXmlFile);
+            XmlDocument doc = new XmlDocument();
+            doc.Load(sXmlFile);
 
-                XmlNodeList curDatabase = doc.SelectNodes("Databases/Database[@name='" + lbl_DatabaseName.Text + "']");
-                //_servers = new Servers();
-                //_servers2 = new Servers();
+            XmlNodeList curDatabase = doc.SelectNodes("Databases/Database[@name='" + _cur_Db + "']/Tables/Table");
+
+            tViewScripts.Nodes.Clear();
+            tViewScripts.Nodes.Add(new TreeNode(_cur_Db));
+
+            TreeNode tNode = new TreeNode();
+            tNode = tViewScripts.Nodes[0];
+
                 var i = 1;
                 foreach (XmlNode tbl in curDatabase)
                 {
-                    //var svr = new ServerX { Id = i, Name = xServer.Attributes["name"].Value, IP = xServer.Attributes["ip"].Value };
-                    label1.Text += tbl.Attributes["name"].Value + "\n";
-                    // this needs to read the instances on this server
-                    foreach (XmlNode xEnv in tbl.ChildNodes)
-                    {
-                        label1.Text += "\t" + xEnv.Attributes["names"].Value + "\n";
-                        /*var inst = new Instance();
-                        inst.xInstance = xInstance.Attributes["instance"].Value;
-                        inst.Port = xInstance.Attributes["port"].Value;
-                        inst.User = xInstance.Attributes["user"].Value;
-                        inst.Password = xInstance.Attributes["password"].Value;
-                        inst.Backups = xInstance.Attributes["backups"].Value;*/
-                        //svr.Instances.Add(xInstance);
-                        //svr.Instances.Add(inst);
-                        // read the envs for this server
-                        /*foreach (XmlNode xEnvironment in xInstance.ChildNodes)
-                        {
-                            var env = new Environments { Name = xEnvironment.InnerText, data = xEnvironment.Attributes["data"].Value, log = xEnvironment.Attributes["log"].Value };
-                            //env.Name = xEnvironment.InnerText;
-
-                            // svr.Instances.Environments.Add(xEnvironment.InnerText);
-                            //inst.Environments.Add(xEnvironment.InnerText);
-                           // inst.Environments.Add(env);
-                        }*/
-
-                        //svr.Instances.Add(inst);
-                    }
-                    //_servers.Add(svr);
-                    //_servers2.Add(svr);
+                    //label1.Text += "\t" + tbl.Attributes["name"].Value + "\n";
+                    childNode = tViewScripts.Nodes.Add(tbl.Attributes["name"].Value);
 
                     i++;
                 }
-
-                //cBox_Server.DataSource = _servers;
-                //cBox_DestServer.DataSource = _servers2;
-
             }
         
             
