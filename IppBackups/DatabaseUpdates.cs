@@ -499,6 +499,7 @@ namespace IppBackups
                            inTreeNode.Nodes.Add(new TreeNode(tab.Attributes["name"].Value));
                            tNode = inTreeNode.Nodes[i];
                            AddNode(tab, tNode);
+                           i++;
                        }
                        else if (tab.Name == "Environment")
                        {
@@ -507,7 +508,7 @@ namespace IppBackups
                            AddNode(tab, tNode);
                        }
                    }
-                   i++;
+                   //i++;
                 }
             }
         }
