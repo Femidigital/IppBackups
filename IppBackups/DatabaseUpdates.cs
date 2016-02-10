@@ -20,7 +20,7 @@ namespace IppBackups
     {
         string cur_database = "";
         string script = "";
-        string useStmt = "USE [";
+        string useStmt = "USE ";
         string tbl = "";
         int max_row = 5;
         int min_rowCount = 2;
@@ -67,7 +67,7 @@ namespace IppBackups
             //script = useStmt + cur_database + "]\n";
             //rTxtBox_Script.Text += script;
             rTxtBox_Script.AppendText(useStmt, Color.Blue);
-            rTxtBox_Script.AppendText(" " + cur_database + "]\n", Color.Green);
+            rTxtBox_Script.AppendText("[" + cur_database + "]\n", Color.Green);
 
             logic.Add("AND");
             logic.Add("OR");
@@ -200,12 +200,16 @@ namespace IppBackups
             script = rTxtBox_Script.Text;
             int sqBracket = script.IndexOf("]") + 1;
             int sqrBracket = rTxtBox_Script.Text.IndexOf("]") + 1;
-            
+
 
             int scriptLength = script.Length;
             //script = script.Replace(script.Substring(sqBracket,scriptLength - sqBracket), "");
             rTxtBox_Script.Text = rTxtBox_Script.Text.Replace(script.Substring(sqBracket, scriptLength - sqBracket), " ");
             //rTxtBox_Script.Text = rTxtBox_Script.Text.Replace(rTxtBox_Script.Text.Substring(sqBracket, scriptLength - sqBracket), " ");
+
+            //rTxtBox_Script.SelectionStart = 0;
+            //rTxtBox_Script.SelectionLength = rTxtBox_Script.GetFirstCharIndexFromLine(2);
+            //rTxtBox_Script.SelectedText = "";
         }
 
         private void tlp_ScriptBuilder_MouseClick(object sender, MouseEventArgs e)
@@ -459,50 +463,55 @@ namespace IppBackups
             doc.Load(sXmlFile);
 
             XmlNodeList curDatabase = doc.SelectNodes("Databases/Database[@name='" + _cur_Db + "']/Tables/Table");
+            XmlNode startNode = doc.SelectSingleNode("Databases/Database[@name='" + _cur_Db + "']");
 
             tViewScripts.Nodes.Clear();
             tViewScripts.Nodes.Add(new TreeNode(_cur_Db));
+            //tViewScripts.Nodes.Add(new TreeNode(startNode));
 
             TreeNode tNode = new TreeNode();
             tNode = tViewScripts.Nodes[0];
 
-            AddNode(doc.SelectSingleNode("Databases/Database[@name='" + _cur_Db + "']"), tNode);
-
-                var i = 1;
-                foreach (XmlNode tbl in curDatabase)
-                {
-                    //label1.Text += "\t" + tbl.Attributes["name"].Value + "\n";
-                   // childNode = tViewScripts.Nodes.Add(tbl.Attributes["name"].Value);
-                    AddNode(tbl, tNode);
-
-                    i++;
-                }
-            }
+            if (startNode != null)
+                AddNode(startNode, tNode);
+        }
 
         private void AddNode(XmlNode inXmlNode, TreeNode inTreeNode)
         {
-            XmlNode xNode;
+            //XmlNode xNode;
             TreeNode tNode;
             XmlNodeList nodeList;
-            int i;
+            int i = 0;
 
             if (inXmlNode.HasChildNodes)
             {
                 nodeList = inXmlNode.ChildNodes;
-                for (i = 0; i <= inXmlNode.ChildNodes.Count - 1; i++)
+                //for (i = 0; i <= inXmlNode.ChildNodes.Count - 1; i++)
+                foreach (XmlNode xNode in inXmlNode.ChildNodes)
                 {
-                    xNode = inXmlNode.ChildNodes[i];
+                   // xNode = inXmlNode.ChildNodes[i];
+                    
 
-                    if (xNode.Name == "Database")
-                    inTreeNode.Nodes.Add(new TreeNode(xNode.Attributes["name"].Value));
-
-                    tNode = inTreeNode.Nodes[i];
-                    //tNode.ImageIndex = 1;
-                    //tNode.Tag = "Servers";
-                    AddNode(xNode, tNode);
+                   foreach(XmlNode tab in xNode.ChildNodes)
+                   {
+                       if (tab.Name == "Table")
+                       {
+                           inTreeNode.Nodes.Add(new TreeNode(tab.Attributes["name"].Value));
+                           tNode = inTreeNode.Nodes[i];
+                           AddNode(tab, tNode);
+                       }
+                       else if (tab.Name == "Environment")
+                       {
+                           inTreeNode.Nodes.Add(new TreeNode(tab.Attributes["name"].Value));
+                           tNode = inTreeNode.Nodes[i];
+                           AddNode(tab, tNode);
+                       }
+                   }
+                   i++;
                 }
             }
         }
+
         
             
     }
