@@ -199,12 +199,13 @@ namespace IppBackups
         {
             script = rTxtBox_Script.Text;
             int sqBracket = script.IndexOf("]") + 1;
+            int sqrBracket = rTxtBox_Script.Text.IndexOf("]") + 1;
             
 
             int scriptLength = script.Length;
             //script = script.Replace(script.Substring(sqBracket,scriptLength - sqBracket), "");
             rTxtBox_Script.Text = rTxtBox_Script.Text.Replace(script.Substring(sqBracket, scriptLength - sqBracket), " ");
-            //yourRichTextBox.Text = yourRichTextBox.Text.Replace("e","ea");
+            //rTxtBox_Script.Text = rTxtBox_Script.Text.Replace(rTxtBox_Script.Text.Substring(sqBracket, scriptLength - sqBracket), " ");
         }
 
         private void tlp_ScriptBuilder_MouseClick(object sender, MouseEventArgs e)
@@ -465,15 +466,43 @@ namespace IppBackups
             TreeNode tNode = new TreeNode();
             tNode = tViewScripts.Nodes[0];
 
+            AddNode(doc.SelectSingleNode("Databases/Database[@name='" + _cur_Db + "']"), tNode);
+
                 var i = 1;
                 foreach (XmlNode tbl in curDatabase)
                 {
                     //label1.Text += "\t" + tbl.Attributes["name"].Value + "\n";
-                    childNode = tViewScripts.Nodes.Add(tbl.Attributes["name"].Value);
+                   // childNode = tViewScripts.Nodes.Add(tbl.Attributes["name"].Value);
+                    AddNode(tbl, tNode);
 
                     i++;
                 }
             }
+
+        private void AddNode(XmlNode inXmlNode, TreeNode inTreeNode)
+        {
+            XmlNode xNode;
+            TreeNode tNode;
+            XmlNodeList nodeList;
+            int i;
+
+            if (inXmlNode.HasChildNodes)
+            {
+                nodeList = inXmlNode.ChildNodes;
+                for (i = 0; i <= inXmlNode.ChildNodes.Count - 1; i++)
+                {
+                    xNode = inXmlNode.ChildNodes[i];
+
+                    if (xNode.Name == "Database")
+                    inTreeNode.Nodes.Add(new TreeNode(xNode.Attributes["name"].Value));
+
+                    tNode = inTreeNode.Nodes[i];
+                    //tNode.ImageIndex = 1;
+                    //tNode.Tag = "Servers";
+                    AddNode(xNode, tNode);
+                }
+            }
+        }
         
             
     }
