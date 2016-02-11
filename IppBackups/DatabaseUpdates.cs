@@ -67,11 +67,13 @@ namespace IppBackups
             //script = useStmt + cur_database + "]\n";
             //rTxtBox_Script.Text += script;
             rTxtBox_Script.AppendText(useStmt, Color.Blue);
-            rTxtBox_Script.AppendText("[" + cur_database + "]\n", Color.Green);
+            rTxtBox_Script.AppendText("[" + cur_database + "]", Color.Green);
 
             logic.Add("AND");
             logic.Add("OR");
             logic.Add("WHERE");
+            logic.Add("WITH");
+
 
             operand.Add("=");
             operand.Add("<>");
@@ -138,14 +140,16 @@ namespace IppBackups
             ClearScriptBuilder();
             UpdateScriptWindow();
            // script += "\nUPDATE " + tbl + "\n";
+            //rTxtBox_Script.AppendText(useStmt, Color.Blue);
+            //rTxtBox_Script.AppendText("[" + cur_database + "]\n", Color.Green);
             rTxtBox_Script.AppendText("\nUPDATE ", Color.Blue);
-            rTxtBox_Script.AppendText(" " + tbl + "\n ", Color.Green);
+            rTxtBox_Script.AppendText(" " + tbl + "\n", Color.Green);
             for (int i = 0; i < (tlp_ScriptBuilder.RowCount - min_rowCount); i++ )
             {
                 if ( cBox_Logic[i].SelectedItem == null)
                 {
                     //script += "SET " + cBox_Field[i].SelectedItem + " " + cBox_Operand[i].SelectedItem + " " + txtBox_Value[i].Text;
-                    rTxtBox_Script.AppendText("SET ", Color.Blue);
+                    rTxtBox_Script.AppendText("\nSET ", Color.Blue);
                     rTxtBox_Script.AppendText("" + cBox_Field[i].SelectedItem + " ", Color.Green);
                     rTxtBox_Script.AppendText(" " + cBox_Operand[i].SelectedItem + "", Color.Green);
                     rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
@@ -175,8 +179,38 @@ namespace IppBackups
         {
             ClearScriptBuilder();
             UpdateScriptWindow();
-            script += "\nREPLACE ";
-            rTxtBox_Script.Text = script;
+
+            rTxtBox_Script.AppendText("Build script then click Generate after", Color.Black);
+
+            //rTxtBox_Script.AppendText("\nDECLARE ", Color.Blue);
+            //rTxtBox_Script.AppendText("@Current" + cBox_Field[0].SelectedItem, Color.Black);
+            //rTxtBox_Script.AppendText("DataType",Color.Black);
+            //rTxtBox_Script.AppendText("\nSET ", Color.Blue);
+            //rTxtBox_Script.AppendText("@Current" + cBox_Field[0].SelectedItem + " = (", Color.Black);
+            //rTxtBox_Script.AppendText(" SELECT ", Color.Black);
+            //rTxtBox_Script.AppendText("TOP ", Color.Orange);
+            //rTxtBox_Script.AppendText("" + cBox_Field[0].SelectedItem, Color.Black);
+            //rTxtBox_Script.AppendText(" FROM ", Color.Blue);
+            //rTxtBox_Script.AppendText("" + cBox_Tables.SelectedItem, Color.Blue);
+            //rTxtBox_Script.AppendText(" (NOLOCK)", Color.Black);
+            //rTxtBox_Script.AppendText("\n");
+            //rTxtBox_Script.AppendText("SELECT", Color.Blue);
+            //rTxtBox_Script.AppendText("@" + cBox_Field[0].SelectedItem + " =", Color.Black);
+            //rTxtBox_Script.AppendText(" SUBSTRING ", Color.Pink);
+            //rTxtBox_Script.AppendText("(@Current" + cBox_Field[0].SelectedItem + " ,", Color.Black);
+            //rTxtBox_Script.AppendText(" 0", Color.Orange);
+            //rTxtBox_Script.AppendText(" , PATINDEX(", Color.Pink);
+
+            //rTxtBox_Script.AppendText("'" + txtBox_Value[0].Text + "'", Color.Red);
+            //rTxtBox_Script.AppendText(" , @Current" + cBox_Field[0] + "))\n");
+            
+            //rTxtBox_Script.AppendText("\nUPDATE ", Color.Pink);
+            //rTxtBox_Script.AppendText(" " + tbl + "\n", Color.Black);
+            //rTxtBox_Script.AppendText("SET ", Color.Blue);
+            //rTxtBox_Script.AppendText("" + cBox_Field[0].SelectedItem + " = ", Color.Black);
+            //rTxtBox_Script.AppendText(" REPLACE", Color.Pink);
+            //rTxtBox_Script.AppendText("([" + cBox_Field[0].SelectedItem + "], @Current" + cBox_Field[0].SelectedItem + ",", Color.Black);
+            //rTxtBox_Script.AppendText("'" + txtBox_Value[1].Text + "'", Color.Red);
         }
 
         private void rBtn_Insert_CheckedChanged(object sender, EventArgs e)
@@ -193,7 +227,7 @@ namespace IppBackups
             UpdateScriptWindow();
             //script += "\nDELETE FROM " + tbl + "\n"; ;
             rTxtBox_Script.AppendText("\nDELETE", Color.Blue);
-            rTxtBox_Script.AppendText(" " + tbl + "\n", Color.Green);
+            rTxtBox_Script.AppendText(" " + tbl + "", Color.Green);
             //rTxtBox_Script.Text = script;
         }
 
@@ -209,15 +243,41 @@ namespace IppBackups
             //rTxtBox_Script.Text = rTxtBox_Script.Text.Replace(script.Substring(sqBracket, scriptLength - sqBracket), " ");
             ////rTxtBox_Script.Text = rTxtBox_Script.Text.Replace(rTxtBox_Script.Text.Substring(sqBracket, scriptLength - sqBracket), " ");
 
-            if (rTxtBox_Script.Lines.Count() > 1)
+            /*if (rTxtBox_Script.Lines.Count() > 1)
             {
-                rTxtBox_Script.SelectionStart = 0;
+                rTxtBox_Script.SelectionStart = 1;
                 if (rTxtBox_Script.GetFirstCharIndexFromLine(2) > -1)
                 {
-                    rTxtBox_Script.SelectionLength = rTxtBox_Script.GetFirstCharIndexFromLine(2);
+                    rTxtBox_Script.SelectionLength = rTxtBox_Script.GetFirstCharIndexFromLine(rTxtBox_Script.Lines.Count());
                     rTxtBox_Script.SelectedText = "";
                 }
+            }*/
+
+            var text = "";  // Holds the text of current line being looped.
+            var startindex = 0; // The position where selection starts.
+            var endindex = 0;   // The lenght of selection.
+
+            for (int i = 0; i < rTxtBox_Script.Lines.Length; i++)   //Loops through each line of text in RichTextBox
+            {
+                if (i > 0)
+                {
+                    text = rTxtBox_Script.Lines[i]; //Stores current line of text.
+                    if (text.Length > 0)
+                    {
+                        startindex = rTxtBox_Script.GetFirstCharIndexFromLine(i);   //If match is found the index of first char of that line is stored in startindex.
+                        endindex = text.Length; // Gets the length of line till semicolon and stores it in endindex.
+                        rTxtBox_Script.Select(startindex, endindex);    //Selects the text.
+                        rTxtBox_Script.Text = rTxtBox_Script.Text.Replace(rTxtBox_Script.SelectedText, string.Empty);   //Replaces the text with empty string.
+                    }
+                    //else
+                    //{
+                    //   // rTxtBox_Script.
+                    //}
+                }
             }
+            rTxtBox_Script.Text = "";
+            rTxtBox_Script.AppendText(useStmt, Color.Blue);
+            rTxtBox_Script.AppendText("[" + cur_database + "]\n", Color.Green);
         }
        
         private void tlp_ScriptBuilder_MouseClick(object sender, MouseEventArgs e)
@@ -518,6 +578,44 @@ namespace IppBackups
                    }
                    //i++;
                 }
+            }
+        }
+
+        private void btn_Generate_Click(object sender, EventArgs e)
+        {
+            UpdateScriptWindow();
+
+            if( rBtn_Replace.Checked)
+            {
+                rTxtBox_Script.AppendText("\nDECLARE ", Color.Blue);
+                rTxtBox_Script.AppendText("@Current" + cBox_Field[0].SelectedItem, Color.Black);
+                rTxtBox_Script.AppendText("DataType", Color.Black);
+                rTxtBox_Script.AppendText("\nSET ", Color.Blue);
+                rTxtBox_Script.AppendText("@Current" + cBox_Field[0].SelectedItem + " = (", Color.Black);
+                rTxtBox_Script.AppendText(" SELECT ", Color.Black);
+                rTxtBox_Script.AppendText("TOP ", Color.Orange);
+                rTxtBox_Script.AppendText("" + cBox_Field[0].SelectedItem, Color.Black);
+                rTxtBox_Script.AppendText(" FROM ", Color.Blue);
+                rTxtBox_Script.AppendText("" + cBox_Tables.SelectedItem, Color.Blue);
+                rTxtBox_Script.AppendText(" (NOLOCK)", Color.Black);
+                rTxtBox_Script.AppendText("\n");
+                rTxtBox_Script.AppendText("SELECT", Color.Blue);
+                rTxtBox_Script.AppendText("@" + cBox_Field[0].SelectedItem + " =", Color.Black);
+                rTxtBox_Script.AppendText(" SUBSTRING ", Color.Pink);
+                rTxtBox_Script.AppendText("(@Current" + cBox_Field[0].SelectedItem + " ,", Color.Black);
+                rTxtBox_Script.AppendText(" 0", Color.Orange);
+                rTxtBox_Script.AppendText(" , PATINDEX(", Color.Pink);
+
+                rTxtBox_Script.AppendText("'" + txtBox_Value[0].Text + "'", Color.Red);
+                rTxtBox_Script.AppendText(" , @Current" + cBox_Field[0] + "))\n");
+
+                rTxtBox_Script.AppendText("\nUPDATE ", Color.Pink);
+                rTxtBox_Script.AppendText(" " + tbl + "\n", Color.Black);
+                rTxtBox_Script.AppendText("SET ", Color.Blue);
+                rTxtBox_Script.AppendText("" + cBox_Field[0].SelectedItem + " = ", Color.Black);
+                rTxtBox_Script.AppendText(" REPLACE", Color.Pink);
+                rTxtBox_Script.AppendText("([" + cBox_Field[0].SelectedItem + "], @Current" + cBox_Field[0].SelectedItem + ",", Color.Black);
+                rTxtBox_Script.AppendText("'" + txtBox_Value[1].Text + "'", Color.Red);
             }
         }
 
