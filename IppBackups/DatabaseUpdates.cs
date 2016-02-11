@@ -191,27 +191,35 @@ namespace IppBackups
         {
             ClearScriptBuilder();
             UpdateScriptWindow();
-            script += "\nDELETE FROM " + tbl + "\n"; ;
-            rTxtBox_Script.Text = script;
+            //script += "\nDELETE FROM " + tbl + "\n"; ;
+            rTxtBox_Script.AppendText("\nDELETE", Color.Blue);
+            rTxtBox_Script.AppendText(" " + tbl + "\n", Color.Green);
+            //rTxtBox_Script.Text = script;
         }
 
         private void UpdateScriptWindow()
         {
-            script = rTxtBox_Script.Text;
-            int sqBracket = script.IndexOf("]") + 1;
-            int sqrBracket = rTxtBox_Script.Text.IndexOf("]") + 1;
+            //script = rTxtBox_Script.Text;
+            //int sqBracket = script.IndexOf("]") + 1;
+            //int sqrBracket = rTxtBox_Script.Text.IndexOf("]") + 1;
 
 
-            int scriptLength = script.Length;
-            //script = script.Replace(script.Substring(sqBracket,scriptLength - sqBracket), "");
-            rTxtBox_Script.Text = rTxtBox_Script.Text.Replace(script.Substring(sqBracket, scriptLength - sqBracket), " ");
-            //rTxtBox_Script.Text = rTxtBox_Script.Text.Replace(rTxtBox_Script.Text.Substring(sqBracket, scriptLength - sqBracket), " ");
+            //int scriptLength = script.Length;
+            ////script = script.Replace(script.Substring(sqBracket,scriptLength - sqBracket), "");
+            //rTxtBox_Script.Text = rTxtBox_Script.Text.Replace(script.Substring(sqBracket, scriptLength - sqBracket), " ");
+            ////rTxtBox_Script.Text = rTxtBox_Script.Text.Replace(rTxtBox_Script.Text.Substring(sqBracket, scriptLength - sqBracket), " ");
 
-            //rTxtBox_Script.SelectionStart = 0;
-            //rTxtBox_Script.SelectionLength = rTxtBox_Script.GetFirstCharIndexFromLine(2);
-            //rTxtBox_Script.SelectedText = "";
+            if (rTxtBox_Script.Lines.Count() > 1)
+            {
+                rTxtBox_Script.SelectionStart = 0;
+                if (rTxtBox_Script.GetFirstCharIndexFromLine(2) > -1)
+                {
+                    rTxtBox_Script.SelectionLength = rTxtBox_Script.GetFirstCharIndexFromLine(2);
+                    rTxtBox_Script.SelectedText = "";
+                }
+            }
         }
-
+       
         private void tlp_ScriptBuilder_MouseClick(object sender, MouseEventArgs e)
         {
             int row = 0;

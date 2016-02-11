@@ -190,7 +190,7 @@
               </FilterToken>
             </Tokens>
           </Environment>
-          <Environment name="TEST">
+			<Environment name="TEST">
             <Tokens>
               <ReplaceToken type="ColumnToken">
                 <Token columnName="UserName" value="test-cloudadmin"></Token>
