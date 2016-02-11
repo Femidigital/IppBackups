@@ -84,14 +84,14 @@
         <Environments>
           <Environment name="PROD">
             <Tokens>
-              <ReplaceToken type="ColumnToken">
+              <ReplaceToken name="admin" type="ColumnToken">
                 <Token columnName="UserName" value="prod-cloudadmin"></Token>
                 <Token columnName="Password" value="Password1"></Token>
               </ReplaceToken>
               <FilterToken type="FilterToken">
                 <Token columnName="Name" value="admin"></Token>
               </FilterToken>
-              <ReplaceToken type="ColumnToken">
+              <ReplaceToken name="Dar" type="ColumnToken">
                 <Token columnName="UserName" value="363a5e31aa0f4d7894e95d95df875137"></Token>
                 <Token columnName="Password" value="363a5e31aa0f4d7894e95d95df875137"></Token>
               </ReplaceToken>
@@ -102,14 +102,14 @@
           </Environment>
           <Environment name="PPD">
             <Tokens>
-              <ReplaceToken type="ColumnToken">
+              <ReplaceToken name="admin" type="ColumnToken">
                 <Token columnName="UserName" value="ppd-cloudadmin"></Token>
                 <Token columnName="Password" value="Password1"></Token>
               </ReplaceToken>
               <FilterToken type="FilterToken">
                 <Token columnName="Name" value="admin"></Token>
               </FilterToken>
-              <ReplaceToken type="ColumnToken">
+              <ReplaceToken name="Dar" type="ColumnToken">
                 <Token columnName="UserName" value="363a5e31aa0f4d7894e95d95df875137"></Token>
                 <Token columnName="Password" value="363a5e31aa0f4d7894e95d95df875137"></Token>
               </ReplaceToken>
