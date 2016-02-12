@@ -39,6 +39,7 @@ namespace IppBackups
         Label lastRowMark = new Label() { Text = "*" };
         string sXmlFile = "";
         bool afterWhile = false;
+        XmlNode startNode;
         
 
         public DatabaseUpdates(string curInstance, string database, string env)
@@ -49,6 +50,9 @@ namespace IppBackups
             getTables(curInstance, database);
 
             lbl_DatabaseName.Text = database;
+
+            tViewScripts.NodeMouseClick += 
+                new TreeNodeMouseClickEventHandler(tViewScripts_NodeMouseClick);
 
             tlp_ScriptBuilder.AutoSize = true;
             tlp_ScriptBuilder.CellBorderStyle = TableLayoutPanelCellBorderStyle.Single;
@@ -556,7 +560,8 @@ namespace IppBackups
             doc.Load(sXmlFile);
 
             XmlNodeList curDatabase = doc.SelectNodes("Databases/Database[@name='" + _cur_Db + "']/Tables/Table");
-            XmlNode startNode = doc.SelectSingleNode("Databases/Database[@name='" + _cur_Db + "']");
+            //XmlNode startNode = doc.SelectSingleNode("Databases/Database[@name='" + _cur_Db + "']");
+            startNode = doc.SelectSingleNode("Databases/Database[@name='" + _cur_Db + "']");
 
             tViewScripts.Nodes.Clear();
             tViewScripts.Nodes.Add(new TreeNode(_cur_Db));
@@ -575,6 +580,7 @@ namespace IppBackups
             TreeNode tNode;
             XmlNodeList nodeList;
             int i = 0;
+            int j = 0;
 
             if (inXmlNode.HasChildNodes)
             {
@@ -587,21 +593,31 @@ namespace IppBackups
 
                    foreach(XmlNode tab in xNode.ChildNodes)
                    {
-                       if (tab.Name == "Table")
-                       {
-                           inTreeNode.Nodes.Add(new TreeNode(tab.Attributes["name"].Value));
-                           tNode = inTreeNode.Nodes[i];
-                           AddNode(tab, tNode);
-                           i++;
-                       }
-                       else if (tab.Name == "Environment")
-                       {
-                           inTreeNode.Nodes.Add(new TreeNode(tab.Attributes["name"].Value));
-                           tNode = inTreeNode.Nodes[i];
-                           AddNode(tab, tNode);
-                       }
+                       //foreach (XmlNode col in tab.ChildNodes)
+                       //{
+                           if (tab.Name == "Table")
+                           {
+                               inTreeNode.Nodes.Add(new TreeNode(tab.Attributes["name"].Value));
+                               tNode = inTreeNode.Nodes[i];
+                               AddNode(tab, tNode);
+                               i++;
+                           }
+                           else if (tab.Name == "Environment")
+                           {
+                               inTreeNode.Nodes.Add(new TreeNode(tab.Attributes["name"].Value));
+                               tNode = inTreeNode.Nodes[i];
+                               AddNode(tab, tNode);
+                               i++;
+
+                           }
+                           else if (tab.Name == "ReplaceToken")
+                           {
+                               inTreeNode.Nodes.Add(new TreeNode(tab.Attributes["name"].Value));
+                               tNode = inTreeNode.Nodes[i];
+                               AddNode(tab, tNode);
+                           }
+                       //}
                    }
-                   //i++;
                 }
             }
         }
@@ -641,6 +657,27 @@ namespace IppBackups
                 rTxtBox_Script.AppendText(" REPLACE", Color.Pink);
                 rTxtBox_Script.AppendText("([" + cBox_Field[0].SelectedItem + "], @Current" + cBox_Field[0].SelectedItem + ",", Color.Black);
                 rTxtBox_Script.AppendText("'" + txtBox_Value[1].Text + "'", Color.Red);
+            }
+        }
+
+        void tViewScripts_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            //XmlNode startNode = doc.SelectSingleNode("Databases/Database[@name='" + _cur_Db + "']");
+            XmlNodeList nNode;
+
+            if (e.Node.Parent != null)
+            {
+                if (e.Node.Parent.Text == "PROD")
+                {
+                    rTxtBox_Script.AppendText("\nClicked:" + e.Node.Text);
+                    nNode = startNode.SelectNodes("Tables/Table/Environments/Environment[@name='" + e.Node.Parent.Text + "']/Tokens/ReplaceToken[@name='" + e.Node.Text + "']");
+
+                    foreach (XmlNode xn in nNode)
+                    {
+                        rTxtBox_Script.AppendText("/n" + xn["ReplaceToken"].Attributes["name"].Value, Color.Black);
+                    }
+
+                }
             }
         }
 

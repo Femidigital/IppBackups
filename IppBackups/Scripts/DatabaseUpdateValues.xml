@@ -6,8 +6,8 @@
       <Environments>
         <Environment name="PROD">
           <Tokens>
-            <ReplaceToken type="ColumnToken">
-              <Token columnName="" value="https://identity.bsigroup.com"></Token>
+            <ReplaceToken name="Identity" type="ColumnToken">
+              <Token columnName="ClaimIdentifier" value="https://identity.bsigroup.com"></Token>
             </ReplaceToken>
             <FilterToken type="FilterToken">
               <Token columnName="" value=""></Token>
@@ -16,8 +16,8 @@
         </Environment>
         <Environment name="PPD">
           <Tokens>
-            <ReplaceToken type="ColumnToken">
-              <Token columnName="" value="https://identityppd.bsigroup.com"></Token>
+            <ReplaceToken name="Identity" type="ColumnToken">
+              <Token columnName="ClaimIdentifier" value="https://identityppd.bsigroup.com"></Token>
             </ReplaceToken>
             <FilterToken type="FilterToken">
               <Token columnName="" value=""></Token>
@@ -26,8 +26,8 @@
         </Environment>
         <Environment name="UAT">
           <Tokens>
-            <ReplaceToken type="ColumnToken">
-              <Token columnName="" value="https://identity.bsiuat.com"></Token>
+            <ReplaceToken name="Identity" type="ColumnToken">
+              <Token columnName="ClaimIdentifier" value="https://identity.bsiuat.com"></Token>
             </ReplaceToken>
             <FilterToken type="FilterToken">
               <Token columnName="" value=""></Token>
@@ -36,8 +36,8 @@
         </Environment>
         <Environment name="QA">
           <Tokens>
-            <ReplaceToken type="ColumnToken">
-              <Token columnName="" value="https://identityqa.bsiuat.com"></Token>
+            <ReplaceToken name="Identity" type="ColumnToken">
+              <Token columnName="ClaimIdentifier" value="https://identityqa.bsiuat.com"></Token>
             </ReplaceToken>
             <FilterToken type="FilterToken">
               <Token columnName="" value=""></Token>
@@ -46,8 +46,8 @@
         </Environment>
         <Environment name="CI">
           <Tokens>
-            <ReplaceToken type="ColumnToken">
-              <Token columnName="" value="https://identityci.bsiuat.com"></Token>
+            <ReplaceToken name="Identity" type="ColumnToken">
+              <Token columnName="ClaimIdentifier" value="https://identityci.bsiuat.com"></Token>
             </ReplaceToken>
             <FilterToken type="FilterToken">
               <Token columnName="" value=""></Token>
@@ -56,8 +56,8 @@
         </Environment>
         <Environment name="DEV">
           <Tokens>
-            <ReplaceToken type="ColumnToken">
-              <Token columnName="" value="https://identitydev.bsiuat.com"></Token>
+            <ReplaceToken name="Identity" type="ColumnToken">
+              <Token columnName="ClaimIdentifier" value="https://identitydev.bsiuat.com"></Token>
             </ReplaceToken>
             <FilterToken type="FilterToken">
               <Token columnName="" value=""></Token>
@@ -66,8 +66,8 @@
         </Environment>
         <Environment name="TEST">
           <Tokens>
-            <ReplaceToken type="ColumnToken">
-              <Token columnName="" value="https://identitytest.bsiuat.com"></Token>
+            <ReplaceToken name="Identity" type="ColumnToken">
+              <Token columnName="ClaimIdentifier" value="https://identitytest.bsiuat.com"></Token>
             </ReplaceToken>
             <FilterToken type="FilterToken">
               <Token columnName="" value=""></Token>
@@ -120,14 +120,14 @@
           </Environment>
           <Environment name="UAT">
             <Tokens>
-              <ReplaceToken type="ColumnToken">
+              <ReplaceToken name="admin" type="ColumnToken">
                 <Token columnName="UserName" value="uat-cloudadmin"></Token>
                 <Token columnName="Password" value="Password1"></Token>
               </ReplaceToken>
               <FilterToken type="FilterToken">
                 <Token columnName="Name" value="admin"></Token>
               </FilterToken>
-              <ReplaceToken type="ColumnToken">
+              <ReplaceToken name="Dar"  type="ColumnToken">
                 <Token columnName="UserName" value="363a5e31aa0f4d7894e95d95df875137"></Token>
                 <Token columnName="Password" value="363a5e31aa0f4d7894e95d95df875137"></Token>
               </ReplaceToken>
@@ -138,14 +138,14 @@
           </Environment>
           <Environment name="QA">
             <Tokens>
-              <ReplaceToken type="ColumnToken">
+              <ReplaceToken name="admin" type="ColumnToken">
                 <Token columnName="UserName" value="qa-cloudadmin"></Token>
                 <Token columnName="Password" value="Password1"></Token>
               </ReplaceToken>
               <FilterToken type="FilterToken">
                 <Token columnName="Name" value="admin"></Token>
               </FilterToken>
-              <ReplaceToken type="ColumnToken">
+              <ReplaceToken name="Dar"  type="ColumnToken">
                 <Token columnName="UserName" value="363a5e31aa0f4d7894e95d95df875137"></Token>
                 <Token columnName="Password" value="363a5e31aa0f4d7894e95d95df875137"></Token>
               </ReplaceToken>
@@ -156,14 +156,14 @@
           </Environment>
           <Environment name="CI">
             <Tokens>
-              <ReplaceToken type="ColumnToken">
+              <ReplaceToken name="admin" type="ColumnToken">
                 <Token columnName="UserName" value="ci-cloudadmin"></Token>
                 <Token columnName="Password" value="Password1"></Token>
               </ReplaceToken>
               <FilterToken type="FilterToken">
                 <Token columnName="Name" value="admin"></Token>
               </FilterToken>
-              <ReplaceToken type="ColumnToken">
+              <ReplaceToken name="Dar"  type="ColumnToken">
                 <Token columnName="UserName" value="363a5e31aa0f4d7894e95d95df875137"></Token>
                 <Token columnName="Password" value="363a5e31aa0f4d7894e95d95df875137"></Token>
               </ReplaceToken>
@@ -174,14 +174,14 @@
           </Environment>
           <Environment name="DEV">
             <Tokens>
-              <ReplaceToken type="ColumnToken">
+              <ReplaceToken name="admin" type="ColumnToken">
                 <Token columnName="UserName" value="dev-cloudadmin"></Token>
                 <Token columnName="Password" value="Password1"></Token>
               </ReplaceToken>
               <FilterToken type="FilterToken">
                 <Token columnName="Name" value="admin"></Token>
               </FilterToken>
-              <ReplaceToken type="ColumnToken">
+              <ReplaceToken name="Dar"  type="ColumnToken">
                 <Token columnName="UserName" value="363a5e31aa0f4d7894e95d95df875137"></Token>
                 <Token columnName="Password" value="363a5e31aa0f4d7894e95d95df875137"></Token>
               </ReplaceToken>
@@ -190,16 +190,16 @@
               </FilterToken>
             </Tokens>
           </Environment>
-			<Environment name="TEST">
+			    <Environment name="TEST">
             <Tokens>
-              <ReplaceToken type="ColumnToken">
+              <ReplaceToken name="admin" type="ColumnToken">
                 <Token columnName="UserName" value="test-cloudadmin"></Token>
                 <Token columnName="Password" value="Password1"></Token>
               </ReplaceToken>
               <FilterToken type="FilterToken">
                 <Token columnName="Name" value="admin"></Token>
               </FilterToken>
-              <ReplaceToken type="ColumnToken">
+              <ReplaceToken name="Dar"  type="ColumnToken">
                 <Token columnName="UserName" value="363a5e31aa0f4d7894e95d95df875137"></Token>
                 <Token columnName="Password" value="363a5e31aa0f4d7894e95d95df875137"></Token>
               </ReplaceToken>
@@ -214,13 +214,13 @@
         <Environments>
           <Environment name="PROD">
             <Tokens>
-              <ReplaceToken type="ColumnToken">
+              <ReplaceToken name="Dar"  type="ColumnToken">
                 <Token columnName="Name" value="DAR"></Token>
               </ReplaceToken>
               <FilterToken type="FilterToken">
                 <Token columnName="id" value="3"></Token>
               </FilterToken>
-              <ReplaceToken type="ColumnToken">
+              <ReplaceToken name="Eurocodes" type="ColumnToken">
                 <Token columnName="Name" value="Eurocodes"></Token>
               </ReplaceToken>
               <FilterToken type="FilterToken">
@@ -230,13 +230,13 @@
           </Environment>
           <Environment name="PPD">
             <Tokens>
-              <ReplaceToken type="ColumnToken">
+              <ReplaceToken name="Dar"  type="ColumnToken">
                 <Token columnName="Name" value="DAR"></Token>
               </ReplaceToken>
               <FilterToken type="FilterToken">
                 <Token columnName="id" value="3"></Token>
               </FilterToken>
-              <ReplaceToken type="ColumnToken">
+              <ReplaceToken name="Eurocodes" type="ColumnToken">
                 <Token columnName="Name" value="Eurocodes"></Token>
               </ReplaceToken>
               <FilterToken type="FilterToken">
@@ -246,13 +246,13 @@
           </Environment>
           <Environment name="UAT">
             <Tokens>
-              <ReplaceToken type="ColumnToken">
+              <ReplaceToken name="Dar"  type="ColumnToken">
                 <Token columnName="Name" value="DAR"></Token>
               </ReplaceToken>
               <FilterToken type="FilterToken">
                 <Token columnName="id" value="3"></Token>
               </FilterToken>
-              <ReplaceToken type="ColumnToken">
+              <ReplaceToken name="Eurocodes" type="ColumnToken">
                 <Token columnName="Name" value="Eurocodes"></Token>
               </ReplaceToken>
               <FilterToken type="FilterToken">
@@ -262,13 +262,13 @@
           </Environment>
           <Environment name="QA">
             <Tokens>
-              <ReplaceToken type="ColumnToken">
+              <ReplaceToken name="Dar"  type="ColumnToken">
                 <Token columnName="Name" value="DAR"></Token>
               </ReplaceToken>
               <FilterToken type="FilterToken">
                 <Token columnName="id" value="3"></Token>
               </FilterToken>
-              <ReplaceToken type="ColumnToken">
+              <ReplaceToken name="Eurocodes" type="ColumnToken">
                 <Token columnName="Name" value="Eurocodes"></Token>
               </ReplaceToken>
               <FilterToken type="FilterToken">
@@ -278,13 +278,13 @@
           </Environment>
           <Environment name="CI">
             <Tokens>
-              <ReplaceToken type="ColumnToken">
+              <ReplaceToken name="Dar"  type="ColumnToken">
                 <Token columnName="Name" value="DAR"></Token>
               </ReplaceToken>
               <FilterToken type="FilterToken">
                 <Token columnName="id" value="3"></Token>
               </FilterToken>
-              <ReplaceToken type="ColumnToken">
+              <ReplaceToken name="Eurocodes"  type="ColumnToken">
                 <Token columnName="Name" value="Eurocodes"></Token>
               </ReplaceToken>
               <FilterToken type="FilterToken">
@@ -293,17 +293,30 @@
             </Tokens>
           </Environment>
           <Environment name="DEV">
-            
-          </Environment>
-          <Environment name="TEST">
             <Tokens>
-              <ReplaceToken type="ColumnToken">
+              <ReplaceToken name="Dar"  type="ColumnToken">
                 <Token columnName="Name" value="DAR"></Token>
               </ReplaceToken>
               <FilterToken type="FilterToken">
                 <Token columnName="id" value="3"></Token>
               </FilterToken>
-              <ReplaceToken type="ColumnToken">
+              <ReplaceToken name="Eurocodes"  type="ColumnToken">
+                <Token columnName="Name" value="Eurocodes"></Token>
+              </ReplaceToken>
+              <FilterToken type="FilterToken">
+                <Token columnName="id" value="10"></Token>
+              </FilterToken>
+            </Tokens>
+          </Environment>
+          <Environment name="TEST">
+            <Tokens>
+              <ReplaceToken name="Dar"  type="ColumnToken">
+                <Token columnName="Name" value="DAR"></Token>
+              </ReplaceToken>
+              <FilterToken type="FilterToken">
+                <Token columnName="id" value="3"></Token>
+              </FilterToken>
+              <ReplaceToken name="Eurocodes"  type="ColumnToken">
                 <Token columnName="Name" value="Eurocodes"></Token>
               </ReplaceToken>
               <FilterToken type="FilterToken">
