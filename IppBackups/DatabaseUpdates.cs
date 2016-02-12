@@ -164,11 +164,14 @@ namespace IppBackups
                 }
                 else if (cBox_Logic[i].SelectedItem == "WHERE")
                 {
-                    //script += "\nWHERE " + cBox_Field[i].SelectedItem + " " + cBox_Operand[i].SelectedItem + " " + txtBox_Value[i].Text;
-                    rTxtBox_Script.AppendText("\nWHERE ", Color.Blue);
-                    rTxtBox_Script.AppendText("" + cBox_Field[i].SelectedItem + " ", Color.Green);
-                    rTxtBox_Script.AppendText(" " + cBox_Operand[i].SelectedItem + "", Color.Green);
-                    rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
+                    if (CheckSQL_Syntax())
+                    {
+                        //script += "\nWHERE " + cBox_Field[i].SelectedItem + " " + cBox_Operand[i].SelectedItem + " " + txtBox_Value[i].Text;
+                        rTxtBox_Script.AppendText("\nWHERE ", Color.Blue);
+                        rTxtBox_Script.AppendText("" + cBox_Field[i].SelectedItem + " ", Color.Green);
+                        rTxtBox_Script.AppendText(" " + cBox_Operand[i].SelectedItem + "", Color.Green);
+                        rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
+                    }
                 }
             }
 
@@ -351,6 +354,20 @@ namespace IppBackups
 
         }
 
+        private bool CheckSQL_Syntax()
+        {
+            bool goodToGo = true;
+
+            int cur_Row = tlp_ScriptBuilder.RowCount - min_rowCount;
+
+            for (int i = 0; i < cur_Row; i++)
+            {
+                if (cBox_Logic[i].SelectedItem == "WHERE")
+                    goodToGo = false;
+            }
+            return goodToGo;
+        }
+
         private void ScriptContent()
         {
             int i = tlp_ScriptBuilder.RowCount - (min_rowCount + 1);
@@ -375,11 +392,14 @@ namespace IppBackups
                 }
                 else if (cBox_Logic[i].SelectedItem == "WHERE")
                 {
-                    //script += "\nWHERE " + cBox_Field[i].SelectedItem + " " + cBox_Operand[i].SelectedItem + " " + txtBox_Value[i].Text;
-                    rTxtBox_Script.AppendText("\nWHERE ", Color.Blue);
-                    rTxtBox_Script.AppendText("" + cBox_Field[i].SelectedItem + " ", Color.Green);
-                    rTxtBox_Script.AppendText(" " + cBox_Operand[i].SelectedItem + "", Color.Green);
-                    rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
+                    if (CheckSQL_Syntax())
+                    {
+                        //script += "\nWHERE " + cBox_Field[i].SelectedItem + " " + cBox_Operand[i].SelectedItem + " " + txtBox_Value[i].Text;
+                        rTxtBox_Script.AppendText("\nWHERE ", Color.Blue);
+                        rTxtBox_Script.AppendText("" + cBox_Field[i].SelectedItem + " ", Color.Green);
+                        rTxtBox_Script.AppendText(" " + cBox_Operand[i].SelectedItem + "", Color.Green);
+                        rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
+                    }
                 }
             }
             else if (rBtn_Delete.Checked)
