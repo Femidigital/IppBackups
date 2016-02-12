@@ -38,6 +38,7 @@ namespace IppBackups
         TextBox[] txtBox_Value = new TextBox[5];
         Label lastRowMark = new Label() { Text = "*" };
         string sXmlFile = "";
+        bool afterWhile = false;
         
 
         public DatabaseUpdates(string curInstance, string database, string env)
@@ -289,7 +290,7 @@ namespace IppBackups
             int verticalOffset = 0;
             int y = tlp_ScriptBuilder.RowCount;
 
-            if (CanAddNewRow())
+            if (CanAddNewRow() && CheckSQL_Syntax())
             {
                 if (y >= min_rowCount)
                 {
@@ -329,41 +330,31 @@ namespace IppBackups
                     }
                 }
             }
-
-            //int i = y - min_rowCount;
-
-            //if (i < max_row)
-            //{
-            //    tlp_ScriptBuilder.RowCount++;
-            //    tlp_ScriptBuilder.RowStyles.Insert(tlp_ScriptBuilder.RowCount - 2, new RowStyle(SizeType.AutoSize));
-
-            //    tlp_ScriptBuilder.Controls.Add(rowLabel[i], 0, y - 1);
-            //    rowLabel[i].Text = i.ToString();
-            //    if (y > min_rowCount || rBtn_Delete.Checked)
-            //        tlp_ScriptBuilder.Controls.Add(cBox_Logic[i], 1, y - 1);
-            //    tlp_ScriptBuilder.Controls.Add(cBox_Field[i], 2, y - 1);
-            //    tlp_ScriptBuilder.Controls.Add(cBox_Operand[i], 3, y - 1);
-                
-            //    tlp_ScriptBuilder.Controls.Add(txtBox_Value[i], 4, y - 1);
-            //    TableLayoutPanelCellPosition pos = tlp_ScriptBuilder.GetCellPosition(txtBox_Value[i]);
-            //    txtBox_Value[i].Width = tlp_ScriptBuilder.GetColumnWidths()[pos.Column];
-
-            //    tlp_ScriptBuilder.Controls.Add(lastRowMark, 0, y);
-                
-            //}
+            else
+            {
+                MessageBox.Show("SQL Syntax error");
+            }
 
         }
 
         private bool CheckSQL_Syntax()
         {
+            int count = 0;
             bool goodToGo = true;
 
             int cur_Row = tlp_ScriptBuilder.RowCount - min_rowCount;
 
-            for (int i = 0; i < cur_Row; i++)
+            for (int i = 0; i <= cur_Row - 1; i++)
             {
                 if (cBox_Logic[i].SelectedItem == "WHERE")
-                    goodToGo = false;
+                {
+                    count++;
+                    afterWhile = true;
+                    if (i == cur_Row - 1  && count > 1)
+                    {
+                        goodToGo = false;
+                    }
+                }
             }
             return goodToGo;
         }
@@ -379,15 +370,21 @@ namespace IppBackups
                    // script += "SET " + cBox_Field[i].SelectedItem + " " + cBox_Operand[i].SelectedItem + " " + txtBox_Value[i].Text;
                     rTxtBox_Script.AppendText("SET ", Color.Blue);
                     rTxtBox_Script.AppendText("" + cBox_Field[i].SelectedItem + " ", Color.Green);
-                    rTxtBox_Script.AppendText(" " + cBox_Operand[i].SelectedItem + "", Color.Green);
+                    rTxtBox_Script.AppendText(" " + cBox_Operand[i].SelectedItem + " ", Color.Green);
                     rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
                 }
                 else if (cBox_Logic[i].SelectedItem != null && cBox_Logic[i].SelectedItem != "WHERE")
                 {
-                    //script += " , " + cBox_Field[i].SelectedItem + " " + cBox_Operand[i].SelectedItem + " " + txtBox_Value[i].Text;
-                    rTxtBox_Script.AppendText(", ", Color.Green);
+                    if (CheckSQL_Syntax() && afterWhile == false)
+                    {
+                        rTxtBox_Script.AppendText(", ", Color.Green);
+                    }
+                    else
+                    {
+                        rTxtBox_Script.AppendText("" + cBox_Logic[i].SelectedItem + " ", Color.Green);
+                    }
                     rTxtBox_Script.AppendText("" + cBox_Field[i].SelectedItem + " ", Color.Green);
-                    rTxtBox_Script.AppendText(" " + cBox_Operand[i].SelectedItem + "", Color.Green);
+                    rTxtBox_Script.AppendText(" " + cBox_Operand[i].SelectedItem + " ", Color.Green);
                     rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
                 }
                 else if (cBox_Logic[i].SelectedItem == "WHERE")
@@ -397,7 +394,7 @@ namespace IppBackups
                         //script += "\nWHERE " + cBox_Field[i].SelectedItem + " " + cBox_Operand[i].SelectedItem + " " + txtBox_Value[i].Text;
                         rTxtBox_Script.AppendText("\nWHERE ", Color.Blue);
                         rTxtBox_Script.AppendText("" + cBox_Field[i].SelectedItem + " ", Color.Green);
-                        rTxtBox_Script.AppendText(" " + cBox_Operand[i].SelectedItem + "", Color.Green);
+                        rTxtBox_Script.AppendText(" " + cBox_Operand[i].SelectedItem + " ", Color.Green);
                         rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
                     }
                 }
@@ -406,11 +403,19 @@ namespace IppBackups
             {
                if (cBox_Logic[i].SelectedItem != null && cBox_Logic[i].SelectedItem != "WHERE")
                 {
-                    script += cBox_Logic[i].SelectedItem + " " + cBox_Field[i].SelectedItem + " " + cBox_Operand[i].SelectedItem + " " + txtBox_Value[i].Text;
+                    //script += cBox_Logic[i].SelectedItem + " " + cBox_Field[i].SelectedItem + " " + cBox_Operand[i].SelectedItem + " " + txtBox_Value[i].Text;
+                    rTxtBox_Script.AppendText("" + cBox_Logic[i].SelectedItem + " ", Color.Blue);
+                    rTxtBox_Script.AppendText("" + cBox_Field[i].SelectedItem + " ", Color.Green);
+                    rTxtBox_Script.AppendText("" + cBox_Operand[i].SelectedItem + " ", Color.Green);
+                    rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
                 }
                 else if (cBox_Logic[i].SelectedItem == "WHERE")
                 {
-                    script += "WHERE " + cBox_Field[i].SelectedItem + " " + cBox_Operand[i].SelectedItem + " " + txtBox_Value[i].Text;
+                    //script += "WHERE " + cBox_Field[i].SelectedItem + " " + cBox_Operand[i].SelectedItem + " " + txtBox_Value[i].Text;
+                    rTxtBox_Script.AppendText("\nWHERE ", Color.Blue);
+                    rTxtBox_Script.AppendText("" + cBox_Field[i].SelectedItem + " ", Color.Green);
+                    rTxtBox_Script.AppendText(" " + cBox_Operand[i].SelectedItem + " ", Color.Green);
+                    rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
                 }
             }
             else if (rBtn_Replace.Checked)
