@@ -672,9 +672,13 @@ namespace IppBackups
                     rTxtBox_Script.AppendText("\nClicked:" + e.Node.Text);
                     nNode = startNode.SelectNodes("Tables/Table/Environments/Environment[@name='" + e.Node.Parent.Text + "']/Tokens/ReplaceToken[@name='" + e.Node.Text + "']");
 
-                    foreach (XmlNode xn in nNode)
+                    foreach (XmlNode replaceNode in nNode)
                     {
-                        rTxtBox_Script.AppendText("/n" + xn["ReplaceToken"].Attributes["name"].Value, Color.Black);
+                        foreach (XmlNode token in replaceNode)
+                        {
+                            //rTxtBox_Script.AppendText("/n" + xn["ReplaceToken"].Attributes["name"].Value, Color.Black);
+                            rTxtBox_Script.AppendText("\n\t" + token.Name, Color.Black);
+                        }
                     }
 
                 }
