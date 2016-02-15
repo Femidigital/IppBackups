@@ -57,6 +57,7 @@ namespace IppBackups
         public DatabaseUpdates(string curInstance, string database, string env)
         {
             InitializeComponent();
+            //this.DoubleBuffered = true;
             LoadValuesFromSettings(database);
 
             getTables(curInstance, database);
@@ -145,6 +146,7 @@ namespace IppBackups
         private void btn_Commit_Click(object sender, EventArgs e)
         {
             // this will create a .sql script file.
+
         }
 
         private void btn_Add_Click(object sender, EventArgs e)
@@ -253,26 +255,6 @@ namespace IppBackups
 
         private void UpdateScriptWindow()
         {
-            //script = rTxtBox_Script.Text;
-            //int sqBracket = script.IndexOf("]") + 1;
-            //int sqrBracket = rTxtBox_Script.Text.IndexOf("]") + 1;
-
-
-            //int scriptLength = script.Length;
-            ////script = script.Replace(script.Substring(sqBracket,scriptLength - sqBracket), "");
-            //rTxtBox_Script.Text = rTxtBox_Script.Text.Replace(script.Substring(sqBracket, scriptLength - sqBracket), " ");
-            ////rTxtBox_Script.Text = rTxtBox_Script.Text.Replace(rTxtBox_Script.Text.Substring(sqBracket, scriptLength - sqBracket), " ");
-
-            /*if (rTxtBox_Script.Lines.Count() > 1)
-            {
-                rTxtBox_Script.SelectionStart = 1;
-                if (rTxtBox_Script.GetFirstCharIndexFromLine(2) > -1)
-                {
-                    rTxtBox_Script.SelectionLength = rTxtBox_Script.GetFirstCharIndexFromLine(rTxtBox_Script.Lines.Count());
-                    rTxtBox_Script.SelectedText = "";
-                }
-            }*/
-
             var text = "";  // Holds the text of current line being looped.
             var startindex = 0; // The position where selection starts.
             var endindex = 0;   // The lenght of selection.
@@ -289,10 +271,6 @@ namespace IppBackups
                         rTxtBox_Script.Select(startindex, endindex);    //Selects the text.
                         rTxtBox_Script.Text = rTxtBox_Script.Text.Replace(rTxtBox_Script.SelectedText, string.Empty);   //Replaces the text with empty string.
                     }
-                    //else
-                    //{
-                    //   // rTxtBox_Script.
-                    //}
                 }
             }
             rTxtBox_Script.Text = "";
@@ -325,8 +303,8 @@ namespace IppBackups
                             tlp_ScriptBuilder.RowCount++;
                             tlp_ScriptBuilder.RowStyles.Insert(tlp_ScriptBuilder.RowCount - 2, new RowStyle(SizeType.AutoSize));
 
-                            tlp_ScriptBuilder.Controls.Add(rowLabel[i], 0, y - 1);
-                            rowLabel[i].Text = i.ToString();
+                            //tlp_ScriptBuilder.Controls.Add(rowLabel[i], 0, y - 1);
+                            //rowLabel[i].Text = i.ToString();
                             if (y > min_rowCount || rBtn_Delete.Checked)
                                 tlp_ScriptBuilder.Controls.Add(cBox_Logic[i], 1, y - 1);
                             tlp_ScriptBuilder.Controls.Add(cBox_Field[i], 2, y - 1);
@@ -681,41 +659,59 @@ namespace IppBackups
 
             if (e.Node.Parent != null)
             {
-                //if (e.Node.Parent.Text == "PROD" || e.Node.Parent.Text == "PPD")
                 if (Enum.IsDefined(typeof(Environment), e.Node.Parent.Text))
                 {
                     //nNode = startNode.SelectNodes("Tables/Table/Environments/Environment[@name='" + e.Node.Parent.Text + "']/Tokens/ReplaceToken[@name='" + e.Node.Text + "']");
                     nNode = startNode.SelectNodes("Tables/Table/Environments/Environment[@name='" + e.Node.Parent.Text + "']/Tokens");
 
-                    foreach (XmlNode replaceNode in nNode)
+                    foreach (XmlNode tokens in nNode)
                     {
-                        int y = tlp_ScriptBuilder.RowCount;
+                        //int y = tlp_ScriptBuilder.RowCount;
                         int i = 0;
-                        foreach (XmlNode token in replaceNode.ChildNodes)
+                        foreach (XmlNode replaceNode in tokens.ChildNodes)
                         {
-                            if (token.Attributes["columnName"].Value == e.Node.Text)
+                            //if (replaceNode.Name == "ReplaceToken" && replaceNode.Attributes["name"].Value == e.Node.Text)
+                            if (replaceNode.Attributes["name"].Value == e.Node.Text)
                             {
+                                if (replaceNode.Name == "ReplaceToken")
+                                {
+                                    if (replaceNode.Attributes["dml"].Value == "Update")
+                                    {
+                                        rBtn_Update.Checked = true;
+                                    }
+                                    else if (replaceNode.Attributes["dml"].Value == "Replace")
+                                    {
+                                        rBtn_Replace.Checked = true;
+                                    }
+                                }
+
                                 cBox_Tables.SelectedIndex = cBox_Tables.FindString("[dbo].[" + e.Node.Parent.Parent.Text + "]");
+                                foreach (XmlNode token in replaceNode.ChildNodes)
+                                {
+                                    //cBox_Logic[i].SelectedIndex = cBox_Logic[i].Items.IndexOf(token.Attributes[""].Value);
+                                    cBox_Field[i].SelectedIndex = cBox_Field[i].Items.IndexOf(token.Attributes["columnName"].Value);
+                                    cBox_Operand[i].SelectedIndex = cBox_Operand[i].Items.IndexOf(token.Attributes["operator"].Value);
+                                    txtBox_Value[i].Text = token.Attributes["value"].Value;
 
-                                cBox_Field[i].SelectedIndex = cBox_Field[i].Items.IndexOf(token.Attributes["columnName"].Value);
-                                txtBox_Value[i].Text = token.Attributes["value"].Value;
+                                    tlp_ScriptBuilder.RowCount++;
+                                    int y = tlp_ScriptBuilder.RowCount;
+                                    tlp_ScriptBuilder.RowStyles.Insert(tlp_ScriptBuilder.RowCount - 2, new RowStyle(SizeType.AutoSize));
 
-                                tlp_ScriptBuilder.RowCount++;
-                                tlp_ScriptBuilder.RowStyles.Insert(tlp_ScriptBuilder.RowCount - 2, new RowStyle(SizeType.AutoSize));
+                                    //tlp_ScriptBuilder.Controls.Add(rowLabel[i], 0, y - 1);
+                                    //rowLabel[i].Text = i.ToString();
+                                    if (y > min_rowCount || rBtn_Delete.Checked)
+                                        tlp_ScriptBuilder.Controls.Add(cBox_Logic[i], 1, y - 1);
+                                    tlp_ScriptBuilder.Controls.Add(cBox_Field[i], 2, y - 1);
+                                    tlp_ScriptBuilder.Controls.Add(cBox_Operand[i], 3, y - 1);
 
-                                tlp_ScriptBuilder.Controls.Add(rowLabel[i], 0, y - 1);
-                                rowLabel[i].Text = i.ToString();
-                                if (y > min_rowCount || rBtn_Delete.Checked)
-                                    tlp_ScriptBuilder.Controls.Add(cBox_Logic[i], 1, y - 1);
-                                tlp_ScriptBuilder.Controls.Add(cBox_Field[i], 2, y - 1);
-                                tlp_ScriptBuilder.Controls.Add(cBox_Operand[i], 3, y - 1);
+                                    tlp_ScriptBuilder.Controls.Add(txtBox_Value[i], 4, y - 1);
+                                    TableLayoutPanelCellPosition pos = tlp_ScriptBuilder.GetCellPosition(txtBox_Value[i]);
+                                    txtBox_Value[i].Width = tlp_ScriptBuilder.GetColumnWidths()[pos.Column];
 
-                                tlp_ScriptBuilder.Controls.Add(txtBox_Value[i], 4, y - 1);
-                                TableLayoutPanelCellPosition pos = tlp_ScriptBuilder.GetCellPosition(txtBox_Value[i]);
-                                txtBox_Value[i].Width = tlp_ScriptBuilder.GetColumnWidths()[pos.Column];
-
-                                tlp_ScriptBuilder.Controls.Add(lastRowMark, 0, y);
-                                i++;
+                                    tlp_ScriptBuilder.Controls.Add(lastRowMark, 0, y);
+                                    ScriptContent();
+                                    i++;
+                                }
                             }
                         }
                     }
