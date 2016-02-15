@@ -755,160 +755,160 @@
       </Table>
     </Tables>
   </Database>
-  <Database name="Ecommerce">
+  <Database name="ECommerce">
     <Tables>
       <Table name="Application">
         <Environments>
           <Environment name="PROD">
             <Tokens>
-              <ReplaceToken name="OrderPrefix" type="ColumnToken">
+              <ReplaceToken name="BSOL_OrderPrefix" type="ColumnToken">
                 <Token columnName="ApplicationPrefix" value="B"></Token>
               </ReplaceToken>
-              <FilterToken type="FilterToken">
+              <FilterToken name="BSOL_OrderPrefix" type="FilterToken">
                 <Token columnName="id" value="1"></Token>
               </FilterToken>
-              <ReplaceToken name="OrderPrefix" type="ColumnToken">
+              <ReplaceToken name="Sho_OrderPrefix" type="ColumnToken">
                 <Token columnName="ApplicationPrefix" value="S"></Token>
               </ReplaceToken>
-              <FilterToken type="FilterToken">
+              <FilterToken name="Sho_OrderPrefix" type="FilterToken">
                 <Token columnName="id" value="2"></Token>
               </FilterToken>
-              <ReplaceToken name="OrderPrefix" type="ColumnToken">
+              <ReplaceToken name="MC_OrderPrefix" type="ColumnToken">
                 <Token columnName="ApplicationPrefix" value="M"></Token>
               </ReplaceToken>
-              <FilterToken type="FilterToken">
+              <FilterToken name="MC_OrderPrefix" type="FilterToken">
                 <Token columnName="id" value="3"></Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="PPD">
             <Tokens>
-              <ReplaceToken name="OrderPrefix" type="ColumnToken">
+              <ReplaceToken name="BSOL_OrderPrefix" type="ColumnToken">
                 <Token columnName="ApplicationPrefix" value="BPPD"></Token>
               </ReplaceToken>
-              <FilterToken type="FilterToken">
+              <FilterToken name="BSOL_OrderPrefix" type="FilterToken">
                 <Token columnName="id" value="1"></Token>
               </FilterToken>
-              <ReplaceToken name="OrderPrefix" type="ColumnToken">
+              <ReplaceToken name="Shop_OrderPrefix" type="ColumnToken">
                 <Token columnName="ApplicationPrefix" value="SPPD"></Token>
               </ReplaceToken>
-              <FilterToken type="FilterToken">
+              <FilterToken name="Shop_OrderPrefix" type="FilterToken">
                 <Token columnName="id" value="2"></Token>
               </FilterToken>
-              <ReplaceToken name="OrderPrefix" type="ColumnToken">
+              <ReplaceToken name="MC_OrderPrefix" type="ColumnToken">
                 <Token columnName="ApplicationPrefix" value="MPPD"></Token>
               </ReplaceToken>
-              <FilterToken type="FilterToken">
+				<FilterToken name="MC_OrderPrefix" type="FilterToken">
                 <Token columnName="id" value="3"></Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="UAT">
             <Tokens>
-              <ReplaceToken name="OrderPrefix" type="ColumnToken">
+              <ReplaceToken name="BSOL_OrderPrefix" type="ColumnToken">
                 <Token columnName="ApplicationPrefix" value="BUAT"></Token>
               </ReplaceToken>
-              <FilterToken type="FilterToken">
+				<FilterToken name="BSOL_OrderPrefix" type="FilterToken">
                 <Token columnName="id" value="1"></Token>
               </FilterToken>
-              <ReplaceToken name="OrderPrefix" type="ColumnToken">
+              <ReplaceToken name="Shop_OrderPrefix" type="ColumnToken">
                 <Token columnName="ApplicationPrefix" value="SUAT"></Token>
               </ReplaceToken>
-              <FilterToken type="FilterToken">
+				<FilterToken name="Shop_OrderPrefix" type="FilterToken">
                 <Token columnName="id" value="2"></Token>
               </FilterToken>
-              <ReplaceToken name="OrderPrefix" type="ColumnToken">
+              <ReplaceToken name="MC_OrderPrefix" type="ColumnToken">
                 <Token columnName="ApplicationPrefix" value="MUAT"></Token>
               </ReplaceToken>
-              <FilterToken type="FilterToken">
+				<FilterToken name="MC_OrderPrefix" type="FilterToken">
                 <Token columnName="id" value="3"></Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="QA">
             <Tokens>
-              <ReplaceToken name="OrderPrefix" type="ColumnToken">
+              <ReplaceToken name="BSOL_OrderPrefix" type="ColumnToken">
                 <Token columnName="ApplicationPrefix" value="BQA"></Token>
               </ReplaceToken>
-              <FilterToken type="FilterToken">
+				<FilterToken name="BSOL_OrderPrefix" type="FilterToken">
                 <Token columnName="id" value="1"></Token>
               </FilterToken>
-              <ReplaceToken name="OrderPrefix" type="ColumnToken">
+              <ReplaceToken name="Shop_OrderPrefix" type="ColumnToken">
                 <Token columnName="ApplicationPrefix" value="SQA"></Token>
               </ReplaceToken>
-              <FilterToken type="FilterToken">
+				<FilterToken name="Shop_OrderPrefix" type="FilterToken">
                 <Token columnName="id" value="2"></Token>
               </FilterToken>
-              <ReplaceToken name="OrderPrefix" type="ColumnToken">
+              <ReplaceToken name="MC_OrderPrefix" type="ColumnToken">
                 <Token columnName="ApplicationPrefix" value="MQA"></Token>
               </ReplaceToken>
-              <FilterToken type="FilterToken">
+				<FilterToken name="MC_OrderPrefix" type="FilterToken">
                 <Token columnName="id" value="3"></Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="CI">
             <Tokens>
-              <ReplaceToken name="OrderPrefix" type="ColumnToken">
+              <ReplaceToken name="BSOL_OrderPrefix" type="ColumnToken">
                 <Token columnName="ApplicationPrefix" value="BCI"></Token>
               </ReplaceToken>
-              <FilterToken type="FilterToken">
+				<FilterToken name="BSOL_OrderPrefix" type="FilterToken">
                 <Token columnName="id" value="1"></Token>
               </FilterToken>
-              <ReplaceToken name="OrderPrefix" type="ColumnToken">
+              <ReplaceToken name="Shop_OrderPrefix" type="ColumnToken">
                 <Token columnName="ApplicationPrefix" value="SCI"></Token>
               </ReplaceToken>
-              <FilterToken type="FilterToken">
+				<FilterToken name="BSOL_OrderPrefix" type="FilterToken">
                 <Token columnName="id" value="2"></Token>
               </FilterToken>
-              <ReplaceToken name="OrderPrefix" type="ColumnToken">
+              <ReplaceToken name="MC_OrderPrefix" type="ColumnToken">
                 <Token columnName="ApplicationPrefix" value="MCI"></Token>
               </ReplaceToken>
-              <FilterToken type="FilterToken">
+				<FilterToken name="MC_OrderPrefix" type="FilterToken">
                 <Token columnName="id" value="3"></Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="DEV">
             <Tokens>
-				<ReplaceToken name="OrderPrefix" type="ColumnToken">
+				<ReplaceToken name="BSOL_OrderPrefix" type="ColumnToken">
 					<Token columnName="ApplicationPrefix" value="BDEV"></Token>
 				</ReplaceToken>
-				<FilterToken type="FilterToken">
+				<FilterToken name="BSOL_OrderPrefix" type="FilterToken">
 					<Token columnName="id" value="1"></Token>
 				</FilterToken>
-				<ReplaceToken name="OrderPrefix" type="ColumnToken">
+				<ReplaceToken name="Shop_OrderPrefix" type="ColumnToken">
 					<Token columnName="ApplicationPrefix" value="SDEV"></Token>
 				</ReplaceToken>
-				<FilterToken type="FilterToken">
+				<FilterToken name="Shop_OrderPrefix" type="FilterToken">
 					<Token columnName="id" value="2"></Token>
 				</FilterToken>
-				<ReplaceToken name="OrderPrefix" type="ColumnToken">
+				<ReplaceToken name="MC_OrderPrefix" type="ColumnToken">
 					<Token columnName="ApplicationPrefix" value="MDEV"></Token>
 				</ReplaceToken>
-				<FilterToken type="FilterToken">
+				<FilterToken name="MC_OrderPrefix" type="FilterToken">
 					<Token columnName="id" value="3"></Token>
 				</FilterToken>
             </Tokens>
           </Environment>
           <Environment name="TEST">
             <Tokens>
-              <ReplaceToken name="OrderPrefix" type="ColumnToken">
+              <ReplaceToken name="BSOL_OrderPrefix" type="ColumnToken">
                 <Token columnName="ApplicationPrefix" value="TESB"></Token>
               </ReplaceToken>
-              <FilterToken type="FilterToken">
+				<FilterToken name="BSOL_OrderPrefix" type="FilterToken">
                 <Token columnName="id" value="1"></Token>
               </FilterToken>
-              <ReplaceToken name="OrderPrefix" type="ColumnToken">
+              <ReplaceToken name="Shop_OrderPrefix" type="ColumnToken">
                 <Token columnName="ApplicationPrefix" value="TESS"></Token>
               </ReplaceToken>
-              <FilterToken type="FilterToken">
+				<FilterToken name="Shop_OrderPrefix" type="FilterToken">
                 <Token columnName="id" value="2"></Token>
               </FilterToken>
-              <ReplaceToken name="OrderPrefix" type="ColumnToken">
+              <ReplaceToken name="MC_OrderPrefix" type="ColumnToken">
                 <Token columnName="ApplicationPrefix" value="TESM"></Token>
               </ReplaceToken>
-              <FilterToken type="FilterToken">
+				<FilterToken name="MC_OrderPrefix" type="FilterToken">
                 <Token columnName="id" value="3"></Token>
               </FilterToken>
             </Tokens>

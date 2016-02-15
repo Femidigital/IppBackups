@@ -674,6 +674,7 @@ namespace IppBackups
 
         void tViewScripts_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
+            ClearScriptBuilder();
             
             //XmlNode startNode = doc.SelectSingleNode("Databases/Database[@name='" + _cur_Db + "']");
             XmlNodeList nNode;
@@ -683,36 +684,39 @@ namespace IppBackups
                 //if (e.Node.Parent.Text == "PROD" || e.Node.Parent.Text == "PPD")
                 if (Enum.IsDefined(typeof(Environment), e.Node.Parent.Text))
                 {
-                    //rTxtBox_Script.AppendText("\nClicked:" + e.Node.Text);
-                    nNode = startNode.SelectNodes("Tables/Table/Environments/Environment[@name='" + e.Node.Parent.Text + "']/Tokens/ReplaceToken[@name='" + e.Node.Text + "']");
+                    //nNode = startNode.SelectNodes("Tables/Table/Environments/Environment[@name='" + e.Node.Parent.Text + "']/Tokens/ReplaceToken[@name='" + e.Node.Text + "']");
+                    nNode = startNode.SelectNodes("Tables/Table/Environments/Environment[@name='" + e.Node.Parent.Text + "']/Tokens");
 
                     foreach (XmlNode replaceNode in nNode)
                     {
                         int y = tlp_ScriptBuilder.RowCount;
                         int i = 0;
-                        foreach (XmlNode token in replaceNode)
+                        foreach (XmlNode token in replaceNode.ChildNodes)
                         {
-                            cBox_Tables.SelectedIndex = cBox_Tables.FindString("[dbo].[" + e.Node.Parent.Parent.Text + "]");
+                            if (token.Attributes["columnName"].Value == e.Node.Text)
+                            {
+                                cBox_Tables.SelectedIndex = cBox_Tables.FindString("[dbo].[" + e.Node.Parent.Parent.Text + "]");
 
-                            cBox_Field[i].SelectedIndex = cBox_Field[i].Items.IndexOf(token.Attributes["columnName"].Value);
-                            txtBox_Value[i].Text =  token.Attributes["value"].Value;
-                            
-                            tlp_ScriptBuilder.RowCount++;
-                            tlp_ScriptBuilder.RowStyles.Insert(tlp_ScriptBuilder.RowCount - 2, new RowStyle(SizeType.AutoSize));
+                                cBox_Field[i].SelectedIndex = cBox_Field[i].Items.IndexOf(token.Attributes["columnName"].Value);
+                                txtBox_Value[i].Text = token.Attributes["value"].Value;
 
-                            tlp_ScriptBuilder.Controls.Add(rowLabel[i], 0, y - 1);
-                            rowLabel[i].Text = i.ToString();
-                            if (y > min_rowCount || rBtn_Delete.Checked)
-                                tlp_ScriptBuilder.Controls.Add(cBox_Logic[i], 1, y - 1);
-                            tlp_ScriptBuilder.Controls.Add(cBox_Field[i], 2, y - 1);
-                            tlp_ScriptBuilder.Controls.Add(cBox_Operand[i], 3, y - 1);
+                                tlp_ScriptBuilder.RowCount++;
+                                tlp_ScriptBuilder.RowStyles.Insert(tlp_ScriptBuilder.RowCount - 2, new RowStyle(SizeType.AutoSize));
 
-                            tlp_ScriptBuilder.Controls.Add(txtBox_Value[i], 4, y - 1);
-                            TableLayoutPanelCellPosition pos = tlp_ScriptBuilder.GetCellPosition(txtBox_Value[i]);
-                            txtBox_Value[i].Width = tlp_ScriptBuilder.GetColumnWidths()[pos.Column];
+                                tlp_ScriptBuilder.Controls.Add(rowLabel[i], 0, y - 1);
+                                rowLabel[i].Text = i.ToString();
+                                if (y > min_rowCount || rBtn_Delete.Checked)
+                                    tlp_ScriptBuilder.Controls.Add(cBox_Logic[i], 1, y - 1);
+                                tlp_ScriptBuilder.Controls.Add(cBox_Field[i], 2, y - 1);
+                                tlp_ScriptBuilder.Controls.Add(cBox_Operand[i], 3, y - 1);
 
-                            tlp_ScriptBuilder.Controls.Add(lastRowMark, 0, y);
-                            i++;                            
+                                tlp_ScriptBuilder.Controls.Add(txtBox_Value[i], 4, y - 1);
+                                TableLayoutPanelCellPosition pos = tlp_ScriptBuilder.GetCellPosition(txtBox_Value[i]);
+                                txtBox_Value[i].Width = tlp_ScriptBuilder.GetColumnWidths()[pos.Column];
+
+                                tlp_ScriptBuilder.Controls.Add(lastRowMark, 0, y);
+                                i++;
+                            }
                         }
                     }
 
