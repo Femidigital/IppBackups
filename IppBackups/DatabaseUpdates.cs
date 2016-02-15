@@ -670,6 +670,7 @@ namespace IppBackups
                         int i = 0;
                         foreach (XmlNode replaceNode in tokens.ChildNodes)
                         {
+                            cBox_Tables.SelectedIndex = cBox_Tables.FindString("[dbo].[" + e.Node.Parent.Parent.Text + "]");
                             //if (replaceNode.Name == "ReplaceToken" && replaceNode.Attributes["name"].Value == e.Node.Text)
                             if (replaceNode.Attributes["name"].Value == e.Node.Text)
                             {
@@ -685,10 +686,10 @@ namespace IppBackups
                                     }
                                 }
 
-                                cBox_Tables.SelectedIndex = cBox_Tables.FindString("[dbo].[" + e.Node.Parent.Parent.Text + "]");
+                                //cBox_Tables.SelectedIndex = cBox_Tables.FindString("[dbo].[" + e.Node.Parent.Parent.Text + "]");
                                 foreach (XmlNode token in replaceNode.ChildNodes)
                                 {
-                                    //cBox_Logic[i].SelectedIndex = cBox_Logic[i].Items.IndexOf(token.Attributes[""].Value);
+                                    cBox_Logic[i].SelectedIndex = cBox_Logic[i].Items.IndexOf(token.Attributes["set"].Value);
                                     cBox_Field[i].SelectedIndex = cBox_Field[i].Items.IndexOf(token.Attributes["columnName"].Value);
                                     cBox_Operand[i].SelectedIndex = cBox_Operand[i].Items.IndexOf(token.Attributes["operator"].Value);
                                     txtBox_Value[i].Text = token.Attributes["value"].Value;
