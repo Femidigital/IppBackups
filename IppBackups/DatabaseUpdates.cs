@@ -652,7 +652,9 @@ namespace IppBackups
 
         void tViewScripts_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
+            tlp_ScriptBuilder.SuspendLayout();
             ClearScriptBuilder();
+            UpdateScriptWindow();
             
             //XmlNode startNode = doc.SelectSingleNode("Databases/Database[@name='" + _cur_Db + "']");
             XmlNodeList nNode;
@@ -673,12 +675,15 @@ namespace IppBackups
                             cBox_Tables.SelectedIndex = cBox_Tables.FindString("[dbo].[" + e.Node.Parent.Parent.Text + "]");
                             //if (replaceNode.Name == "ReplaceToken" && replaceNode.Attributes["name"].Value == e.Node.Text)
                             if (replaceNode.Attributes["name"].Value == e.Node.Text)
-                            {
+                            {                                
+                                //tlp_ScriptBuilder.StopPaint();
                                 if (replaceNode.Name == "ReplaceToken")
                                 {
                                     if (replaceNode.Attributes["dml"].Value == "Update")
                                     {
                                         rBtn_Update.Checked = true;
+                                        rTxtBox_Script.AppendText("\nUPDATE ", Color.Blue);
+                                        rTxtBox_Script.AppendText(" " + tbl + "\n", Color.Green);
                                     }
                                     else if (replaceNode.Attributes["dml"].Value == "Replace")
                                     {
@@ -712,13 +717,14 @@ namespace IppBackups
                                     tlp_ScriptBuilder.Controls.Add(lastRowMark, 0, y);
                                     ScriptContent();
                                     i++;
-                                }
+                                }                                
                             }
                         }
                     }
 
                 }
             }
+            tlp_ScriptBuilder.ResumeLayout();
         }
 
         
