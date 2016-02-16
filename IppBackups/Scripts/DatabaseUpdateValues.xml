@@ -7,70 +7,70 @@
         <Environment name="PROD">
           <Tokens>
             <ReplaceToken name="Identity" type="ColumnToken" dml="Replace">
-              <Token set="" columnName="ClaimIdentifier" operator="=" value="https://identity.bsigroup.com"></Token>
+              <Token set="" columnName="ClaimIdentifier" operator="=" value="%.com%"></Token>
             </ReplaceToken>
             <FilterToken name="Identity" type="FilterToken">
-              <Token set="WHERE" columnName="" operator="=" value=""></Token>
+              <Token set="WITH" columnName="ClaimIdentifier" operator="=" value="https://identity.bsigroup.com"></Token>
             </FilterToken>
           </Tokens>
         </Environment>
         <Environment name="PPD">
           <Tokens>
             <ReplaceToken name="Identity" type="ColumnToken" dml="Replace">
-              <Token set="" columnName="ClaimIdentifier" operator="=" value="https://identityppd.bsigroup.com"></Token>
+              <Token set="" columnName="ClaimIdentifier" operator="=" value="%.com%"></Token>
             </ReplaceToken>
             <FilterToken name="Identity" type="FilterToken">
-              <Token set="WHERE" columnName="" operator="=" value=""></Token>
+              <Token set="WITH" columnName="ClaimIdentifier" operator="=" value="https://identityppd.bsigroup.com"></Token>
             </FilterToken>
           </Tokens>
         </Environment>
         <Environment name="UAT">
           <Tokens>
             <ReplaceToken name="Identity" type="ColumnToken" dml="Replace">
-			  <Token set="" columnName="ClaimIdentifier" operator="=" value="https://identity.bsiuat.com"></Token>
+			        <Token set="" columnName="ClaimIdentifier" operator="=" value="%.com%"></Token>
             </ReplaceToken>
             <FilterToken name="Identity" type="FilterToken">
-              <Token set="WHERE" columnName="" operator="=" value=""></Token>
+              <Token set="WITH" columnName="ClaimIdentifier" operator="=" value="https://identity.bsiuat.com"></Token>
             </FilterToken>
           </Tokens>
         </Environment>
         <Environment name="QA">
           <Tokens>
             <ReplaceToken name="Identity" type="ColumnToken" dml="Replace">
-              <Token set="" columnName="ClaimIdentifier" operator="=" value="https://identityqa.bsiuat.com"></Token>
+              <Token set="" columnName="ClaimIdentifier" operator="=" value="%.com%"></Token>
             </ReplaceToken>
             <FilterToken name="Identity" type="FilterToken">
-              <Token set="WHERE" columnName="" operator="=" value=""></Token>
+              <Token set="WITH" columnName="ClaimIdentifier" operator="=" value="https://identityqa.bsiuat.com"></Token>
             </FilterToken>
           </Tokens>
         </Environment>
         <Environment name="CI">
           <Tokens>
             <ReplaceToken name="Identity" type="ColumnToken" dml="Replace">
-              <Token set="" columnName="ClaimIdentifier" operator="=" value="https://identityci.bsiuat.com"></Token>
+              <Token set="" columnName="ClaimIdentifier" operator="=" value="%.com%"></Token>
             </ReplaceToken>
             <FilterToken name="Identity" type="FilterToken">
-              <Token set="WHERE" columnName="" operator="=" value=""></Token>
+              <Token set="WITH" columnName="ClaimIdentifier" operator="=" value="https://identityci.bsiuat.com"></Token>
             </FilterToken>
           </Tokens>
         </Environment>
         <Environment name="DEV">
           <Tokens>
             <ReplaceToken name="Identity" type="ColumnToken"  dml="Replace">
-              <Token set="" columnName="ClaimIdentifier" operator="=" value="https://identitydev.bsiuat.com"></Token>
+              <Token set="" columnName="ClaimIdentifier" operator="=" value="%.com%"></Token>
             </ReplaceToken>
             <FilterToken name="Identity" type="FilterToken">
-              <Token set="WHERE" columnName="" operator="=" value=""></Token>
+              <Token set="WITH" columnName="ClaimIdentifier" operator="=" value="https://identitydev.bsiuat.com"></Token>
             </FilterToken>
           </Tokens>
         </Environment>
         <Environment name="TEST">
           <Tokens>
             <ReplaceToken name="Identity" type="ColumnToken"  dml="Replace">
-              <Token set="" columnName="ClaimIdentifier" operator="=" value="https://identitytest.bsiuat.com"></Token>
+              <Token set="" columnName="ClaimIdentifier" operator="=" value="%.com%"></Token>
             </ReplaceToken>
             <FilterToken name="Identity" type="FilterToken">
-              <Token set="WHERE" columnName="" operator="=" value=""></Token>
+              <Token set="WITH" columnName="ClaimIdentifier" operator="=" value="https://identitytest.bsiuat.com"></Token>
             </FilterToken>
           </Tokens>
         </Environment>

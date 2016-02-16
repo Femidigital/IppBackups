@@ -19,6 +19,8 @@ namespace IppBackups
     public partial class DatabaseUpdates : Form
     {
         string cur_database = "";
+        string cur_environment = "";
+        string sel_environment = "";
         string script = "";
         string useStmt = "USE ";
         string tbl = "";
@@ -27,6 +29,8 @@ namespace IppBackups
         List<string> logic = new List<string>();
         List<string> operand = new List<string>();
         List<string> field = new List<string>();
+        List<string> fieldDatatypes = new List<string>();
+        //List<KeyValuePair<string, string>> field = new List<KeyValuePair<string, string>>();
         int x, y;
         Microsoft.SqlServer.Management.Smo.Server svr;
         Database db;
@@ -39,6 +43,7 @@ namespace IppBackups
         Label lastRowMark = new Label() { Text = "*" };
         string sXmlFile = "";
         bool afterWhile = false;
+        bool scriptFromTreeView = false;
         XmlNode startNode;
 
         enum Environment
@@ -63,6 +68,7 @@ namespace IppBackups
             getTables(curInstance, database);
 
             lbl_DatabaseName.Text = database;
+            cur_environment = env;
 
             tViewScripts.NodeMouseClick += 
                 new TreeNodeMouseClickEventHandler(tViewScripts_NodeMouseClick);
@@ -275,6 +281,8 @@ namespace IppBackups
             }
             rTxtBox_Script.Text = "";
             rTxtBox_Script.AppendText(useStmt, Color.Blue);
+            if (scriptFromTreeView)
+                cur_database = cur_database.Replace(cur_environment, sel_environment);
             rTxtBox_Script.AppendText("[" + cur_database + "]\n", Color.Green);
         }
        
@@ -447,8 +455,10 @@ namespace IppBackups
                     foreach (Column column in table.Columns)
                     {
                         // do something with each column for that table
-
+                        
                         field.Add(column.Name);
+                        fieldDatatypes.Add(column.DataType.ToString());
+                        //field.Add(column.Name, column.DataType.ToString());
                     }
                 }
             }
@@ -620,7 +630,7 @@ namespace IppBackups
             {
                 rTxtBox_Script.AppendText("\nDECLARE ", Color.Blue);
                 rTxtBox_Script.AppendText("@Current" + cBox_Field[0].SelectedItem, Color.Black);
-                rTxtBox_Script.AppendText("DataType", Color.Black);
+                rTxtBox_Script.AppendText(" " + fieldDatatypes[cBox_Field[0].SelectedIndex].ToUpper() + "", Color.Blue);
                 rTxtBox_Script.AppendText("\nSET ", Color.Blue);
                 rTxtBox_Script.AppendText("@Current" + cBox_Field[0].SelectedItem + " = (", Color.Black);
                 rTxtBox_Script.AppendText(" SELECT ", Color.Black);
@@ -631,14 +641,14 @@ namespace IppBackups
                 rTxtBox_Script.AppendText(" (NOLOCK)", Color.Black);
                 rTxtBox_Script.AppendText("\n");
                 rTxtBox_Script.AppendText("SELECT", Color.Blue);
-                rTxtBox_Script.AppendText("@" + cBox_Field[0].SelectedItem + " =", Color.Black);
+                rTxtBox_Script.AppendText("@Current" + cBox_Field[0].SelectedItem + " =", Color.Black);
                 rTxtBox_Script.AppendText(" SUBSTRING ", Color.Pink);
                 rTxtBox_Script.AppendText("(@Current" + cBox_Field[0].SelectedItem + " ,", Color.Black);
                 rTxtBox_Script.AppendText(" 0", Color.Orange);
                 rTxtBox_Script.AppendText(" , PATINDEX(", Color.Pink);
 
                 rTxtBox_Script.AppendText("'" + txtBox_Value[0].Text + "'", Color.Red);
-                rTxtBox_Script.AppendText(" , @Current" + cBox_Field[0] + "))\n");
+                rTxtBox_Script.AppendText(" , @Current" + cBox_Field[0].SelectedItem + "))\n");
 
                 rTxtBox_Script.AppendText("\nUPDATE ", Color.Pink);
                 rTxtBox_Script.AppendText(" " + tbl + "\n", Color.Black);
@@ -646,34 +656,35 @@ namespace IppBackups
                 rTxtBox_Script.AppendText("" + cBox_Field[0].SelectedItem + " = ", Color.Black);
                 rTxtBox_Script.AppendText(" REPLACE", Color.Pink);
                 rTxtBox_Script.AppendText("([" + cBox_Field[0].SelectedItem + "], @Current" + cBox_Field[0].SelectedItem + ",", Color.Black);
-                rTxtBox_Script.AppendText("'" + txtBox_Value[1].Text + "'", Color.Red);
+                rTxtBox_Script.AppendText("'" + txtBox_Value[1].Text + "')", Color.Red);
             }
         }
 
         void tViewScripts_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
+            scriptFromTreeView = true;
             tlp_ScriptBuilder.SuspendLayout();
             ClearScriptBuilder();
-            UpdateScriptWindow();
+            //UpdateScriptWindow();            
             
-            //XmlNode startNode = doc.SelectSingleNode("Databases/Database[@name='" + _cur_Db + "']");
             XmlNodeList nNode;
 
             if (e.Node.Parent != null)
             {
                 if (Enum.IsDefined(typeof(Environment), e.Node.Parent.Text))
                 {
+                    sel_environment = e.Node.Parent.Text;
                     //nNode = startNode.SelectNodes("Tables/Table/Environments/Environment[@name='" + e.Node.Parent.Text + "']/Tokens/ReplaceToken[@name='" + e.Node.Text + "']");
                     nNode = startNode.SelectNodes("Tables/Table/Environments/Environment[@name='" + e.Node.Parent.Text + "']/Tokens");
+                    UpdateScriptWindow();
 
                     foreach (XmlNode tokens in nNode)
                     {
-                        //int y = tlp_ScriptBuilder.RowCount;
                         int i = 0;
                         foreach (XmlNode replaceNode in tokens.ChildNodes)
                         {
                             cBox_Tables.SelectedIndex = cBox_Tables.FindString("[dbo].[" + e.Node.Parent.Parent.Text + "]");
-                            //if (replaceNode.Name == "ReplaceToken" && replaceNode.Attributes["name"].Value == e.Node.Text)
+
                             if (replaceNode.Attributes["name"].Value == e.Node.Text)
                             {                                
                                 //tlp_ScriptBuilder.StopPaint();
@@ -682,8 +693,20 @@ namespace IppBackups
                                     if (replaceNode.Attributes["dml"].Value == "Update")
                                     {
                                         rBtn_Update.Checked = true;
-                                        rTxtBox_Script.AppendText("\nUPDATE ", Color.Blue);
-                                        rTxtBox_Script.AppendText(" " + tbl + "\n", Color.Green);
+                                        if (!rTxtBox_Script.Text.Contains("UPDATE"))
+                                        {
+                                            rTxtBox_Script.AppendText("\nUPDATE ", Color.Blue);
+                                            rTxtBox_Script.AppendText(" " + tbl + "\n", Color.Green);                                            
+                                        }
+                                    }
+                                    else if (replaceNode.Attributes["dml"].Value == "Delete")
+                                    {
+                                        rBtn_Delete.Checked = true;
+                                        if (!rTxtBox_Script.Text.Contains("DELETE"))
+                                        {
+                                            rTxtBox_Script.AppendText("\nDELETE ", Color.Blue);
+                                            rTxtBox_Script.AppendText(" " + tbl + "\n", Color.Green);
+                                        }
                                     }
                                     else if (replaceNode.Attributes["dml"].Value == "Replace")
                                     {
@@ -691,7 +714,6 @@ namespace IppBackups
                                     }
                                 }
 
-                                //cBox_Tables.SelectedIndex = cBox_Tables.FindString("[dbo].[" + e.Node.Parent.Parent.Text + "]");
                                 foreach (XmlNode token in replaceNode.ChildNodes)
                                 {
                                     cBox_Logic[i].SelectedIndex = cBox_Logic[i].Items.IndexOf(token.Attributes["set"].Value);
@@ -717,7 +739,10 @@ namespace IppBackups
                                     tlp_ScriptBuilder.Controls.Add(lastRowMark, 0, y);
                                     ScriptContent();
                                     i++;
-                                }                                
+                                }
+                                if (rBtn_Replace.Checked)
+                                    btn_Generate.PerformClick();
+                                //rTxtBox_Script.Text = rTxtBox_Script.Text.Replace(cur_environment, e.Node.Parent.Text);
                             }
                         }
                     }
