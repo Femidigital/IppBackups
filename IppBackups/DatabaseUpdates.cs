@@ -282,7 +282,11 @@ namespace IppBackups
             rTxtBox_Script.Text = "";
             rTxtBox_Script.AppendText(useStmt, Color.Blue);
             if (scriptFromTreeView)
-                cur_database = cur_database.Replace(cur_environment, sel_environment);
+            {
+                int pos = cur_database.IndexOf("-");
+                string old_environment = cur_database.Substring(0, pos);
+                cur_database = cur_database.Replace(old_environment, sel_environment);
+            }
             rTxtBox_Script.AppendText("[" + cur_database + "]\n", Color.Green);
         }
        
