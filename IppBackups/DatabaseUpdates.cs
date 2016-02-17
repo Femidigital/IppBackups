@@ -315,8 +315,8 @@ namespace IppBackups
                             tlp_ScriptBuilder.RowCount++;
                             tlp_ScriptBuilder.RowStyles.Insert(tlp_ScriptBuilder.RowCount - 2, new RowStyle(SizeType.AutoSize));
 
-                            //tlp_ScriptBuilder.Controls.Add(rowLabel[i], 0, y - 1);
-                            //rowLabel[i].Text = i.ToString();
+                            tlp_ScriptBuilder.Controls.Add(rowLabel[i], 0, y - 1);
+                            rowLabel[i].Text = i.ToString();
                             if (y > min_rowCount || rBtn_Delete.Checked)
                                 tlp_ScriptBuilder.Controls.Add(cBox_Logic[i], 1, y - 1);
                             tlp_ScriptBuilder.Controls.Add(cBox_Field[i], 2, y - 1);
@@ -729,9 +729,9 @@ namespace IppBackups
                                     int y = tlp_ScriptBuilder.RowCount;
                                     tlp_ScriptBuilder.RowStyles.Insert(tlp_ScriptBuilder.RowCount - 2, new RowStyle(SizeType.AutoSize));
 
-                                    //tlp_ScriptBuilder.Controls.Add(rowLabel[i], 0, y - 1);
-                                    //rowLabel[i].Text = i.ToString();
-                                    if (y > min_rowCount || rBtn_Delete.Checked)
+                                    tlp_ScriptBuilder.Controls.Add(rowLabel[i], 0, y - 1);
+                                    rowLabel[i].Text = i.ToString();
+                                    if (i > min_rowCount - 2 || rBtn_Delete.Checked)
                                         tlp_ScriptBuilder.Controls.Add(cBox_Logic[i], 1, y - 1);
                                     tlp_ScriptBuilder.Controls.Add(cBox_Field[i], 2, y - 1);
                                     tlp_ScriptBuilder.Controls.Add(cBox_Operand[i], 3, y - 1);
