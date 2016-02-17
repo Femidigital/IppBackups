@@ -18,6 +18,7 @@ namespace IppBackups
 {
     public partial class DatabaseUpdates : Form
     {
+        XmlDocument doc;
         string cur_database = "";
         string cur_environment = "";
         string sel_environment = "";
@@ -63,6 +64,8 @@ namespace IppBackups
         {
             InitializeComponent();
             //this.DoubleBuffered = true;
+            doc = new XmlDocument();
+
             LoadValuesFromSettings(database);
 
             getTables(curInstance, database);
@@ -151,7 +154,59 @@ namespace IppBackups
 
         private void btn_Commit_Click(object sender, EventArgs e)
         {
+            XmlNode root = doc.DocumentElement;
             // this will create a .sql script file.
+            if (scriptFromTreeView)
+            {
+                MessageBox.Show("Update selected node in TreeView");
+            }
+            else
+            {
+                MessageBox.Show("Create a new node at : \\" + cur_database + "\\" + cur_environment);
+                //string xpath = "\\" + cur_database + "\\" + cur_environment;
+                doc.Load(".\\Scripts\\DatabaseUpdateValues.xml");
+
+                XmlNode node = doc.SelectSingleNode("//Databases/Database[@name='" + cur_database +"']/Tables/Table[@name='" + cBox_Tables.SelectedItem + "']/Environments/Environment[@name='" + cur_environment +"']");
+                         
+                if (node == null)
+                {
+                    for (int i = 0; i < tlp_ScriptBuilder.RowCount - 2; i++)
+                    {
+                        XmlNode token = doc.CreateNode(XmlNodeType.Element, "Token", null);
+
+                        XmlAttribute set = doc.CreateAttribute("set");
+
+                        if (cBox_Logic[i].SelectedItem != null)                        
+                            set.Value = (string)cBox_Logic[i].SelectedItem;
+                        set.Value = "";
+
+                        XmlAttribute columnName = doc.CreateAttribute("columnName");
+                        columnName.Value = (string)cBox_Field[i].SelectedItem;
+
+                        XmlAttribute operand = doc.CreateAttribute("operand");
+                        operand.Value = (string)cBox_Operand[i].SelectedItem;
+
+                        XmlAttribute value = doc.CreateAttribute("value");
+                        value.Value = txtBox_Value[i].Text;
+
+                        token.Attributes.Append(set);
+                        token.Attributes.Append(columnName);
+                        token.Attributes.Append(operand);
+                        token.Attributes.Append(value);
+
+                        if (node != null)
+                        {
+                            node.AppendChild(token);
+                        }
+                        else
+                        {
+                            root.InsertAfter(token, root.LastChild);
+                        }
+                    }
+                }
+
+                doc.Save(".\\Scripts\\DatabaseUpdateValues.xml");                
+            }
 
         }
 
@@ -291,7 +346,7 @@ namespace IppBackups
         }
        
         private void tlp_ScriptBuilder_MouseClick(object sender, MouseEventArgs e)
-        {
+        {            
             int row = 0;
             int verticalOffset = 0;
             int y = tlp_ScriptBuilder.RowCount;
@@ -560,7 +615,7 @@ namespace IppBackups
             
             sXmlFile = ".\\Scripts\\DatabaseUpdateValues.xml";
 
-            XmlDocument doc = new XmlDocument();
+            //XmlDocument doc = new XmlDocument();
             doc.Load(sXmlFile);
 
             XmlNodeList curDatabase = doc.SelectNodes("Databases/Database[@name='" + _cur_Db + "']/Tables/Table");
@@ -684,7 +739,8 @@ namespace IppBackups
 
                     foreach (XmlNode tokens in nNode)
                     {
-                        int i = 0;
+                        int y;
+                        int i;
                         foreach (XmlNode replaceNode in tokens.ChildNodes)
                         {
                             cBox_Tables.SelectedIndex = cBox_Tables.FindString("[dbo].[" + e.Node.Parent.Parent.Text + "]");
@@ -720,13 +776,15 @@ namespace IppBackups
 
                                 foreach (XmlNode token in replaceNode.ChildNodes)
                                 {
+                                    y = tlp_ScriptBuilder.RowCount;
+                                    i = y - min_rowCount;
                                     cBox_Logic[i].SelectedIndex = cBox_Logic[i].Items.IndexOf(token.Attributes["set"].Value);
                                     cBox_Field[i].SelectedIndex = cBox_Field[i].Items.IndexOf(token.Attributes["columnName"].Value);
-                                    cBox_Operand[i].SelectedIndex = cBox_Operand[i].Items.IndexOf(token.Attributes["operator"].Value);
+                                    cBox_Operand[i].SelectedIndex = cBox_Operand[i].Items.IndexOf(token.Attributes["operand"].Value);
                                     txtBox_Value[i].Text = token.Attributes["value"].Value;
 
                                     tlp_ScriptBuilder.RowCount++;
-                                    int y = tlp_ScriptBuilder.RowCount;
+                                    //int y = tlp_ScriptBuilder.RowCount;
                                     tlp_ScriptBuilder.RowStyles.Insert(tlp_ScriptBuilder.RowCount - 2, new RowStyle(SizeType.AutoSize));
 
                                     tlp_ScriptBuilder.Controls.Add(rowLabel[i], 0, y - 1);
