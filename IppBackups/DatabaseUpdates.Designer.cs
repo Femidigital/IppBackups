@@ -56,7 +56,7 @@
             // rTxtBox_Script
             // 
             this.rTxtBox_Script.Location = new System.Drawing.Point(2, 202);
-            this.rTxtBox_Script.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.rTxtBox_Script.Margin = new System.Windows.Forms.Padding(2);
             this.rTxtBox_Script.Name = "rTxtBox_Script";
             this.rTxtBox_Script.Size = new System.Drawing.Size(858, 171);
             this.rTxtBox_Script.TabIndex = 0;
@@ -68,7 +68,7 @@
             this.panel1.Controls.Add(this.tlp_ScriptBuilder);
             this.panel1.Controls.Add(this.rTxtBox_Script);
             this.panel1.Location = new System.Drawing.Point(9, 66);
-            this.panel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.panel1.Margin = new System.Windows.Forms.Padding(2);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(861, 375);
             this.panel1.TabIndex = 1;
@@ -90,6 +90,8 @@
             this.tViewScripts.Name = "tViewScripts";
             this.tViewScripts.Size = new System.Drawing.Size(269, 169);
             this.tViewScripts.TabIndex = 11;
+            this.tViewScripts.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.tViewScripts_AfterLabelEdit);
+            this.tViewScripts.MouseUp += new System.Windows.Forms.MouseEventHandler(this.tViewScripts_MouseUp);
             // 
             // label1
             // 
@@ -110,7 +112,7 @@
             this.tlp_ScriptBuilder.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 80F));
             this.tlp_ScriptBuilder.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 220F));
             this.tlp_ScriptBuilder.Location = new System.Drawing.Point(0, 0);
-            this.tlp_ScriptBuilder.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tlp_ScriptBuilder.Margin = new System.Windows.Forms.Padding(2);
             this.tlp_ScriptBuilder.Name = "tlp_ScriptBuilder";
             this.tlp_ScriptBuilder.RowCount = 2;
             this.tlp_ScriptBuilder.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
@@ -145,9 +147,9 @@
             this.grpBox_DML.Controls.Add(this.rBtn_Replace);
             this.grpBox_DML.Controls.Add(this.rBtn_Update);
             this.grpBox_DML.Location = new System.Drawing.Point(497, 17);
-            this.grpBox_DML.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.grpBox_DML.Margin = new System.Windows.Forms.Padding(2);
             this.grpBox_DML.Name = "grpBox_DML";
-            this.grpBox_DML.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.grpBox_DML.Padding = new System.Windows.Forms.Padding(2);
             this.grpBox_DML.Size = new System.Drawing.Size(371, 44);
             this.grpBox_DML.TabIndex = 4;
             this.grpBox_DML.TabStop = false;
@@ -157,7 +159,7 @@
             // 
             this.rBtn_Delete.AutoSize = true;
             this.rBtn_Delete.Location = new System.Drawing.Point(284, 18);
-            this.rBtn_Delete.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.rBtn_Delete.Margin = new System.Windows.Forms.Padding(2);
             this.rBtn_Delete.Name = "rBtn_Delete";
             this.rBtn_Delete.Size = new System.Drawing.Size(67, 17);
             this.rBtn_Delete.TabIndex = 3;
@@ -170,7 +172,7 @@
             // 
             this.rBtn_Insert.AutoSize = true;
             this.rBtn_Insert.Location = new System.Drawing.Point(194, 18);
-            this.rBtn_Insert.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.rBtn_Insert.Margin = new System.Windows.Forms.Padding(2);
             this.rBtn_Insert.Name = "rBtn_Insert";
             this.rBtn_Insert.Size = new System.Drawing.Size(65, 17);
             this.rBtn_Insert.TabIndex = 2;
@@ -183,7 +185,7 @@
             // 
             this.rBtn_Replace.AutoSize = true;
             this.rBtn_Replace.Location = new System.Drawing.Point(99, 18);
-            this.rBtn_Replace.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.rBtn_Replace.Margin = new System.Windows.Forms.Padding(2);
             this.rBtn_Replace.Name = "rBtn_Replace";
             this.rBtn_Replace.Size = new System.Drawing.Size(74, 17);
             this.rBtn_Replace.TabIndex = 1;
@@ -196,7 +198,7 @@
             // 
             this.rBtn_Update.AutoSize = true;
             this.rBtn_Update.Location = new System.Drawing.Point(12, 18);
-            this.rBtn_Update.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.rBtn_Update.Margin = new System.Windows.Forms.Padding(2);
             this.rBtn_Update.Name = "rBtn_Update";
             this.rBtn_Update.Size = new System.Drawing.Size(69, 17);
             this.rBtn_Update.TabIndex = 0;
@@ -289,7 +291,7 @@
             this.Controls.Add(this.lbl_DatabaseName);
             this.Controls.Add(this.lblDatabase);
             this.Controls.Add(this.panel1);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "DatabaseUpdates";
             this.Text = "DatabaseUpdates";
             this.panel1.ResumeLayout(false);

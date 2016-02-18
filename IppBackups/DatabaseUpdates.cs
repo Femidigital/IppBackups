@@ -201,6 +201,7 @@ namespace IppBackups
                         else
                         {
                             root.InsertAfter(token, root.LastChild);
+                            doc.GetElementsByTagName("Database")[0].InsertAfter(token, doc.GetElementsByTagName("Database")[0].LastChild);
                         }
                     }
                 }
@@ -658,6 +659,7 @@ namespace IppBackups
                            {
                                inTreeNode.Nodes.Add(new TreeNode(tab.Attributes["name"].Value));
                                tNode = inTreeNode.Nodes[i];
+                               tNode.Tag = "Table";
                                AddNode(tab, tNode);
                                i++;
                            }
@@ -665,6 +667,7 @@ namespace IppBackups
                            {
                                inTreeNode.Nodes.Add(new TreeNode(tab.Attributes["name"].Value));
                                tNode = inTreeNode.Nodes[i];
+                               tNode.Tag = "Environment";
                                AddNode(tab, tNode);
                                i++;
 
@@ -673,6 +676,7 @@ namespace IppBackups
                            {
                                inTreeNode.Nodes.Add(new TreeNode(tab.Attributes["name"].Value));
                                tNode = inTreeNode.Nodes[i];
+                               tNode.Tag = "ReplaceToken";
                                AddNode(tab, tNode);
                            }
                        //}
@@ -814,7 +818,141 @@ namespace IppBackups
             tlp_ScriptBuilder.ResumeLayout();
         }
 
-        
+        private void tViewScripts_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                tViewScripts.SelectedNode = tViewScripts.GetNodeAt(e.X, e.Y);
+
+                int x = tViewScripts.SelectedNode.Bounds.X + tViewScripts.SelectedNode.Bounds.Width + 600;
+                int y = tViewScripts.SelectedNode.Bounds.Y + tViewScripts.SelectedNode.Bounds.Width + 30;
+                Point nodePos = new Point(x, y);
+
+                if (tViewScripts.SelectedNode != null)
+                {
+                    ContextMenu cm = new ContextMenu();
+
+                    if (tViewScripts.SelectedNode.Parent == null)
+                    {
+                        AddMenuItem(cm, "New Table");
+                    }
+                    else if (tViewScripts.SelectedNode.Tag == "Table" || tViewScripts.SelectedNode.Parent.Text == "<Table></Table>")
+                    {
+                        AddMenuItem(cm, "New Environment");
+                        AddMenuItem(cm, "Edit Table");
+                        AddMenuItem(cm, "Remove Table");
+                    }
+                    else if (tViewScripts.SelectedNode.Tag == "Environment")
+                    {
+                        AddMenuItem(cm, "New Query");
+                        AddMenuItem(cm, "Edit Environment");
+                        AddMenuItem(cm, "Remove Environment");
+                    }
+                    else if(tViewScripts.SelectedNode.Tag == "ReplaceToken")
+                    {
+                        AddMenuItem(cm, "Edit Query");
+                        AddMenuItem(cm, "Remove Query");
+                    }
+                    else if (tViewScripts.SelectedNode.Parent.Text != "Table" && tViewScripts.SelectedNode.Tag != "Environment" && tViewScripts.SelectedNode.Parent != null)
+                    {
+                        AddMenuItem(cm, "New Environment");
+                        AddMenuItem(cm, "Edit Table");
+                        AddMenuItem(cm, "Remove Table");
+                    }
+
+                    cm.Show(this, nodePos);
+                }
+            }
+        }
+
+        private void tViewScripts_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
+        {
+            this.BeginInvoke(new Action(() => afterAfterEdit(e.Node)));
+        }
+
+        private void afterAfterEdit(TreeNode node)
+        {
+            if (tViewScripts.SelectedNode.Parent.Text == "Database")
+            {
+                //tBox_ServerName.Text = node.Text;
+            }
+            else if (tViewScripts.SelectedNode.Parent.Tag == "Table")
+            {
+               // tBox_Instance.Text = node.Text;
+            }
+            else
+            {
+                //tBox_Environment.Text = node.Text;
+            }
+
+            btn_Commit.Enabled = true;
+        }
+
+        private MenuItem AddMenuItem(ContextMenu cm, string text)
+        {
+            MenuItem item = new MenuItem(text, new System.EventHandler(this.cmItemClick));
+            // item.Tag = context;
+            cm.MenuItems.Add(item);
+            return item;
+        }
+
+        private void cmItemClick(object sender, EventArgs e)
+        {
+            string actionText = "";
+            MenuItem m = (MenuItem)sender;
+
+            if (m.Text.ToLower() == "new environment")
+            {
+                //bServer = true;
+                actionText = "New Environment";
+
+                TreeNode newNode = new TreeNode("New Environment");
+
+                tViewScripts.SelectedNode.Nodes.Add(newNode);
+                tViewScripts.SelectedNode = newNode;
+                tViewScripts.LabelEdit = true;
+
+                if (!newNode.IsEditing)
+                {
+                    newNode.BeginEdit();
+                   // EnableServerDetails();
+                }
+            }
+            else if (m.Text.ToLower() == "new query")
+            {
+                //bServer = true;
+                actionText = "New Query";
+
+                TreeNode newNode = new TreeNode("New Query");
+
+                tViewScripts.SelectedNode.Nodes.Add(newNode);
+                tViewScripts.SelectedNode = newNode;
+                tViewScripts.LabelEdit = true;
+
+                if (!newNode.IsEditing)
+                {
+                    newNode.BeginEdit();
+                    // EnableServerDetails();
+                }
+
+            }
+        }
+
+        private void RemoveItemFromXml(string nType, string itemToDelete)
+        {
+            XDocument xdoc = XDocument.Load(sXmlFile);
+
+            var q = from node in xdoc.Descendants(nType)
+                    let pAttr = node.Parent.Attribute("name")
+                    let attr = node.Attribute("name")
+                    let inst = node.Attribute("instance")
+                    where (attr != null && attr.Value == itemToDelete) || (inst.Value == itemToDelete && pAttr.Value == tViewScripts.SelectedNode.Text)
+                    select node;
+
+            q.ToList().ForEach(x => x.Remove());
+            xdoc.Save(sXmlFile);
+            MessageBox.Show("Removed " + itemToDelete);
+        }
             
     }
 

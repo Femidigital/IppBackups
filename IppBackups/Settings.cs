@@ -549,21 +549,10 @@ namespace IppBackups
         private void btn_Apply_Click(object sender, EventArgs e)
         {
             string nodeType = "";
-            /* Now using a global variable.
-            XmlDocument doc2 = new XmlDocument();
-             */
+
             doc.Load(sXmlFile);
 
             XmlNode root = doc.DocumentElement;
-
-            //if (bServer)
-            //{
-            //    nodeType = "Server";
-            //}
-            //else
-            //{
-            //    nodeType = "Environemnt";
-            //}
 
             //Create a new node.
             XmlElement elem = doc.CreateElement("Server");
@@ -571,16 +560,9 @@ namespace IppBackups
             //Create Attributes.
             XmlAttribute name = doc.CreateAttribute("name");
             name.Value = tBox_ServerName.Text;
-            //XmlAttribute instance = doc.CreateAttribute("instance");
-            //instance.Value = tBox_Instance.Text;
+
             XmlAttribute ip = doc.CreateAttribute("ip");
             ip.Value = tBox_IPaddress.Text;
-            //XmlAttribute user = doc.CreateAttribute("user");
-            //user.Value = tBox_Username.Text;
-            //XmlAttribute password = doc.CreateAttribute("password");
-            //password.Value = tBox_Password.Text;
-            //XmlAttribute backups = doc.CreateAttribute("backups");
-            //backups.Value = tBox_BackupLocation.Text;
 
             XmlNode InstElement = doc.CreateElement("Instance");
 
@@ -646,12 +628,9 @@ namespace IppBackups
             else if (bServer_Edit)
             {
                 XmlNode oldElem = doc.SelectSingleNode("//Server[@name='" + tBox_ServerName.Text + "']");
-                //oldElem.Attributes["instance"].Value = tBox_Instance.Text;
+
                 oldElem.Attributes["ip"].Value = tBox_IPaddress.Text;
-                //oldElem.Attributes["user"].Value = tBox_Username.Text;
-                //oldElem.Attributes["password"].Value = tBox_Password.Text;
-                //oldElem.Attributes["backups"].Value = tBox_BackupLocation.Text;
-                // root.ReplaceChild(elem, oldElem);
+
                 bServer_Edit = false;
             }
             if (bInstance)
@@ -685,23 +664,14 @@ namespace IppBackups
             }
             else if (bEnvironment)
             {
-
-                //InstElement.AppendChild(elemEnv);
-                //elem.AppendChild(InstElement);
-                //root.InsertAfter(elemEnv, elem.LastChild);  // append the newly created environment to the selected server's child node.
-                //root.InsertAfter(elem, root.LastChild);
-                //InstElement.InsertAfter(elemEnv, InstElement.LastChild);
-                //InstElement.AppendChild(elemEnv);
-                //root.RemoveChild(root.SelectSingleNode("//Servers/Server/Instance/Environment[@name='']"));
                 root.SelectSingleNode("//Servers/Server[@name='" + tBox_ServerName.Text +"']/Instance[@instance='" + tBox_Instance.Text + "']").AppendChild(elemEnv);
-                //root.SelectSingleNode("//Servers/Server/Instance[@instance='" + tBox_Instance.Text + "']").AppendChild(elemEnv);
+
                 bEnvironment = false;
                 int count = 0;
                 XmlNode curNode = root.SelectSingleNode("//Servers/Server[@name='" + tBox_ServerName.Text + "']/Instance[@instance='" + tBox_Instance.Text + "']");
                 count = curNode.ChildNodes.Count;
                 if (count == 2)
                 {
-                    //XmlNodeList curElem = curNode.SelectNodes("//Servers/Server/Instance/Environment");
                     XmlNodeList curElem = curNode.ChildNodes;
 
                     if (curElem[0].Attributes["name"].Value == "")
@@ -719,10 +689,6 @@ namespace IppBackups
                 envNode.Attributes["log"].Value = tBox_LogFiles.Text;
                 bEnvironment = false;
             }
-
-            //XmlNode elemServ = doc.SelectSingleNode("//Server[@name='" + tBox_ServerName.Text + "']");
-
-            //elemServ.AppendChild(elemEnv);
 
             doc.Save(sXmlFile);
 
