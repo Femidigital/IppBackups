@@ -200,8 +200,30 @@ namespace IppBackups
                         }
                         else
                         {
+                            //Create a new Database node to attach.
+                            XmlNode database = doc.CreateNode(XmlNodeType.Element, "Database", null);
+
+                            XmlAttribute name = doc.CreateAttribute("name");
+                            name.Value = lblDatabase.Text;
+
+                            // Create a new Table Node 
+                            XmlNode table = doc.CreateNode(XmlNodeType.Element, "Table", null);
+
+                            XmlAttribute tblNode = doc.CreateAttribute("name");
+                            tblNode.Value = cBox_Tables.SelectedItem.ToString();
+
+
+                            // Create a newEnvironment Node
+                            XmlNode envNode = doc.CreateNode(XmlNodeType.Element, "Environment", null);
+
+                            XmlAttribute envName = doc.CreateAttribute("name");
+                            envName.Value = "";
+
+                            database.AppendChild(tblNode);
+
+                            // Attach the token to the new database node.
                             root.InsertAfter(token, root.LastChild);
-                            doc.GetElementsByTagName("Database")[0].InsertAfter(token, doc.GetElementsByTagName("Database")[0].LastChild);
+                            doc.GetElementsByTagName("Database")[0].InsertAfter(database, doc.GetElementsByTagName("Database")[0].LastChild);
                         }
                     }
                 }
