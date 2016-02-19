@@ -1,80 +1,94 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Databases>
   <Database name="PersonalData">
     <Tables>
       <Table name="Identity">
-      <Environments>
-        <Environment name="PROD">
-          <Tokens>
-            <ReplaceToken name="Identity" type="ColumnToken" dml="Replace">
-              <Token set="" columnName="ClaimIdentifier" operand="=" value="%.com%"></Token>
-            </ReplaceToken>
-            <FilterToken name="Identity" type="FilterToken">
-              <Token set="WITH" columnName="ClaimIdentifier" operand="=" value="https://identity.bsigroup.com"></Token>
-            </FilterToken>
-          </Tokens>
-        </Environment>
-        <Environment name="PPD">
-          <Tokens>
-            <ReplaceToken name="Identity" type="ColumnToken" dml="Replace">
-              <Token set="" columnName="ClaimIdentifier" operand="=" value="%.com%"></Token>
-            </ReplaceToken>
-            <FilterToken name="Identity" type="FilterToken">
-              <Token set="WITH" columnName="ClaimIdentifier" operand="=" value="https://identityppd.bsigroup.com"></Token>
-            </FilterToken>
-          </Tokens>
-        </Environment>
-        <Environment name="UAT">
-          <Tokens>
-            <ReplaceToken name="Identity" type="ColumnToken" dml="Replace">
-			        <Token set="" columnName="ClaimIdentifier" operand="=" value="%.com%"></Token>
-            </ReplaceToken>
-            <FilterToken name="Identity" type="FilterToken">
-              <Token set="WITH" columnName="ClaimIdentifier" operand="=" value="https://identity.bsiuat.com"></Token>
-            </FilterToken>
-          </Tokens>
-        </Environment>
-        <Environment name="QA">
-          <Tokens>
-            <ReplaceToken name="Identity" type="ColumnToken" dml="Replace">
-              <Token set="" columnName="ClaimIdentifier" operand="=" value="%.com%"></Token>
-            </ReplaceToken>
-            <FilterToken name="Identity" type="FilterToken">
-              <Token set="WITH" columnName="ClaimIdentifier" operand="=" value="https://identityqa.bsiuat.com"></Token>
-            </FilterToken>
-          </Tokens>
-        </Environment>
-        <Environment name="CI">
-          <Tokens>
-            <ReplaceToken name="Identity" type="ColumnToken" dml="Replace">
-              <Token set="" columnName="ClaimIdentifier" operand="=" value="%.com%"></Token>
-            </ReplaceToken>
-            <FilterToken name="Identity" type="FilterToken">
-              <Token set="WITH" columnName="ClaimIdentifier" operand="=" value="https://identityci.bsiuat.com"></Token>
-            </FilterToken>
-          </Tokens>
-        </Environment>
-        <Environment name="DEV">
-          <Tokens>
-            <ReplaceToken name="Identity" type="ColumnToken"  dml="Replace">
-              <Token set="" columnName="ClaimIdentifier" operand="=" value="%.com%"></Token>
-            </ReplaceToken>
-            <FilterToken name="Identity" type="FilterToken">
-              <Token set="WITH" columnName="ClaimIdentifier" operand="=" value="https://identitydev.bsiuat.com"></Token>
-            </FilterToken>
-          </Tokens>
-        </Environment>
-        <Environment name="TEST">
-          <Tokens>
-            <ReplaceToken name="Identity" type="ColumnToken"  dml="Replace">
-              <Token set="" columnName="ClaimIdentifier" operand="=" value="%.com%"></Token>
-            </ReplaceToken>
-            <FilterToken name="Identity" type="FilterToken">
-              <Token set="WITH" columnName="ClaimIdentifier" operand="=" value="https://identitytest.bsiuat.com"></Token>
-            </FilterToken>
-          </Tokens>
-        </Environment>
-      </Environments>
+        <Environments>
+          <Environment name="PROD">
+            <Tokens>
+              <ReplaceToken name="Identity" type="ColumnToken" dml="Replace">
+                <Token set="" columnName="ClaimIdentifier" operand="=" value="%.com%">
+                </Token>
+              </ReplaceToken>
+              <FilterToken name="Identity" type="FilterToken">
+                <Token set="WITH" columnName="ClaimIdentifier" operand="=" value="https://identity.bsigroup.com">
+                </Token>
+              </FilterToken>
+            </Tokens>
+          </Environment>
+          <Environment name="PPD">
+            <Tokens>
+              <ReplaceToken name="Identity" type="ColumnToken" dml="Replace">
+                <Token set="" columnName="ClaimIdentifier" operand="=" value="%.com%">
+                </Token>
+              </ReplaceToken>
+              <FilterToken name="Identity" type="FilterToken">
+                <Token set="WITH" columnName="ClaimIdentifier" operand="=" value="https://identityppd.bsigroup.com">
+                </Token>
+              </FilterToken>
+            </Tokens>
+          </Environment>
+          <Environment name="UAT">
+            <Tokens>
+              <ReplaceToken name="Identity" type="ColumnToken" dml="Replace">
+                <Token set="" columnName="ClaimIdentifier" operand="=" value="%.com%">
+                </Token>
+              </ReplaceToken>
+              <FilterToken name="Identity" type="FilterToken">
+                <Token set="WITH" columnName="ClaimIdentifier" operand="=" value="https://identity.bsiuat.com">
+                </Token>
+              </FilterToken>
+            </Tokens>
+          </Environment>
+          <Environment name="QA">
+            <Tokens>
+              <ReplaceToken name="Identity" type="ColumnToken" dml="Replace">
+                <Token set="" columnName="ClaimIdentifier" operand="=" value="%.com%">
+                </Token>
+              </ReplaceToken>
+              <FilterToken name="Identity" type="FilterToken">
+                <Token set="WITH" columnName="ClaimIdentifier" operand="=" value="https://identityqa.bsiuat.com">
+                </Token>
+              </FilterToken>
+            </Tokens>
+          </Environment>
+          <Environment name="CI">
+            <Tokens>
+              <ReplaceToken name="Identity" type="ColumnToken" dml="Replace">
+                <Token set="" columnName="ClaimIdentifier" operand="=" value="%.com%">
+                </Token>
+              </ReplaceToken>
+              <FilterToken name="Identity" type="FilterToken">
+                <Token set="WITH" columnName="ClaimIdentifier" operand="=" value="https://identityci.bsiuat.com">
+                </Token>
+              </FilterToken>
+            </Tokens>
+          </Environment>
+          <Environment name="DEV">
+            <Tokens>
+              <ReplaceToken name="Identity" type="ColumnToken" dml="Replace">
+                <Token set="" columnName="ClaimIdentifier" operand="=" value="%.com%">
+                </Token>
+              </ReplaceToken>
+              <FilterToken name="Identity" type="FilterToken">
+                <Token set="WITH" columnName="ClaimIdentifier" operand="=" value="https://identitydev.bsiuat.com">
+                </Token>
+              </FilterToken>
+            </Tokens>
+          </Environment>
+          <Environment name="TEST">
+            <Tokens>
+              <ReplaceToken name="Identity" type="ColumnToken" dml="Replace">
+                <Token set="" columnName="ClaimIdentifier" operand="=" value="%.com%">
+                </Token>
+              </ReplaceToken>
+              <FilterToken name="Identity" type="FilterToken">
+                <Token set="WITH" columnName="ClaimIdentifier" operand="=" value="https://identitytest.bsiuat.com">
+                </Token>
+              </FilterToken>
+            </Tokens>
+          </Environment>
+        </Environments>
       </Table>
     </Tables>
   </Database>
@@ -85,242 +99,312 @@
           <Environment name="PROD">
             <Tokens>
               <ReplaceToken name="admin" type="ColumnToken" dml="Update">
-                <Token set="" columnName="UserName" operand="=" value="prod-cloudadmin"></Token>
-                <Token set="AND" columnName="Password" operand="=" value="Password1"></Token>
+                <Token set="" columnName="UserName" operand="=" value="prod-cloudadmin">
+                </Token>
+                <Token set="AND" columnName="Password" operand="=" value="Password1">
+                </Token>
               </ReplaceToken>
-              <FilterToken name="admin"  type="FilterToken">
-                <Token set="WHERE" columnName="Name" operand="=" value="admin"></Token>
+              <FilterToken name="admin" type="FilterToken">
+                <Token set="WHERE" columnName="Name" operand="=" value="admin">
+                </Token>
               </FilterToken>
               <ReplaceToken name="Dar" type="ColumnToken" dml="Update">
-                <Token set="" columnName="UserName" operand="=" value="363a5e31aa0f4d7894e95d95df875137"></Token>
-                <Token set="AND" columnName="Password" operand="=" value="363a5e31aa0f4d7894e95d95df875137"></Token>
+                <Token set="" columnName="UserName" operand="=" value="363a5e31aa0f4d7894e95d95df875137">
+                </Token>
+                <Token set="AND" columnName="Password" operand="=" value="363a5e31aa0f4d7894e95d95df875137">
+                </Token>
               </ReplaceToken>
-              <FilterToken name="Dar"  type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="1"></Token>
+              <FilterToken name="Dar" type="FilterToken">
+                <Token set="WHERE" columnName="Id" operand="=" value="1">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="PPD">
             <Tokens>
               <ReplaceToken name="admin" type="ColumnToken" dml="Update">
-                <Token set="" columnName="UserName" operand="=" value="ppd-cloudadmin"></Token>
-                <Token set="AND" columnName="Password" operand="=" value="Password1"></Token>
+                <Token set="" columnName="UserName" operand="=" value="ppd-cloudadmin">
+                </Token>
+                <Token set="AND" columnName="Password" operand="=" value="Password1">
+                </Token>
               </ReplaceToken>
-              <FilterToken  name="admin" type="FilterToken">
-                <Token set="WHERE" columnName="Name" operand="=" value="admin"></Token>
+              <FilterToken name="admin" type="FilterToken">
+                <Token set="WHERE" columnName="Name" operand="=" value="admin">
+                </Token>
               </FilterToken>
               <ReplaceToken name="Dar" type="ColumnToken" dml="Update">
-                <Token set="" columnName="UserName" operand="=" value="363a5e31aa0f4d7894e95d95df875137"></Token>
-                <Token set="AND" columnName="Password" operand="=" value="363a5e31aa0f4d7894e95d95df875137"></Token>
+                <Token set="" columnName="UserName" operand="=" value="363a5e31aa0f4d7894e95d95df875137">
+                </Token>
+                <Token set="AND" columnName="Password" operand="=" value="363a5e31aa0f4d7894e95d95df875137">
+                </Token>
               </ReplaceToken>
               <FilterToken name="Dar" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="1"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="1">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="UAT">
             <Tokens>
               <ReplaceToken name="admin" type="ColumnToken" dml="Update">
-                <Token set="" columnName="UserName" operand="=" value="uat-cloudadmin"></Token>
-                <Token set="AND" columnName="Password" operand="=" value="Password1"></Token>
+                <Token set="" columnName="UserName" operand="=" value="uat-cloudadmin">
+                </Token>
+                <Token set="AND" columnName="Password" operand="=" value="Password1">
+                </Token>
               </ReplaceToken>
               <FilterToken name="admin" type="FilterToken">
-                <Token set="WHERE" columnName="Name" operand="=" value="admin"></Token>
+                <Token set="WHERE" columnName="Name" operand="=" value="admin">
+                </Token>
               </FilterToken>
-              <ReplaceToken name="Dar"  type="ColumnToken" dml="Update">
-                <Token set="" columnName="UserName" operand="=" value="363a5e31aa0f4d7894e95d95df875137"></Token>
-                <Token set="AND" columnName="Password" operand="=" value="363a5e31aa0f4d7894e95d95df875137"></Token>
+              <ReplaceToken name="Dar" type="ColumnToken" dml="Update">
+                <Token set="" columnName="UserName" operand="=" value="363a5e31aa0f4d7894e95d95df875137">
+                </Token>
+                <Token set="AND" columnName="Password" operand="=" value="363a5e31aa0f4d7894e95d95df875137">
+                </Token>
               </ReplaceToken>
               <FilterToken name="Dar" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="1"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="1">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="QA">
             <Tokens>
               <ReplaceToken name="admin" type="ColumnToken" dml="Update">
-                <Token set="" columnName="UserName" operand="=" value="qa-cloudadmin"></Token>
-                <Token set="AND" columnName="Password" operand="=" value="Password1"></Token>
+                <Token set="" columnName="UserName" operand="=" value="qa-cloudadmin">
+                </Token>
+                <Token set="AND" columnName="Password" operand="=" value="Password1">
+                </Token>
               </ReplaceToken>
               <FilterToken name="admin" type="FilterToken">
-                <Token set="WHERE" columnName="Name" operand="=" value="admin"></Token>
+                <Token set="WHERE" columnName="Name" operand="=" value="admin">
+                </Token>
               </FilterToken>
-              <ReplaceToken name="Dar"  type="ColumnToken" dml="Update">
-                <Token set="" columnName="UserName" operand="=" value="363a5e31aa0f4d7894e95d95df875137"></Token>
-                <Token set="AND" columnName="Password" operand="=" value="363a5e31aa0f4d7894e95d95df875137"></Token>
+              <ReplaceToken name="Dar" type="ColumnToken" dml="Update">
+                <Token set="" columnName="UserName" operand="=" value="363a5e31aa0f4d7894e95d95df875137">
+                </Token>
+                <Token set="AND" columnName="Password" operand="=" value="363a5e31aa0f4d7894e95d95df875137">
+                </Token>
               </ReplaceToken>
               <FilterToken name="Dar" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="1"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="1">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="CI">
             <Tokens>
               <ReplaceToken name="admin" type="ColumnToken" dml="Update">
-                <Token set="" columnName="UserName" operand="=" value="ci-cloudadmin"></Token>
-                <Token set="AND" columnName="Password" operand="=" value="Password1"></Token>
+                <Token set="" columnName="UserName" operand="=" value="ci-cloudadmin">
+                </Token>
+                <Token set="AND" columnName="Password" operand="=" value="Password1">
+                </Token>
               </ReplaceToken>
               <FilterToken name="admin" type="FilterToken">
-                <Token set="WHERE" columnName="Name" operand="=" value="admin"></Token>
+                <Token set="WHERE" columnName="Name" operand="=" value="admin">
+                </Token>
               </FilterToken>
-              <ReplaceToken name="Dar"  type="ColumnToken" dml="Update">
-                <Token set="" columnName="UserName" operand="=" value="363a5e31aa0f4d7894e95d95df875137"></Token>
-                <Token set="AND" columnName="Password" operand="=" value="363a5e31aa0f4d7894e95d95df875137"></Token>
+              <ReplaceToken name="Dar" type="ColumnToken" dml="Update">
+                <Token set="" columnName="UserName" operand="=" value="363a5e31aa0f4d7894e95d95df875137">
+                </Token>
+                <Token set="AND" columnName="Password" operand="=" value="363a5e31aa0f4d7894e95d95df875137">
+                </Token>
               </ReplaceToken>
               <FilterToken name="Dar" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="1"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="1">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="DEV">
             <Tokens>
               <ReplaceToken name="admin" type="ColumnToken" dml="Update">
-                <Token set="" columnName="UserName" operand="=" value="dev-cloudadmin"></Token>
-                <Token set="AND" columnName="Password" operand="=" value="Password1"></Token>
+                <Token set="" columnName="UserName" operand="=" value="dev-cloudadmin">
+                </Token>
+                <Token set="AND" columnName="Password" operand="=" value="Password1">
+                </Token>
               </ReplaceToken>
               <FilterToken name="admin" type="FilterToken">
-                <Token set="WHERE" columnName="Name" operand="=" value="admin"></Token>
+                <Token set="WHERE" columnName="Name" operand="=" value="admin">
+                </Token>
               </FilterToken>
-              <ReplaceToken name="Dar"  type="ColumnToken" dml="Update">
-                <Token set="" columnName="UserName" operand="=" value="363a5e31aa0f4d7894e95d95df875137"></Token>
-                <Token set="AND" columnName="Password" operand="=" value="363a5e31aa0f4d7894e95d95df875137"></Token>
+              <ReplaceToken name="Dar" type="ColumnToken" dml="Update">
+                <Token set="" columnName="UserName" operand="=" value="363a5e31aa0f4d7894e95d95df875137">
+                </Token>
+                <Token set="AND" columnName="Password" operand="=" value="363a5e31aa0f4d7894e95d95df875137">
+                </Token>
               </ReplaceToken>
               <FilterToken name="Dar" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="1"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="1">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
-		      <Environment name="TEST">
-                <Tokens>
-                  <ReplaceToken name="admin" type="ColumnToken" dml="Update">
-                    <Token set="" columnName="UserName" operand="=" value="test-cloudadmin"></Token>
-                    <Token set="AND" columnName="Password" operand="=" value="Password1"></Token>
-                  </ReplaceToken>
-                  <FilterToken name="admin" type="FilterToken">
-                    <Token set="WHERE" columnName="Name" operand="=" value="admin"></Token>
-                  </FilterToken>
-                  <ReplaceToken name="Dar"  type="ColumnToken" dml="Update">
-                    <Token set="" columnName="UserName" operand="=" value="363a5e31aa0f4d7894e95d95df875137"></Token>
-                    <Token set="AND" columnName="Password" operand="=" value="363a5e31aa0f4d7894e95d95df875137"></Token>
-                  </ReplaceToken>
-                  <FilterToken name="Dar" type="FilterToken">
-                    <Token set="WHERE" columnName="Id" operand="=" value="1"></Token>
-                  </FilterToken>
-                </Tokens>
-              </Environment>
+          <Environment name="TEST">
+            <Tokens>
+              <ReplaceToken name="admin" type="ColumnToken" dml="Update">
+                <Token set="" columnName="UserName" operand="=" value="test-cloudadmin">
+                </Token>
+                <Token set="AND" columnName="Password" operand="=" value="Password1">
+                </Token>
+              </ReplaceToken>
+              <FilterToken name="admin" type="FilterToken">
+                <Token set="WHERE" columnName="Name" operand="=" value="admin">
+                </Token>
+              </FilterToken>
+              <ReplaceToken name="Dar" type="ColumnToken" dml="Update">
+                <Token set="" columnName="UserName" operand="=" value="363a5e31aa0f4d7894e95d95df875137">
+                </Token>
+                <Token set="AND" columnName="Password" operand="=" value="363a5e31aa0f4d7894e95d95df875137">
+                </Token>
+              </ReplaceToken>
+              <FilterToken name="Dar" type="FilterToken">
+                <Token set="WHERE" columnName="Id" operand="=" value="1">
+                </Token>
+              </FilterToken>
+            </Tokens>
+          </Environment>
         </Environments>
       </Table>
       <Table name="DatabasePool">
         <Environments>
           <Environment name="PROD">
             <Tokens>
-              <ReplaceToken name="Dar"  type="ColumnToken" dml="Update">
-                <Token set="" columnName="Name" operand="=" value="DAR"></Token>
+              <ReplaceToken name="Dar" type="ColumnToken" dml="Update">
+                <Token set="" columnName="Name" operand="=" value="DAR">
+                </Token>
               </ReplaceToken>
               <FilterToken name="Dar" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="3"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="3">
+                </Token>
               </FilterToken>
               <ReplaceToken name="Eurocodes" type="ColumnToken" dml="Update">
-                <Token set="" columnName="Name" operand="=" value="Eurocodes"></Token>
+                <Token set="" columnName="Name" operand="=" value="Eurocodes">
+                </Token>
               </ReplaceToken>
               <FilterToken name="Eurocodes" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="10"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="10">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="PPD">
             <Tokens>
-              <ReplaceToken name="Dar"  type="ColumnToken" dml="Update">
-                <Token set="" columnName="Name" operand="=" value="DAR"></Token>
+              <ReplaceToken name="Dar" type="ColumnToken" dml="Update">
+                <Token set="" columnName="Name" operand="=" value="DAR">
+                </Token>
               </ReplaceToken>
               <FilterToken name="Dar" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="3"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="3">
+                </Token>
               </FilterToken>
               <ReplaceToken name="Eurocodes" type="ColumnToken" dml="Update">
-                <Token set="" columnName="Name" operand="=" value="Eurocodes"></Token>
+                <Token set="" columnName="Name" operand="=" value="Eurocodes">
+                </Token>
               </ReplaceToken>
               <FilterToken name="Eurocodes" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="10"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="10">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="UAT">
             <Tokens>
-              <ReplaceToken name="Dar"  type="ColumnToken" dml="Update">
-                <Token set="" columnName="Name" operand="=" value="DAR"></Token>
+              <ReplaceToken name="Dar" type="ColumnToken" dml="Update">
+                <Token set="" columnName="Name" operand="=" value="DAR">
+                </Token>
               </ReplaceToken>
               <FilterToken name="Dar" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="3"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="3">
+                </Token>
               </FilterToken>
               <ReplaceToken name="Eurocodes" type="ColumnToken" dml="Update">
-                <Token set="" columnName="Name" operand="=" value="Eurocodes"></Token>
+                <Token set="" columnName="Name" operand="=" value="Eurocodes">
+                </Token>
               </ReplaceToken>
               <FilterToken name="Eurocodes" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="10"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="10">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="QA">
             <Tokens>
-              <ReplaceToken name="Dar"  type="ColumnToken" dml="Update">
-                <Token set="" columnName="Name" operand="=" value="DAR"></Token>
+              <ReplaceToken name="Dar" type="ColumnToken" dml="Update">
+                <Token set="" columnName="Name" operand="=" value="DAR">
+                </Token>
               </ReplaceToken>
               <FilterToken name="Dar" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="3"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="3">
+                </Token>
               </FilterToken>
               <ReplaceToken name="Eurocodes" type="ColumnToken" dml="Update">
-                <Token set="" columnName="Name" operand="=" value="Eurocodes"></Token>
+                <Token set="" columnName="Name" operand="=" value="Eurocodes">
+                </Token>
               </ReplaceToken>
               <FilterToken name="Eurocodes" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="10"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="10">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="CI">
             <Tokens>
-              <ReplaceToken name="Dar"  type="ColumnToken" dml="Update">
-                <Token set="" columnName="Name" operand="=" value="DAR"></Token>
+              <ReplaceToken name="Dar" type="ColumnToken" dml="Update">
+                <Token set="" columnName="Name" operand="=" value="DAR">
+                </Token>
               </ReplaceToken>
               <FilterToken name="Dar" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="3"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="3">
+                </Token>
               </FilterToken>
-              <ReplaceToken name="Eurocodes"  type="ColumnToken" dml="Update">
-                <Token set="" columnName="Name" operand="=" value="Eurocodes"></Token>
+              <ReplaceToken name="Eurocodes" type="ColumnToken" dml="Update">
+                <Token set="" columnName="Name" operand="=" value="Eurocodes">
+                </Token>
               </ReplaceToken>
               <FilterToken name="Eurocodes" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="10"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="10">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="DEV">
             <Tokens>
-              <ReplaceToken name="Dar"  type="ColumnToken" dml="Update">
-                <Token set="" columnName="Name" operand="=" value="DAR"></Token>
+              <ReplaceToken name="Dar" type="ColumnToken" dml="Update">
+                <Token set="" columnName="Name" operand="=" value="DAR">
+                </Token>
               </ReplaceToken>
               <FilterToken name="Dar" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="3"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="3">
+                </Token>
               </FilterToken>
-              <ReplaceToken name="Eurocodes"  type="ColumnToken" dml="Update">
-                <Token set="" columnName="Name" operand="=" value="Eurocodes"></Token>
+              <ReplaceToken name="Eurocodes" type="ColumnToken" dml="Update">
+                <Token set="" columnName="Name" operand="=" value="Eurocodes">
+                </Token>
               </ReplaceToken>
               <FilterToken name="Eurocodes" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="10"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="10">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="TEST">
             <Tokens>
-              <ReplaceToken name="Dar"  type="ColumnToken" dml="Update">
-                <Token set="" columnName="Name" operand="=" value="DAR"></Token>
+              <ReplaceToken name="Dar" type="ColumnToken" dml="Update">
+                <Token set="" columnName="Name" operand="=" value="DAR">
+                </Token>
               </ReplaceToken>
               <FilterToken name="Dar" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="3"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="3">
+                </Token>
               </FilterToken>
-              <ReplaceToken name="Eurocodes"  type="ColumnToken" dml="Update">
-                <Token set="" columnName="Name" operand="=" value="Eurocodes"></Token>
+              <ReplaceToken name="Eurocodes" type="ColumnToken" dml="Update">
+                <Token set="" columnName="Name" operand="=" value="Eurocodes">
+                </Token>
               </ReplaceToken>
               <FilterToken name="Eurocodes" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="10"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="10">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
@@ -331,159 +415,214 @@
           <Environment name="PROD">
             <Tokens>
               <ReplaceToken name="dar_Marklogic" type="ColumnToken" dml="Update">
-                <Token set="" columnName="Host" operand="=" value="10.33.207.20"></Token>
-                <Token set="AND" columnName="Port" operand="=" value="20051"></Token>
+                <Token set="" columnName="Host" operand="=" value="10.33.207.20">
+                </Token>
+                <Token set="AND" columnName="Port" operand="=" value="20051">
+                </Token>
               </ReplaceToken>
               <FilterToken name="dar_Marklogic" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="5"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="5">
+                </Token>
               </FilterToken>
               <ReplaceToken name="sql" type="ColumnToken" dml="Update">
-                <Token set="" columnName="Host" operand="=" value="10.33.203.33"></Token>
-                <Token set="AND" columnName="Port" operand="=" value="1443"></Token>
+                <Token set="" columnName="Host" operand="=" value="10.33.203.33">
+                </Token>
+                <Token set="AND" columnName="Port" operand="=" value="1443">
+                </Token>
               </ReplaceToken>
               <FilterToken name="sql" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="10"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="10">
+                </Token>
               </FilterToken>
-			  <ReplaceToken name="CompNav_Marklogic" type="ColumnToken" dml="Update">
-				<Token set="" columnName="Host" operand="=" value="10.103.207.23"></Token>
-				<Token set="AND" columnName="Port" operand="=" value="9001"></Token>
-			  </ReplaceToken>
+              <ReplaceToken name="CompNav_Marklogic" type="ColumnToken" dml="Update">
+                <Token set="" columnName="Host" operand="=" value="10.103.207.23">
+                </Token>
+                <Token set="AND" columnName="Port" operand="=" value="9001">
+                </Token>
+              </ReplaceToken>
               <FilterToken name="CompNav_Marklogic" type="FilterToken">
-			  	<Token set="WHERE" columnName="Id" operand="=" value="10"></Token>
-			  </FilterToken>
+                <Token set="WHERE" columnName="Id" operand="=" value="10">
+                </Token>
+              </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="PPD">
             <Tokens>
               <ReplaceToken name="dar_Marklogic" type="ColumnToken" dml="Update">
-                <Token set="" columnName="Host" operand="=" value="10.33.207.21"></Token>
-                <Token set="AND" columnName="Port" operand="=" value="20101"></Token>
+                <Token set="" columnName="Host" operand="=" value="10.33.207.21">
+                </Token>
+                <Token set="AND" columnName="Port" operand="=" value="20101">
+                </Token>
               </ReplaceToken>
               <FilterToken name="dar_Marklogic" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="5"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="5">
+                </Token>
               </FilterToken>
-			  <ReplaceToken name="sql" type="ColumnToken" dml="Update">
-			    <Token set="" columnName="Host" operand="=" value="10.33.203.33"></Token>
-				<Token set="AND" columnName="Port" operand="=" value="1443"></Token>
-			  </ReplaceToken>
+              <ReplaceToken name="sql" type="ColumnToken" dml="Update">
+                <Token set="" columnName="Host" operand="=" value="10.33.203.33">
+                </Token>
+                <Token set="AND" columnName="Port" operand="=" value="1443">
+                </Token>
+              </ReplaceToken>
               <FilterToken name="sql" type="FilterToken">
-				<Token set="WHERE" columnName="Id" operand="=" value="10"></Token>
-			  </FilterToken>	
+                <Token set="WHERE" columnName="Id" operand="=" value="10">
+                </Token>
+              </FilterToken>
               <ReplaceToken name="CompNav_Marklogic" type="ColumnToken" dml="Update">
-                <Token set="" columnName="Host" operand="=" value="10.33.207.24"></Token>
-                <Token set="AND" columnName="Port" operand="=" value="9051"></Token>
+                <Token set="" columnName="Host" operand="=" value="10.33.207.24">
+                </Token>
+                <Token set="AND" columnName="Port" operand="=" value="9051">
+                </Token>
               </ReplaceToken>
               <FilterToken name="CompNav_Marklogic" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="10"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="10">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="UAT">
             <Tokens>
               <ReplaceToken name="dar_Marklogic" type="ColumnToken" dml="Update">
-                <Token set="" columnName="Host" operand="=" value="172.16.87.43"></Token>
-                <Token set="AND" columnName="Port" operand="=" value="5500"></Token>
+                <Token set="" columnName="Host" operand="=" value="172.16.87.43">
+                </Token>
+                <Token set="AND" columnName="Port" operand="=" value="5500">
+                </Token>
               </ReplaceToken>
               <FilterToken name="dar_Marklogic" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="5"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="5">
+                </Token>
               </FilterToken>
-			  <ReplaceToken name="sql" type="ColumnToken" dml="Update">
-				<Token set="" columnName="Host" operand="=" value="10.103.109.46"></Token>
-				<Token set="AND" columnName="Port" operand="=" value="1433"></Token>
-			  </ReplaceToken>
+              <ReplaceToken name="sql" type="ColumnToken" dml="Update">
+                <Token set="" columnName="Host" operand="=" value="10.103.109.46">
+                </Token>
+                <Token set="AND" columnName="Port" operand="=" value="1433">
+                </Token>
+              </ReplaceToken>
               <FilterToken name="sql" type="FilterToken">
-				<Token set="WHERE" columnName="Id" operand="=" value="10"></Token>
-			  </FilterToken>
+                <Token set="WHERE" columnName="Id" operand="=" value="10">
+                </Token>
+              </FilterToken>
               <ReplaceToken name="CompNav_Marklogic" type="ColumnToken" dml="Update">
-                <Token set="" columnName="Host" operand="=" value="10.103.109.24"></Token>
-                <Token set="AND" columnName="Port" operand="=" value="9001"></Token>
+                <Token set="" columnName="Host" operand="=" value="10.103.109.24">
+                </Token>
+                <Token set="AND" columnName="Port" operand="=" value="9001">
+                </Token>
               </ReplaceToken>
               <FilterToken name="CompNav_Marklogic" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="10"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="10">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="QA">
             <Tokens>
               <ReplaceToken name="dar_Marklogic" type="ColumnToken" dml="Update">
-                <Token set="" columnName="Host" operand="=" value="172.16.87.43"></Token>
-                <Token set="AND" columnName="Port" operand="=" value="5400"></Token>
+                <Token set="" columnName="Host" operand="=" value="172.16.87.43">
+                </Token>
+                <Token set="AND" columnName="Port" operand="=" value="5400">
+                </Token>
               </ReplaceToken>
               <FilterToken name="dar_Marklogic" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="5"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="5">
+                </Token>
               </FilterToken>
-			  <ReplaceToken name="sql" type="ColumnToken" dml="Update">
-				<Token set="" columnName="Host" operand="=" value="10.103.109.45"></Token>
-				<Token set="AND" columnName="Port" operand="=" value="1443"></Token>
-			  </ReplaceToken>
+              <ReplaceToken name="sql" type="ColumnToken" dml="Update">
+                <Token set="" columnName="Host" operand="=" value="10.103.109.45">
+                </Token>
+                <Token set="AND" columnName="Port" operand="=" value="1443">
+                </Token>
+              </ReplaceToken>
               <FilterToken name="sql" type="FilterToken">
-				<Token set="WHERE" columnName="Id" operand="=" value="10"></Token>
-			  </FilterToken>
+                <Token set="WHERE" columnName="Id" operand="=" value="10">
+                </Token>
+              </FilterToken>
               <ReplaceToken name="CompNav_Marklogic" type="ColumnToken" dml="Update">
-                <Token set="" columnName="Host" operand="=" value="10.103.109.21"></Token>
-                <Token set="AND" columnName="Port" operand="=" value="9001"></Token>
+                <Token set="" columnName="Host" operand="=" value="10.103.109.21">
+                </Token>
+                <Token set="AND" columnName="Port" operand="=" value="9001">
+                </Token>
               </ReplaceToken>
               <FilterToken name="CompNav_Marklogic" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="10"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="10">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="CI">
             <Tokens>
               <ReplaceToken name="dar_Marklogic" type="ColumnToken" dml="Update">
-                <Token set="" columnName="Host" operand="=" value="172.16.87.43"></Token>
-                <Token set="AND" columnName="Port" operand="=" value="5300"></Token>
+                <Token set="" columnName="Host" operand="=" value="172.16.87.43">
+                </Token>
+                <Token set="AND" columnName="Port" operand="=" value="5300">
+                </Token>
               </ReplaceToken>
               <FilterToken name="dar_Marklogic" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="5"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="5">
+                </Token>
               </FilterToken>
-			  <ReplaceToken name="sql" type="ColumnToken" dml="Update">
-				<Token set="" columnName="Host" operand="=" value="10.103.109.45"></Token>
-				<Token set="AND" columnName="Port" operand="=" value="1433"></Token>
-			  </ReplaceToken>
+              <ReplaceToken name="sql" type="ColumnToken" dml="Update">
+                <Token set="" columnName="Host" operand="=" value="10.103.109.45">
+                </Token>
+                <Token set="AND" columnName="Port" operand="=" value="1433">
+                </Token>
+              </ReplaceToken>
               <FilterToken name="sql" type="FilterToken">
-				<Token set="WHERE" columnName="Id" operand="=" value="10"></Token>
-			  </FilterToken>
+                <Token set="WHERE" columnName="Id" operand="=" value="10">
+                </Token>
+              </FilterToken>
               <ReplaceToken name="CompNav_Marklogic" type="ColumnToken" dml="Update">
-                <Token set="" columnName="Host" operand="=" value="10.103.109.21"></Token>
-                <Token set="AND" columnName="Port" operand="=" value="9001"></Token>
+                <Token set="" columnName="Host" operand="=" value="10.103.109.21">
+                </Token>
+                <Token set="AND" columnName="Port" operand="=" value="9001">
+                </Token>
               </ReplaceToken>
               <FilterToken name="CompNav_Marklogic" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="10"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="10">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="DEV">
             <Tokens>
               <ReplaceToken name="dar_Marklogic" type="ColumnToken" dml="Update">
-                <Token set="" columnName="Host" operand="=" value="127.0.0.1"></Token>
+                <Token set="" columnName="Host" operand="=" value="127.0.0.1">
+                </Token>
               </ReplaceToken>
               <FilterToken name="dar_Marklogic" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="3"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="3">
+                </Token>
               </FilterToken>
               <ReplaceToken name="CompNav_Marklogic" type="ColumnToken" dml="Update">
-                <Token set="" columnName="Host" operand="=" value="127.0.0.1"></Token>
+                <Token set="" columnName="Host" operand="=" value="127.0.0.1">
+                </Token>
               </ReplaceToken>
               <FilterToken name="CompNav_Marklogic" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="10"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="10">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="TEST">
             <Tokens>
-              <ReplaceToken  name="dar_Marklogic" type="ColumnToken" dml="Update">
-                <Token set="" columnName="Host" operand="=" value="127.0.0.1"></Token>
-                <Token set="AND" columnName="Port" operand="=" value="20101"></Token>
+              <ReplaceToken name="dar_Marklogic" type="ColumnToken" dml="Update">
+                <Token set="" columnName="Host" operand="=" value="127.0.0.1">
+                </Token>
+                <Token set="AND" columnName="Port" operand="=" value="20101">
+                </Token>
               </ReplaceToken>
-              <FilterToken  name="dar_Marklogic" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="5"></Token>
+              <FilterToken name="dar_Marklogic" type="FilterToken">
+                <Token set="WHERE" columnName="Id" operand="=" value="5">
+                </Token>
               </FilterToken>
               <ReplaceToken name="CompNav_Marklogic" type="ColumnToken" dml="Update">
-                <Token set="" columnName="Host" operand="=" value="127.0.0.1"></Token>
-                <Token set="AND" columnName="Port" operand="=" value=""></Token>
+                <Token set="" columnName="Host" operand="=" value="127.0.0.1">
+                </Token>
+                <Token set="AND" columnName="Port" operand="=" value="">
+                </Token>
               </ReplaceToken>
               <FilterToken name="CompNav_Marklogic" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="10"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="10">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
@@ -494,112 +633,140 @@
           <Environment name="PROD">
             <Tokens>
               <ReplaceToken name="eurocodesUrl" type="ColumnToken" dml="Update">
-                <Token set="" columnName="Url" operand="=" value="https://eurocodesplus.bsigroup.com"></Token>
+                <Token set="" columnName="Url" operand="=" value="https://eurocodesplus.bsigroup.com">
+                </Token>
               </ReplaceToken>
               <FilterToken name="eurocodesUrl" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="3"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="3">
+                </Token>
               </FilterToken>
               <ReplaceToken name="bsolUrl" type="ColumnToken" dml="Update">
-                <Token set="" columnName="Url" operand="=" value="https://bsol.bsigroup.com"></Token>
+                <Token set="" columnName="Url" operand="=" value="https://bsol.bsigroup.com">
+                </Token>
               </ReplaceToken>
               <FilterToken name="bsolUrl" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="10"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="10">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="PPD">
             <Tokens>
               <ReplaceToken name="eurocodesUrl" type="ColumnToken" dml="Update">
-                <Token set="" columnName="Url" operand="=" value="https://eurocodesplusppd.bsigroup.com"></Token>
+                <Token set="" columnName="Url" operand="=" value="https://eurocodesplusppd.bsigroup.com">
+                </Token>
               </ReplaceToken>
               <FilterToken name="eurocodesUrl" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="3"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="3">
+                </Token>
               </FilterToken>
               <ReplaceToken name="bsolUrl" type="ColumnToken" dml="Update">
-                <Token set="" columnName="Url" operand="=" value="https://bsolppd.bsigroup.com"></Token>
+                <Token set="" columnName="Url" operand="=" value="https://bsolppd.bsigroup.com">
+                </Token>
               </ReplaceToken>
               <FilterToken name="bsolUrl" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="10"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="10">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="UAT">
             <Tokens>
               <ReplaceToken name="eurocodesUrl" type="ColumnToken" dml="Update">
-                <Token set="" columnName="Url" operand="=" value="https://eurocodesplus.bsiuat.com"></Token>
+                <Token set="" columnName="Url" operand="=" value="https://eurocodesplus.bsiuat.com">
+                </Token>
               </ReplaceToken>
               <FilterToken name="eurocodesUrl" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="3"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="3">
+                </Token>
               </FilterToken>
               <ReplaceToken name="bsolUrl" type="ColumnToken" dml="Update">
-                <Token set="" columnName="Url" operand="=" value="https://bsol.bsiuat.com"></Token>
+                <Token set="" columnName="Url" operand="=" value="https://bsol.bsiuat.com">
+                </Token>
               </ReplaceToken>
               <FilterToken name="bsolUrl" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="10"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="10">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="QA">
             <Tokens>
               <ReplaceToken name="eurocodesUrl" type="ColumnToken" dml="Update">
-                <Token set="" columnName="Url" operand="=" value="https://eurocodesplusqa.bsiuat.com"></Token>
+                <Token set="" columnName="Url" operand="=" value="https://eurocodesplusqa.bsiuat.com">
+                </Token>
               </ReplaceToken>
               <FilterToken name="eurocodesUrl" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="3"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="3">
+                </Token>
               </FilterToken>
               <ReplaceToken name="bsolUrl" type="ColumnToken" dml="Update">
-                <Token set="" columnName="Url" operand="=" value="https://bsolqa.bsiuat.com"></Token>
+                <Token set="" columnName="Url" operand="=" value="https://bsolqa.bsiuat.com">
+                </Token>
               </ReplaceToken>
               <FilterToken name="bsolUrl" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="10"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="10">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="CI">
             <Tokens>
               <ReplaceToken name="eurocodesUrl" type="ColumnToken" dml="Update">
-                <Token set="" columnName="Url" operand="=" value="https://eurocodesplusci.bsiuat.com"></Token>
+                <Token set="" columnName="Url" operand="=" value="https://eurocodesplusci.bsiuat.com">
+                </Token>
               </ReplaceToken>
               <FilterToken name="eurocodesUrl" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="3"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="3">
+                </Token>
               </FilterToken>
               <ReplaceToken name="bsolUrl" type="ColumnToken" dml="Update">
-                <Token set="" columnName="Url" operand="=" value="https://bsolci.bsiuat.com"></Token>
+                <Token set="" columnName="Url" operand="=" value="https://bsolci.bsiuat.com">
+                </Token>
               </ReplaceToken>
               <FilterToken name="bsolUrl" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="10"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="10">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="DEV">
             <Tokens>
               <ReplaceToken name="eurocodesUrl" type="ColumnToken" dml="Update">
-                <Token set="" columnName="Url" operand="=" value="https://eurocodesplusdev.bsiuat.com"></Token>
+                <Token set="" columnName="Url" operand="=" value="https://eurocodesplusdev.bsiuat.com">
+                </Token>
               </ReplaceToken>
               <FilterToken name="eurocodesUrl" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="5"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="5">
+                </Token>
               </FilterToken>
               <ReplaceToken name="bsolUrl" type="ColumnToken" dml="Update">
-                <Token set="" columnName="Url" operand="=" value="https://bsoldev.bsiuat.com"></Token>
+                <Token set="" columnName="Url" operand="=" value="https://bsoldev.bsiuat.com">
+                </Token>
               </ReplaceToken>
               <FilterToken name="bsolUrl" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="10"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="10">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="TEST">
             <Tokens>
               <ReplaceToken name="eurocodesUrl" type="ColumnToken" dml="Update">
-                <Token set="" columnName="Url" operand="=" value="https://eurocodesplustest.bsiuat.com"></Token>
+                <Token set="" columnName="Url" operand="=" value="https://eurocodesplustest.bsiuat.com">
+                </Token>
               </ReplaceToken>
               <FilterToken name="eurocodesUrl" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="3"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="3">
+                </Token>
               </FilterToken>
               <ReplaceToken name="bsolUrl" type="ColumnToken" dml="Update">
-                <Token set="" columnName="Url" operand="=" value="https://bsoltest.bsiuat.com"></Token>
+                <Token set="" columnName="Url" operand="=" value="https://bsoltest.bsiuat.com">
+                </Token>
               </ReplaceToken>
               <FilterToken name="bsolUrl" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="10"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="10">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
@@ -610,70 +777,84 @@
           <Environment name="PROD">
             <Tokens>
               <ReplaceToken name="watermark" type="ColumnToken" dml="Update">
-                <Token set="" columnName="Value" operand="=" value="True"></Token>
+                <Token set="" columnName="Value" operand="=" value="True">
+                </Token>
               </ReplaceToken>
               <FilterToken name="watermark" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="5"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="5">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="PPD">
             <Tokens>
               <ReplaceToken name="watermark" type="ColumnToken" dml="Update">
-				  <Token set="" columnName="Value" operand="=" value="True"></Token>
+                <Token set="" columnName="Value" operand="=" value="True">
+                </Token>
               </ReplaceToken>
               <FilterToken name="watermark" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="5"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="5">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="UAT">
             <Tokens>
               <ReplaceToken name="watermark" type="ColumnToken" dml="Update">
-                <Token set="" columnName="Value" operand="=" value="True"></Token>
+                <Token set="" columnName="Value" operand="=" value="True">
+                </Token>
               </ReplaceToken>
               <FilterToken name="watermark" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="5"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="5">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="QA">
             <Tokens>
               <ReplaceToken name="watermark" type="ColumnToken" dml="Update">
-                <Token set="" columnName="Value" operand="=" value="True"></Token>
+                <Token set="" columnName="Value" operand="=" value="True">
+                </Token>
               </ReplaceToken>
               <FilterToken name="watermark" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="5"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="5">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="CI">
             <Tokens>
               <ReplaceToken name="watermark" type="ColumnToken" dml="Update">
-                <Token set="" columnName="Value" operand="=" value="True"></Token>
+                <Token set="" columnName="Value" operand="=" value="True">
+                </Token>
               </ReplaceToken>
               <FilterToken name="watermark" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="5"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="5">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="DEV">
             <Tokens>
               <ReplaceToken name="watermark" type="ColumnToken" dml="Update">
-                <Token set="" columnName="Value" operand="=" value="True"></Token>
+                <Token set="" columnName="Value" operand="=" value="True">
+                </Token>
               </ReplaceToken>
               <FilterToken name="watermark" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="5"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="5">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="TEST">
             <Tokens>
               <ReplaceToken name="watermark" type="ColumnToken" dml="Update">
-                <Token set="" columnName="Value" operand="=" value="True"></Token>
+                <Token set="" columnName="Value" operand="=" value="True">
+                </Token>
               </ReplaceToken>
               <FilterToken name="watermark" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="5"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="5">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
@@ -684,70 +865,84 @@
           <Environment name="PROD">
             <Tokens>
               <ReplaceToken name="Issuer" type="ColumnToken" dml="Update">
-                <Token set="" columnName="IssuerUri" operand="=" value="https://identity.bsigroup.com"></Token>
+                <Token set="" columnName="IssuerUri" operand="=" value="https://identity.bsigroup.com">
+                </Token>
               </ReplaceToken>
               <FilterToken name="Issuer" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="1"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="1">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="PPD">
             <Tokens>
               <ReplaceToken name="Issuer" type="ColumnToken" dml="Update">
-                <Token set="" columnName="IssuerUri" operand="=" value="https://identityppd.bsigroup.com"></Token>
+                <Token set="" columnName="IssuerUri" operand="=" value="https://identityppd.bsigroup.com">
+                </Token>
               </ReplaceToken>
               <FilterToken name="Issuer" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="1"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="1">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="UAT">
             <Tokens>
               <ReplaceToken name="Issuer" type="ColumnToken" dml="Update">
-                <Token set="" columnName="IssuerUri" operand="=" value="https://identity.bsiuat.com"></Token>
+                <Token set="" columnName="IssuerUri" operand="=" value="https://identity.bsiuat.com">
+                </Token>
               </ReplaceToken>
               <FilterToken name="Issuer" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="1"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="1">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="QA">
             <Tokens>
               <ReplaceToken name="Issuer" type="ColumnToken" dml="Update">
-                <Token set="" columnName="IssuerUri" operand="=" value="https://identityqa.bsiuat.com"></Token>
+                <Token set="" columnName="IssuerUri" operand="=" value="https://identityqa.bsiuat.com">
+                </Token>
               </ReplaceToken>
               <FilterToken name="Issuer" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="1"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="1">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="CI">
             <Tokens>
               <ReplaceToken name="Issuer" type="ColumnToken" dml="Update">
-                <Token set="" columnName="IssuerUri" operand="=" value="https://identityci.bsiuat.com"></Token>
+                <Token set="" columnName="IssuerUri" operand="=" value="https://identityci.bsiuat.com">
+                </Token>
               </ReplaceToken>
               <FilterToken name="Issuer" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="1"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="1">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="DEV">
             <Tokens>
               <ReplaceToken name="Issuer" type="ColumnToken" dml="Update">
-                <Token set="" columnName="IssuerUri" operand="=" value="https://identitydev.bsiuat.com"></Token>
+                <Token set="" columnName="IssuerUri" operand="=" value="https://identitydev.bsiuat.com">
+                </Token>
               </ReplaceToken>
               <FilterToken name="Issuer" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="1"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="1">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="TEST">
             <Tokens>
               <ReplaceToken name="Issuer" type="ColumnToken" dml="Update">
-                <Token set="" columnName="IssuerUri" operand="=" value="https://identitytest.bsiuat.com"></Token>
+                <Token set="" columnName="IssuerUri" operand="=" value="https://identitytest.bsiuat.com">
+                </Token>
               </ReplaceToken>
               <FilterToken name="Issuer" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="1"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="1">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
@@ -762,154 +957,214 @@
           <Environment name="PROD">
             <Tokens>
               <ReplaceToken name="BSOL_OrderPrefix" type="ColumnToken" dml="Update">
-                <Token set="" columnName="ApplicationPrefix" operand="=" value="B"></Token>
+                <Token set="" columnName="ApplicationPrefix" operand="=" value="B">
+                </Token>
               </ReplaceToken>
               <FilterToken name="BSOL_OrderPrefix" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="1"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="1">
+                </Token>
               </FilterToken>
               <ReplaceToken name="Sho_OrderPrefix" type="ColumnToken" dml="Update">
-                <Token set="" columnName="ApplicationPrefix" operand="=" value="S"></Token>
+                <Token set="" columnName="ApplicationPrefix" operand="=" value="S">
+                </Token>
               </ReplaceToken>
               <FilterToken name="Sho_OrderPrefix" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="2"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="2">
+                </Token>
               </FilterToken>
               <ReplaceToken name="MC_OrderPrefix" type="ColumnToken" dml="Update">
-                <Token set="" columnName="ApplicationPrefix" operand="=" value="M"></Token>
+                <Token set="" columnName="ApplicationPrefix" operand="=" value="M">
+                </Token>
               </ReplaceToken>
               <FilterToken name="MC_OrderPrefix" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="3"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="3">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="PPD">
             <Tokens>
               <ReplaceToken name="BSOL_OrderPrefix" type="ColumnToken" dml="Update">
-                <Token set="" columnName="ApplicationPrefix" operand="=" value="BPPD"></Token>
+                <Token set="" columnName="ApplicationPrefix" operand="=" value="BPPD">
+                </Token>
               </ReplaceToken>
               <FilterToken name="BSOL_OrderPrefix" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="1"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="1">
+                </Token>
               </FilterToken>
               <ReplaceToken name="Shop_OrderPrefix" type="ColumnToken" dml="Update">
-                <Token set="" columnName="ApplicationPrefix" operand="=" value="SPPD"></Token>
+                <Token set="" columnName="ApplicationPrefix" operand="=" value="SPPD">
+                </Token>
               </ReplaceToken>
               <FilterToken name="Shop_OrderPrefix" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="2"></Token>
+                <Token set="WHERE" columnName="Id" operand="=" value="2">
+                </Token>
               </FilterToken>
               <ReplaceToken name="MC_OrderPrefix" type="ColumnToken" dml="Update">
-                <Token set="" columnName="ApplicationPrefix" operand="=" value="MPPD"></Token>
+                <Token set="" columnName="ApplicationPrefix" operand="=" value="MPPD">
+                </Token>
               </ReplaceToken>
-			  <FilterToken name="MC_OrderPrefix" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="3"></Token>
+              <FilterToken name="MC_OrderPrefix" type="FilterToken">
+                <Token set="WHERE" columnName="Id" operand="=" value="3">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="UAT">
             <Tokens>
               <ReplaceToken name="BSOL_OrderPrefix" type="ColumnToken" dml="Update">
-                <Token set="" columnName="ApplicationPrefix" operand="=" value="BUAT"></Token>
+                <Token set="" columnName="ApplicationPrefix" operand="=" value="BUAT">
+                </Token>
               </ReplaceToken>
-		      <FilterToken name="BSOL_OrderPrefix" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="1"></Token>
+              <FilterToken name="BSOL_OrderPrefix" type="FilterToken">
+                <Token set="WHERE" columnName="Id" operand="=" value="1">
+                </Token>
               </FilterToken>
               <ReplaceToken name="Shop_OrderPrefix" type="ColumnToken" dml="Update">
-                <Token set="" columnName="ApplicationPrefix" operand="=" value="SUAT"></Token>
+                <Token set="" columnName="ApplicationPrefix" operand="=" value="SUAT">
+                </Token>
               </ReplaceToken>
-			  <FilterToken name="Shop_OrderPrefix" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="2"></Token>
+              <FilterToken name="Shop_OrderPrefix" type="FilterToken">
+                <Token set="WHERE" columnName="Id" operand="=" value="2">
+                </Token>
               </FilterToken>
               <ReplaceToken name="MC_OrderPrefix" type="ColumnToken" dml="Update">
-                <Token set="" columnName="ApplicationPrefix" operand="=" value="MUAT"></Token>
+                <Token set="" columnName="ApplicationPrefix" operand="=" value="MUAT">
+                </Token>
               </ReplaceToken>
-			  <FilterToken name="MC_OrderPrefix" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="3"></Token>
+              <FilterToken name="MC_OrderPrefix" type="FilterToken">
+                <Token set="WHERE" columnName="Id" operand="=" value="3">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="QA">
             <Tokens>
               <ReplaceToken name="BSOL_OrderPrefix" type="ColumnToken" dml="Update">
-                <Token set="" columnName="ApplicationPrefix" operand="=" value="BQA"></Token>
+                <Token set="" columnName="ApplicationPrefix" operand="=" value="BQA">
+                </Token>
               </ReplaceToken>
-			  <FilterToken name="BSOL_OrderPrefix" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="1"></Token>
+              <FilterToken name="BSOL_OrderPrefix" type="FilterToken">
+                <Token set="WHERE" columnName="Id" operand="=" value="1">
+                </Token>
               </FilterToken>
               <ReplaceToken name="Shop_OrderPrefix" type="ColumnToken" dml="Update">
-                <Token set="" columnName="ApplicationPrefix" operand="=" value="SQA"></Token>
+                <Token set="" columnName="ApplicationPrefix" operand="=" value="SQA">
+                </Token>
               </ReplaceToken>
-			  <FilterToken name="Shop_OrderPrefix" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="2"></Token>
+              <FilterToken name="Shop_OrderPrefix" type="FilterToken">
+                <Token set="WHERE" columnName="Id" operand="=" value="2">
+                </Token>
               </FilterToken>
               <ReplaceToken name="MC_OrderPrefix" type="ColumnToken" dml="Update">
-                <Token set="" columnName="ApplicationPrefix" operand="=" value="MQA"></Token>
+                <Token set="" columnName="ApplicationPrefix" operand="=" value="MQA">
+                </Token>
               </ReplaceToken>
-		      <FilterToken name="MC_OrderPrefix" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="3"></Token>
+              <FilterToken name="MC_OrderPrefix" type="FilterToken">
+                <Token set="WHERE" columnName="Id" operand="=" value="3">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="CI">
             <Tokens>
               <ReplaceToken name="BSOL_OrderPrefix" type="ColumnToken" dml="Update">
-                <Token set="" columnName="ApplicationPrefix" operand="=" value="BCI"></Token>
+                <Token set="" columnName="ApplicationPrefix" operand="=" value="BCI">
+                </Token>
               </ReplaceToken>
-			  <FilterToken name="BSOL_OrderPrefix" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="1"></Token>
+              <FilterToken name="BSOL_OrderPrefix" type="FilterToken">
+                <Token set="WHERE" columnName="Id" operand="=" value="1">
+                </Token>
               </FilterToken>
               <ReplaceToken name="Shop_OrderPrefix" type="ColumnToken" dml="Update">
-                <Token set="" columnName="ApplicationPrefix" operand="=" value="SCI"></Token>
+                <Token set="" columnName="ApplicationPrefix" operand="=" value="SCI">
+                </Token>
               </ReplaceToken>
-			  <FilterToken name="BSOL_OrderPrefix" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="2"></Token>
+              <FilterToken name="BSOL_OrderPrefix" type="FilterToken">
+                <Token set="WHERE" columnName="Id" operand="=" value="2">
+                </Token>
               </FilterToken>
               <ReplaceToken name="MC_OrderPrefix" type="ColumnToken" dml="Update">
-                <Token set="" columnName="ApplicationPrefix" operand="=" value="MCI"></Token>
+                <Token set="" columnName="ApplicationPrefix" operand="=" value="MCI">
+                </Token>
               </ReplaceToken>
-			  <FilterToken name="MC_OrderPrefix" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="3"></Token>
+              <FilterToken name="MC_OrderPrefix" type="FilterToken">
+                <Token set="WHERE" columnName="Id" operand="=" value="3">
+                </Token>
               </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="DEV">
             <Tokens>
-				<ReplaceToken name="BSOL_OrderPrefix" type="ColumnToken" dml="Update">
-					<Token set="" columnName="ApplicationPrefix" operand="=" value="BDEV"></Token>
-				</ReplaceToken>
-				<FilterToken name="BSOL_OrderPrefix" type="FilterToken">
-					<Token set="WHERE" columnName="Id" operand="=" value="1"></Token>
-				</FilterToken>
-				<ReplaceToken name="Shop_OrderPrefix" type="ColumnToken" dml="Update">
-					<Token set="" columnName="ApplicationPrefix" operand="=" value="SDEV"></Token>
-				</ReplaceToken>
-				<FilterToken name="Shop_OrderPrefix" type="FilterToken">
-					<Token set="WHERE" columnName="Id" operand="=" value="2"></Token>
-				</FilterToken>
-				<ReplaceToken name="MC_OrderPrefix" type="ColumnToken" dml="Update">
-					<Token set="" columnName="ApplicationPrefix" operand="=" value="MDEV"></Token>
-				</ReplaceToken>
-				<FilterToken name="MC_OrderPrefix" type="FilterToken">
-					<Token set="WHERE" columnName="Id" operand="=" value="3"></Token>
-				</FilterToken>
+              <ReplaceToken name="BSOL_OrderPrefix" type="ColumnToken" dml="Update">
+                <Token set="" columnName="ApplicationPrefix" operand="=" value="BDEV">
+                </Token>
+              </ReplaceToken>
+              <FilterToken name="BSOL_OrderPrefix" type="FilterToken">
+                <Token set="WHERE" columnName="Id" operand="=" value="1">
+                </Token>
+              </FilterToken>
+              <ReplaceToken name="Shop_OrderPrefix" type="ColumnToken" dml="Update">
+                <Token set="" columnName="ApplicationPrefix" operand="=" value="SDEV">
+                </Token>
+              </ReplaceToken>
+              <FilterToken name="Shop_OrderPrefix" type="FilterToken">
+                <Token set="WHERE" columnName="Id" operand="=" value="2">
+                </Token>
+              </FilterToken>
+              <ReplaceToken name="MC_OrderPrefix" type="ColumnToken" dml="Update">
+                <Token set="" columnName="ApplicationPrefix" operand="=" value="MDEV">
+                </Token>
+              </ReplaceToken>
+              <FilterToken name="MC_OrderPrefix" type="FilterToken">
+                <Token set="WHERE" columnName="Id" operand="=" value="3">
+                </Token>
+              </FilterToken>
             </Tokens>
           </Environment>
           <Environment name="TEST">
             <Tokens>
               <ReplaceToken name="BSOL_OrderPrefix" type="ColumnToken" dml="Update">
-                <Token set="" columnName="ApplicationPrefix" operand="=" value="TESB"></Token>
+                <Token set="" columnName="ApplicationPrefix" operand="=" value="TESB">
+                </Token>
               </ReplaceToken>
-			  <FilterToken name="BSOL_OrderPrefix" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="1"></Token>
+              <FilterToken name="BSOL_OrderPrefix" type="FilterToken">
+                <Token set="WHERE" columnName="Id" operand="=" value="1">
+                </Token>
               </FilterToken>
               <ReplaceToken name="Shop_OrderPrefix" type="ColumnToken" dml="Update">
-                <Token set="" columnName="ApplicationPrefix" operand="=" value="TESS"></Token>
+                <Token set="" columnName="ApplicationPrefix" operand="=" value="TESS">
+                </Token>
               </ReplaceToken>
-			  <FilterToken name="Shop_OrderPrefix" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="2"></Token>
+              <FilterToken name="Shop_OrderPrefix" type="FilterToken">
+                <Token set="WHERE" columnName="Id" operand="=" value="2">
+                </Token>
               </FilterToken>
               <ReplaceToken name="MC_OrderPrefix" type="ColumnToken" dml="Update">
-                <Token set="" columnName="ApplicationPrefix" operand="=" value="TESM"></Token>
+                <Token set="" columnName="ApplicationPrefix" operand="=" value="TESM">
+                </Token>
               </ReplaceToken>
-			  <FilterToken name="MC_OrderPrefix" type="FilterToken">
-                <Token set="WHERE" columnName="Id" operand="=" value="3"></Token>
+              <FilterToken name="MC_OrderPrefix" type="FilterToken">
+                <Token set="WHERE" columnName="Id" operand="=" value="3">
+                </Token>
+              </FilterToken>
+            </Tokens>
+          </Environment>
+        </Environments>
+      </Table>
+    </Tables>
+  </Database>
+  <Database name="BSOL">
+    <Tables>
+      <Table name="MyDownload">
+        <Environments>
+          <Environment name="DEV">
+            <Tokens>
+              <ReplaceToken name="MyDownload" type="ColumnToken" dml="Update">
+                <Token set="" columnName="DocumentNumber" operand="=" value="000000000030331463" />
+              </ReplaceToken>
+              <FilterToken name="MyDownload" type="FilterToken">
+                <Token set="WHERE" columnName="Id" operand="=" value="123" />
               </FilterToken>
             </Tokens>
           </Environment>
@@ -918,4 +1173,3 @@
     </Tables>
   </Database>
 </Databases>
-

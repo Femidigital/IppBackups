@@ -155,6 +155,7 @@ namespace IppBackups
         private void btn_Commit_Click(object sender, EventArgs e)
         {
             XmlNode root = doc.DocumentElement;
+            bool whereClause = false;
             // this will create a .sql script file.
             if (scriptFromTreeView)
             {
@@ -162,23 +163,102 @@ namespace IppBackups
             }
             else
             {
-                MessageBox.Show("Create a new node at : \\" + cur_database + "\\" + cur_environment);
-                //string xpath = "\\" + cur_database + "\\" + cur_environment;
-                doc.Load(".\\Scripts\\DatabaseUpdateValues.xml");
+                string dbName = cur_database;
+                dbName = dbName.Substring(dbName.IndexOf("-") + 1, dbName.Length - (dbName.IndexOf("-") + 1));
+                string tblName = cBox_Tables.SelectedItem.ToString();
+                tblName = tblName.Substring(7, tblName.Length - 8);
 
-                XmlNode node = doc.SelectSingleNode("//Databases/Database[@name='" + cur_database +"']/Tables/Table[@name='" + cBox_Tables.SelectedItem + "']/Environments/Environment[@name='" + cur_environment +"']");
+                //doc.Load(".\\Scripts\\DatabaseUpdateValues.xml");
+                doc.Load("..\\..\\Scripts\\DatabaseUpdateValues.xml");
+
+                //XmlNode node = doc.SelectSingleNode("//Databases/Database[@name='" + cur_database +"']/Tables/Table[@name='" + cBox_Tables.SelectedItem + "']/Environments/Environment[@name='" + cur_environment +"']");
+                XmlNode node = doc.SelectSingleNode("//Databases/Database[@name='" + cur_database + "']/Tables/Table[@name='" + tblName + "']/Environments/Environment[@name='" + cur_environment + "']");
                          
                 if (node == null)
                 {
-                    for (int i = 0; i < tlp_ScriptBuilder.RowCount - 2; i++)
+                    int NoToken = tlp_ScriptBuilder.RowCount - 3;
+                    XmlNode[] token = new XmlNode[NoToken];
+
+                    //Create a new Database node to attach.
+                    XmlNode database = doc.CreateNode(XmlNodeType.Element, "Database", null);
+
+                    XmlAttribute name = doc.CreateAttribute("name");
+                    name.Value = dbName;
+
+                    database.Attributes.Append(name);
+
+                    XmlNode tables = doc.CreateNode(XmlNodeType.Element, "Tables", null);
+
+                    // Create a new Table Node 
+                    XmlNode table = doc.CreateNode(XmlNodeType.Element, "Table", null);
+
+                    XmlAttribute tblNode = doc.CreateAttribute("name");
+                    tblNode.Value = tblName;
+
+                    table.Attributes.Append(tblNode);
+
+                    XmlNode environments = doc.CreateNode(XmlNodeType.Element, "Environments", null);
+
+                    // Create a newEnvironment Node
+                    XmlNode envNode = doc.CreateNode(XmlNodeType.Element, "Environment", null);
+
+                    XmlAttribute envName = doc.CreateAttribute("name");
+                    envName.Value = cur_environment;
+
+                    envNode.Attributes.Append(envName);
+
+                    //Create a new Tokens Node
+                    XmlNode tokens = doc.CreateNode(XmlNodeType.Element, "Tokens", null);
+
+                    //Create a new ReplaceToken Node
+                    XmlNode replaceToken = doc.CreateNode(XmlNodeType.Element, "ReplaceToken", null);
+
+                    XmlAttribute repTokenName = doc.CreateAttribute("name");
+                    repTokenName.Value = tblName;
+
+                    XmlAttribute repTokenType = doc.CreateAttribute("type");
+                    repTokenType.Value = "ColumnToken";
+
+                    XmlAttribute repTokenDML = doc.CreateAttribute("dml");
+                    var checkedButton = grpBox_DML.Controls.OfType<RadioButton>()
+                        .FirstOrDefault(r => r.Checked);
+                    repTokenDML.Value = checkedButton.Text;
+
+                    replaceToken.Attributes.Append(repTokenName);
+                    replaceToken.Attributes.Append(repTokenType);
+                    replaceToken.Attributes.Append(repTokenDML);
+
+
+                    //Create a new FilterToken Node
+                    XmlNode filterToken = doc.CreateNode(XmlNodeType.Element, "FilterToken", null);
+
+                    XmlAttribute filTokenName = doc.CreateAttribute("name");
+                    filTokenName.Value = tblName;
+
+                    XmlAttribute filTokenType = doc.CreateAttribute("type");
+                    filTokenType.Value = "FilterToken";
+
+                    filterToken.Attributes.Append(filTokenName);
+                    filterToken.Attributes.Append(filTokenType);
+
+                    for (int i = 0; i < tlp_ScriptBuilder.RowCount - 3; i++)
                     {
-                        XmlNode token = doc.CreateNode(XmlNodeType.Element, "Token", null);
+                        token[i] = doc.CreateNode(XmlNodeType.Element, "Token", null);
 
                         XmlAttribute set = doc.CreateAttribute("set");
 
-                        if (cBox_Logic[i].SelectedItem != null)                        
+                        if (cBox_Logic[i].SelectedItem != null)
+                        {
                             set.Value = (string)cBox_Logic[i].SelectedItem;
-                        set.Value = "";
+                            if (set.Value == "WHERE")
+                            {
+                                whereClause = true;
+                            }
+                        }
+                        else
+                        {
+                            set.Value = "";
+                        }
 
                         XmlAttribute columnName = doc.CreateAttribute("columnName");
                         columnName.Value = (string)cBox_Field[i].SelectedItem;
@@ -189,46 +269,44 @@ namespace IppBackups
                         XmlAttribute value = doc.CreateAttribute("value");
                         value.Value = txtBox_Value[i].Text;
 
-                        token.Attributes.Append(set);
-                        token.Attributes.Append(columnName);
-                        token.Attributes.Append(operand);
-                        token.Attributes.Append(value);
+                        token[i].Attributes.Append(set);
+                        token[i].Attributes.Append(columnName);
+                        token[i].Attributes.Append(operand);
+                        token[i].Attributes.Append(value);
 
                         if (node != null)
                         {
-                            node.AppendChild(token);
+                            node.AppendChild(token[i]);
                         }
                         else
                         {
-                            //Create a new Database node to attach.
-                            XmlNode database = doc.CreateNode(XmlNodeType.Element, "Database", null);
+                            if (!whereClause)
+                            {
+                                replaceToken.AppendChild(token[i]);
+                            }
+                            else
+                            {
+                                filterToken.AppendChild(token[i]);
+                            }
 
-                            XmlAttribute name = doc.CreateAttribute("name");
-                            name.Value = lblDatabase.Text;
-
-                            // Create a new Table Node 
-                            XmlNode table = doc.CreateNode(XmlNodeType.Element, "Table", null);
-
-                            XmlAttribute tblNode = doc.CreateAttribute("name");
-                            tblNode.Value = cBox_Tables.SelectedItem.ToString();
-
-
-                            // Create a newEnvironment Node
-                            XmlNode envNode = doc.CreateNode(XmlNodeType.Element, "Environment", null);
-
-                            XmlAttribute envName = doc.CreateAttribute("name");
-                            envName.Value = "";
-
-                            database.AppendChild(tblNode);
-
-                            // Attach the token to the new database node.
-                            root.InsertAfter(token, root.LastChild);
-                            doc.GetElementsByTagName("Database")[0].InsertAfter(database, doc.GetElementsByTagName("Database")[0].LastChild);
                         }
                     }
+
+                    tokens.AppendChild(replaceToken);
+                    tokens.AppendChild(filterToken);
+                    envNode.AppendChild(tokens);
+                    environments.AppendChild(envNode);
+                    table.AppendChild(environments);
+                    tables.AppendChild(table);
+                    database.AppendChild(tables);
+
+                    // Attach the token to the new database node.
+                    //root.InsertAfter(token[i], root.LastChild);
+                    doc.GetElementsByTagName("Databases")[0].InsertAfter(database, doc.GetElementsByTagName("Databases")[0].LastChild);
                 }
 
-                doc.Save(".\\Scripts\\DatabaseUpdateValues.xml");                
+                //doc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
+                doc.Save("..\\..\\Scripts\\DatabaseUpdateValues.xml");    
             }
 
         }
@@ -776,7 +854,7 @@ namespace IppBackups
                                 //tlp_ScriptBuilder.StopPaint();
                                 if (replaceNode.Name == "ReplaceToken")
                                 {
-                                    if (replaceNode.Attributes["dml"].Value == "Update")
+                                    if (replaceNode.Attributes["dml"].Value.ToLower() == "update")
                                     {
                                         rBtn_Update.Checked = true;
                                         if (!rTxtBox_Script.Text.Contains("UPDATE"))
@@ -785,7 +863,7 @@ namespace IppBackups
                                             rTxtBox_Script.AppendText(" " + tbl + "\n", Color.Green);                                            
                                         }
                                     }
-                                    else if (replaceNode.Attributes["dml"].Value == "Delete")
+                                    else if (replaceNode.Attributes["dml"].Value.ToLower() == "delete")
                                     {
                                         rBtn_Delete.Checked = true;
                                         if (!rTxtBox_Script.Text.Contains("DELETE"))
@@ -794,7 +872,7 @@ namespace IppBackups
                                             rTxtBox_Script.AppendText(" " + tbl + "\n", Color.Green);
                                         }
                                     }
-                                    else if (replaceNode.Attributes["dml"].Value == "Replace")
+                                    else if (replaceNode.Attributes["dml"].Value.ToLower() == "replace")
                                     {
                                         rBtn_Replace.Checked = true;
                                     }
