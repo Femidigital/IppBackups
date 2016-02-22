@@ -1154,4 +1154,22 @@
       </Table>
     </Tables>
   </Database>
+  <Database name="BSOL">
+    <Tables>
+      <Table name="MyDownload">
+        <Environments>
+          <Environment name="DEV">
+            <Tokens>
+              <ReplaceToken name="MyDownload" type="ColumnToken" dml="UPDATE">
+                <Token set="" columnName="DocumentNumber" operand="=" value="000000000030331463" />
+              </ReplaceToken>
+              <FilterToken name="MyDownload" type="FilterToken">
+                <Token set="WHERE" columnName="Id" operand="=" value="123" />
+              </FilterToken>
+            </Tokens>
+          </Environment>
+        </Environments>
+      </Table>
+    </Tables>
+  </Database>
 </Databases>
