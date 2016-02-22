@@ -156,16 +156,20 @@ namespace IppBackups
         {
             XmlNode root = doc.DocumentElement;
             bool whereClause = false;
+            string tblName = "";
             // this will create a .sql script file.
             if (scriptFromTreeView)
             {
                 MessageBox.Show("Update selected node in TreeView");
+                tblName = tViewScripts.SelectedNode.Parent.Parent.Text;
+                
+                XmlNode node = doc.SelectSingleNode("//Databases/Database[@name='" + cur_database + "']/Tables/Table[@name='" + tblName + "']/Environments/Environment[@name='" + tViewScripts.SelectedNode.Parent.Text + "']/Tokens/ReplaceToken[@name='"+ tViewScripts.SelectedNode.Text + "']");
             }
             else
             {
                 string dbName = cur_database;
                 dbName = dbName.Substring(dbName.IndexOf("-") + 1, dbName.Length - (dbName.IndexOf("-") + 1));
-                string tblName = cBox_Tables.SelectedItem.ToString();
+                tblName = cBox_Tables.SelectedItem.ToString();
                 tblName = tblName.Substring(7, tblName.Length - 8);
 
                 //doc.Load(".\\Scripts\\DatabaseUpdateValues.xml");
