@@ -1066,7 +1066,12 @@ namespace IppBackups
                 }
 
             }
-            else if (m.Text.ToLower() == "copy query" || m.Text.ToLower() == "copy environment")
+            else if (m.Text.ToLower() == "copy query")
+            {
+                MessageBox.Show("Node selected" + tViewScripts.SelectedNode);
+                cloneNode = tViewScripts.SelectedNode;
+            }
+            else if (m.Text.ToLower() == "copy environment")
             {
                 MessageBox.Show("Node selected" + tViewScripts.SelectedNode);
                 cloneNode = tViewScripts.SelectedNode;
@@ -1077,13 +1082,13 @@ namespace IppBackups
                 var startindex = 0; // The position where selection starts.
                 var endindex = 0;   // The lenght of selection.
 
-                int pos = cur_database.IndexOf("-");
+                int pos = cur_database.IndexOf("-") + 1;
                 string old_environment = cur_database.Substring(0, pos);
                 cur_database = cur_database.Replace(old_environment, sel_environment);
 
                 if (tViewScripts.SelectedNode.Tag == "Table")
                 {
-                    startNode = doc.SelectSingleNode("Databases/Database[@name='" + cur_database + "']/Tables/Table[@name='" + tViewScripts.SelectedNode + "']");
+                    startNode = doc.SelectSingleNode("Databases/Database[@name='" + cur_database + "']/Tables/Table[@name='" + tViewScripts.SelectedNode + "']/Environments");
                 }
                 //else if (tViewScripts.SelectedNode.Tag == "ReplaceToken")
                 //{
