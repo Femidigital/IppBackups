@@ -1154,7 +1154,7 @@
       </Table>
     </Tables>
   </Database>
-  <Database name="BSOL">
+  <Database name="Bsol">
     <Tables>
       <Table name="MyDownload">
         <Environments>
