@@ -803,6 +803,10 @@ namespace IppBackups
                 rTxtBox_Script.AppendText("\nDECLARE ", Color.Blue);
                 rTxtBox_Script.AppendText("@Current" + cBox_Field[0].SelectedItem, Color.Black);
                 rTxtBox_Script.AppendText(" " + fieldDatatypes[cBox_Field[0].SelectedIndex].ToUpper() + "", Color.Blue);
+                if (fieldDatatypes[cBox_Field[0].SelectedIndex].ToUpper() == "NVARCHAR")
+                {
+                    rTxtBox_Script.AppendText("(" + fieldDatatypes[cBox_Field[0].SelectedIndex].Length + ")");
+                }
                 rTxtBox_Script.AppendText("\nSET ", Color.Blue);
                 rTxtBox_Script.AppendText("@Current" + cBox_Field[0].SelectedItem + " = (", Color.Black);
                 rTxtBox_Script.AppendText(" SELECT ", Color.Black);
@@ -846,8 +850,7 @@ namespace IppBackups
                 if (Enum.IsDefined(typeof(Environment), e.Node.Parent.Text))
                 {
                     sel_environment = e.Node.Parent.Text;
-                    //sel_environment = e.Node.Text;
-                    //nNode = startNode.SelectNodes("Tables/Table/Environments/Environment[@name='" + e.Node.Parent.Text + "']/Tokens/ReplaceToken[@name='" + e.Node.Text + "']");
+                    
                     nNode = startNode.SelectNodes("Tables/Table/Environments/Environment[@name='" + e.Node.Parent.Text + "']/Tokens");
                     UpdateScriptWindow();
 
@@ -1009,17 +1012,12 @@ namespace IppBackups
             {
                 //tBox_ServerName.Text = node.Text;
             }
-            //else if (tViewScripts.SelectedNode.Parent.Tag == "Table")
-            //{
-            //   // tBox_Instance.Text = node.Text;
-            //}
+
             else if (tViewScripts.SelectedNode.Tag == "Environment")
             {
-                //tBox_Environment.Text = node.Text;
-                //startNode.SelectSingleNode("Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Text + "']/Tokens")
                 bool exists = false;
-                XmlNode envNode = doc.CreateNode(XmlNodeType.Element, "Environment" , null);
-                
+                XmlNode envNode = doc.CreateNode(XmlNodeType.Element, "Environment", null);
+
                 XmlAttribute nameAttri = doc.CreateAttribute("name");
                 nameAttri.Value = tViewScripts.SelectedNode.Text;
 
@@ -1027,34 +1025,36 @@ namespace IppBackups
 
                 //Create a new Tokens Node
                 XmlNode tokens = doc.CreateNode(XmlNodeType.Element, "Tokens", null);
-                envNode.AppendChild(tokens);
-                //foreach (XmlNode dbNode in doc.GetElementsByTagName("Databases"))
-                foreach(XmlNode dbNode in doc.SelectSingleNode("/Databases/Database[@name='" + _cur_Db + "']/Tables/Table/Environments"))
+                //envNode.AppendChild(tokens);
+
+                foreach (XmlNode dbNode in doc.SelectSingleNode("/Databases/Database[@name='" + _cur_Db + "']/Tables/Table/Environments"))
                 {
                     if (dbNode.Attributes["name"].Value == tViewScripts.SelectedNode.Text)
                     {
                         exists = true;
-                    }                    
+                    }
                 }
-                //XmlNodeList dbNode = doc.GetElementsByTagName("Database");
-                //for (int i = 0; i < dbNode.Count; i++ )
-                //{
-                //    XmlElement database = dbNode[i] as XmlElement;
-                //    XmlElement table = (XmlElement)database.GetElementsByTagName("Environment")[i];
-                //    if (table != null)
-                //    {
-                //        doc.GetElementsByTagName("Environments")[i].InsertAfter(envNode, doc.GetElementsByTagName("Environments")[i].LastChild);
-                //    }
-                //}
-                //doc.GetElementsByTagName("Environments")[0].InsertAfter(envNode, doc.GetElementsByTagName("Environments")[0].LastChild);
-                //doc.Save("..\\..\\Scripts\\DatabaseUpdateValues.xml");
+
                 if (!exists)
                 {
-                    doc.SelectSingleNode("/Databases/Database[@name='" + _cur_Db + "']/Tables/Table/Environments").InsertAfter(envNode,doc.SelectSingleNode("/Databases/Database[@name='" + _cur_Db + "']/Tables/Table/Environments").LastChild);
+                    if (copyNode != null)
+                    {
+                        envNode.AppendChild(copyNode);
+                    }
+                    doc.SelectSingleNode("/Databases/Database[@name='" + _cur_Db + "']/Tables/Table/Environments").InsertAfter(envNode, doc.SelectSingleNode("/Databases/Database[@name='" + _cur_Db + "']/Tables/Table/Environments").LastChild);
                 }
 
                 doc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
                 startNode = doc.SelectSingleNode("Databases/Database[@name='" + _cur_Db + "']");
+            }
+            else if (tViewScripts.SelectedNode.Tag == "Table")
+            {
+                XmlNode updateNode = doc.SelectSingleNode("Databases/Database[@name='" + _cur_Db + "']/Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Text + "']");
+                targetNode = startNode.SelectSingleNode("Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Text + "']/");
+                targetNode.AppendChild(copyNode);
+
+                updateNode = targetNode;
+                doc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
             }
             else
             {
@@ -1116,14 +1116,11 @@ namespace IppBackups
             else if (m.Text.ToLower() == "copy query")
             {
                 XmlNode clickedNode = startNode.SelectSingleNode("Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Parent.Text + "']/Tokens");
-                //copyNode = startNode.SelectSingleNode("Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Parent.Text + "']/Tokens");
-                //copyNode = startNode.SelectSingleNode("Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Parent.Text + "']/Tokens/ReplaceToken[@name='" + tViewScripts.SelectedNode.Text + "']");
+                
                 copyNode = clickedNode.CloneNode(true);
 
                 TreeNode clickNode = tViewScripts.SelectedNode;
                 cloneNode = (TreeNode)clickNode.Clone();
-                
-                //cloneNode = tViewScripts.SelectedNode;
             }
             else if (m.Text.ToLower() == "copy environment")
             {
@@ -1132,9 +1129,6 @@ namespace IppBackups
 
                 TreeNode clickedNode = tViewScripts.SelectedNode;
                 cloneNode = (TreeNode)clickedNode.Clone();
-
-                //cloneNode = tViewScripts.Nodes[tViewScripts;
-                //cloneNode = tViewScripts.SelectedNode;
             }
             else if (m.Text.ToLower() == "paste environment")
             {
@@ -1150,12 +1144,7 @@ namespace IppBackups
                 if (tViewScripts.SelectedNode.Tag == "Table")
                 {
                     TreeNode newNode = new TreeNode("New Environment");
-                    //XmlNode startPasteNode;
-                    //startPasteNode = startNode.SelectSingleNode("/Tables/Table[@name='" + tViewScripts.SelectedNode + "']/Environments");
-                    //AddNode(startPasteNode, cloneNode);
-                    //startNode = doc.SelectSingleNode("/Databases/Database[@name='" + bare_database + "']/Tables/Table[@name='" + tViewScripts.SelectedNode + "']/Environments");
-                    //AddNode(startNode, cloneNode);
-                    //cloneNode.Text += "*";
+                    newNode.Tag = "Environment";
                     
                     tViewScripts.SelectedNode.Nodes.Add(newNode);
                     newNode.Nodes.Add(cloneNode.LastNode);
@@ -1167,10 +1156,6 @@ namespace IppBackups
                     {
                         newNode.BeginEdit();                        
                     }
-
-                   // targetNode = startNode.SelectSingleNode("Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Text + "']/Tokens");
-                    //targetNode.AppendChild(copyNode);
-
                 }
                 
             }
@@ -1179,6 +1164,7 @@ namespace IppBackups
                 var startindex = 0; // The position where selection starts.
                 var endindex = 0;   // The lenght of selection.
                 string bare_database = "";
+                
 
                 int pos = cur_database.IndexOf("-") + 1;
                 string old_environment = cur_database.Substring(0, pos);
@@ -1187,12 +1173,47 @@ namespace IppBackups
 
                 if (tViewScripts.SelectedNode.Tag == "Environment")
                 {
-                    targetNode = startNode.SelectSingleNode("Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Text + "']/Tokens");
+                    XmlNode updateNode = doc.SelectSingleNode("Databases/Database[@name='" + bare_database + "']/Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Text + "']");
+                    //targetNode = startNode.SelectSingleNode("Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Text + "']/Tokens");
+                    targetNode = startNode.SelectSingleNode("Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Text + "']");
                     targetNode.AppendChild(copyNode);
+
+                    updateNode = targetNode;
 
                     tViewScripts.SelectedNode.Nodes.Add(cloneNode);
                     //newNode.Nodes.Add(cloneNode.LastNode);
                     tViewScripts.SelectedNode = cloneNode;
+                }
+                doc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
+            }
+            else if (m.Text.ToLower() == "remove query")
+            {
+                string strMsg = String.Format("Are you sure you want to remove the Query : {0} and all its environment?", tViewScripts.SelectedNode.Text);
+                actionText = tViewScripts.SelectedNode.Text;
+                if (MessageBox.Show(strMsg, "Close Application", MessageBoxButtons.YesNo) != DialogResult.No)
+                {
+                    tViewScripts.Nodes.Remove(tViewScripts.SelectedNode);
+                    RemoveItemFromXml("Query", actionText);
+                }
+            }
+            else if (m.Text.ToLower() == "remove environment")
+            {
+                string strMsg = String.Format("This will remove {0} environment from your configuration. Confirm?", tViewScripts.SelectedNode.Text);
+                actionText = "Remove Environment clicked";
+                if (MessageBox.Show(strMsg, "Close Application", MessageBoxButtons.YesNo) != DialogResult.No)
+                {
+                    string toDelete = tViewScripts.SelectedNode.Text;
+                    //e.Cancel = true;
+                    tViewScripts.Nodes.Remove(tViewScripts.SelectedNode);
+
+                    XDocument xdoc = XDocument.Load(sXmlFile);
+                    var q = from node in xdoc.Descendants("Environment")
+                            let attr = node.Attribute("name")
+                            where attr != null && attr.Value == toDelete
+                            select node;
+                    q.ToList().ForEach(x => x.Remove());
+                    xdoc.Save(sXmlFile);
+                    MessageBox.Show("Removed " + toDelete);
                 }
             }
         }
