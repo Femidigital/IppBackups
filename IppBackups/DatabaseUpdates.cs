@@ -1053,7 +1053,7 @@ namespace IppBackups
                     doc.SelectSingleNode("/Databases/Database[@name='" + _cur_Db + "']/Tables/Table/Environments").InsertAfter(envNode,doc.SelectSingleNode("/Databases/Database[@name='" + _cur_Db + "']/Tables/Table/Environments").LastChild);
                 }
 
-                //doc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
+                doc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
                 startNode = doc.SelectSingleNode("Databases/Database[@name='" + _cur_Db + "']");
             }
             else
@@ -1115,8 +1115,10 @@ namespace IppBackups
             }
             else if (m.Text.ToLower() == "copy query")
             {
-                copyNode = startNode.SelectSingleNode("Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Parent.Text + "']/Tokens");
+                XmlNode clickedNode = startNode.SelectSingleNode("Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Parent.Text + "']/Tokens");
+                //copyNode = startNode.SelectSingleNode("Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Parent.Text + "']/Tokens");
                 //copyNode = startNode.SelectSingleNode("Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Parent.Text + "']/Tokens/ReplaceToken[@name='" + tViewScripts.SelectedNode.Text + "']");
+                copyNode = clickedNode.CloneNode(true);
 
                 TreeNode clickNode = tViewScripts.SelectedNode;
                 cloneNode = (TreeNode)clickNode.Clone();
@@ -1125,6 +1127,9 @@ namespace IppBackups
             }
             else if (m.Text.ToLower() == "copy environment")
             {
+                XmlNode clickedXmlNode = startNode.SelectSingleNode("Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Text + "']/Tokens");
+                copyNode = clickedXmlNode.CloneNode(true);
+
                 TreeNode clickedNode = tViewScripts.SelectedNode;
                 cloneNode = (TreeNode)clickedNode.Clone();
 
@@ -1162,6 +1167,10 @@ namespace IppBackups
                     {
                         newNode.BeginEdit();                        
                     }
+
+                   // targetNode = startNode.SelectSingleNode("Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Text + "']/Tokens");
+                    //targetNode.AppendChild(copyNode);
+
                 }
                 
             }
