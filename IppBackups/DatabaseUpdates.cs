@@ -1189,34 +1189,40 @@ namespace IppBackups
                 }
                 doc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
             }
-            else if (m.Text.ToLower() == "remove query")
+            else if (m.Text.ToLower() == "remove environment")
             {
-                string strMsg = String.Format("Are you sure you want to remove the Query : {0} and all its environment?", tViewScripts.SelectedNode.Text);
+                string strMsg = String.Format("Are you sure you want to remove the Environment : {0} and all its queries?", tViewScripts.SelectedNode.Text);
                 actionText = tViewScripts.SelectedNode.Text;
                 if (MessageBox.Show(strMsg, "Close Application", MessageBoxButtons.YesNo) != DialogResult.No)
                 {
-                    tViewScripts.Nodes.Remove(tViewScripts.SelectedNode);
-                    RemoveItemFromXml("ReplaceToken", actionText);
+                    //tViewScripts.Nodes.Remove(tViewScripts.SelectedNode);
+                    RemoveItemFromXml("Environment", actionText);
                     //RemoveItemFromXml("FilterToken", actionText);
+                    tViewScripts.Nodes.Remove(tViewScripts.SelectedNode);
                 }
             }
-            else if (m.Text.ToLower() == "remove environment")
+            else if (m.Text.ToLower() == "remove query")
             {
-                string strMsg = String.Format("This will remove {0} environment from your configuration. Confirm?", tViewScripts.SelectedNode.Text);
-                actionText = "Remove Environment clicked";
+                string strMsg = String.Format("This will remove {0} query from your configuration. Confirm?", tViewScripts.SelectedNode.Text);
+                actionText = "Remove Query clicked";
                 if (MessageBox.Show(strMsg, "Close Application", MessageBoxButtons.YesNo) != DialogResult.No)
                 {
                     string toDelete = tViewScripts.SelectedNode.Text;
                     //e.Cancel = true;
-                    tViewScripts.Nodes.Remove(tViewScripts.SelectedNode);
+                    //tViewScripts.Nodes.Remove(tViewScripts.SelectedNode);
 
-                    XDocument xdoc = XDocument.Load(sXmlFile);
-                    var q = from node in xdoc.Descendants("Environment")
+                    //XDocument xdoc = XDocument.Load(sXmlFile);
+                    XDocument xdoc = XDocument.Load(".\\Scripts\\DatabaseUpdateValues.xml");
+                    var q = from node in xdoc.Descendants("ReplaceToken")                            
+                            let pattr = node.Parent.Attribute("name")
                             let attr = node.Attribute("name")
-                            where attr != null && attr.Value == toDelete
+                            where (attr != null && attr.Value == toDelete && pattr.Value == tViewScripts.SelectedNode.Parent.Text)
                             select node;
                     q.ToList().ForEach(x => x.Remove());
-                    xdoc.Save(sXmlFile);
+                    //xdoc.Save(sXmlFile);
+                    xdoc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
+
+                    tViewScripts.Nodes.Remove(tViewScripts.SelectedNode);
                     MessageBox.Show("Removed " + toDelete);
                 }
             }
