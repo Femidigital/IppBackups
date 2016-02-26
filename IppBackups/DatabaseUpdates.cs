@@ -910,7 +910,7 @@ namespace IppBackups
                                         tlp_ScriptBuilder.Controls.Add(cBox_Logic[i], 1, y - 1);
                                     tlp_ScriptBuilder.Controls.Add(cBox_Field[i], 2, y - 1);
                                     tlp_ScriptBuilder.Controls.Add(cBox_Operand[i], 3, y - 1);
-
+                                    //txtBox_Value[i].Text = fieldDatatypes[cBox_Field[0].SelectedIndex].ToUpper();
                                     tlp_ScriptBuilder.Controls.Add(txtBox_Value[i], 4, y - 1);
                                     TableLayoutPanelCellPosition pos = tlp_ScriptBuilder.GetCellPosition(txtBox_Value[i]);
                                     txtBox_Value[i].Width = tlp_ScriptBuilder.GetColumnWidths()[pos.Column];
@@ -1062,6 +1062,9 @@ namespace IppBackups
             }
 
             btn_Commit.Enabled = true;
+            copyNode = null;
+            cloneNode = null;
+            targetNode = null;
         }
 
         private MenuItem AddMenuItem(ContextMenu cm, string text)
@@ -1193,7 +1196,8 @@ namespace IppBackups
                 if (MessageBox.Show(strMsg, "Close Application", MessageBoxButtons.YesNo) != DialogResult.No)
                 {
                     tViewScripts.Nodes.Remove(tViewScripts.SelectedNode);
-                    RemoveItemFromXml("Query", actionText);
+                    RemoveItemFromXml("ReplaceToken", actionText);
+                    //RemoveItemFromXml("FilterToken", actionText);
                 }
             }
             else if (m.Text.ToLower() == "remove environment")
@@ -1220,17 +1224,19 @@ namespace IppBackups
 
         private void RemoveItemFromXml(string nType, string itemToDelete)
         {
-            XDocument xdoc = XDocument.Load(sXmlFile);
+            //XDocument xdoc = XDocument.Load(sXmlFile);
+            XDocument xdoc = XDocument.Load(".\\Scripts\\DatabaseUpdateValues.xml");
 
             var q = from node in xdoc.Descendants(nType)
                     let pAttr = node.Parent.Attribute("name")
                     let attr = node.Attribute("name")
-                    let inst = node.Attribute("instance")
-                    where (attr != null && attr.Value == itemToDelete) || (inst.Value == itemToDelete && pAttr.Value == tViewScripts.SelectedNode.Text)
+                    //let inst = node.Attribute("instance")
+                    where (attr != null && attr.Value == itemToDelete) || (attr.Value == itemToDelete && pAttr.Value == tViewScripts.SelectedNode.Parent.Text)
                     select node;
 
             q.ToList().ForEach(x => x.Remove());
-            xdoc.Save(sXmlFile);
+           // xdoc.Save(sXmlFile);
+            xdoc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
             MessageBox.Show("Removed " + itemToDelete);
         }
             
