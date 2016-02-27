@@ -153,7 +153,7 @@ namespace IppBackups
 
         private void btn_Close_Click(object sender, EventArgs e)
         {
-            doc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
+            //doc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
             this.Close();
         }
 
@@ -1195,9 +1195,7 @@ namespace IppBackups
                 actionText = tViewScripts.SelectedNode.Text;
                 if (MessageBox.Show(strMsg, "Close Application", MessageBoxButtons.YesNo) != DialogResult.No)
                 {
-                    //tViewScripts.Nodes.Remove(tViewScripts.SelectedNode);
                     RemoveItemFromXml("Environment", actionText);
-                    //RemoveItemFromXml("FilterToken", actionText);
                     tViewScripts.Nodes.Remove(tViewScripts.SelectedNode);
                 }
             }
@@ -1209,17 +1207,19 @@ namespace IppBackups
                 {
                     string toDelete = tViewScripts.SelectedNode.Text;
                     //e.Cancel = true;
-                    //tViewScripts.Nodes.Remove(tViewScripts.SelectedNode);
 
                     //XDocument xdoc = XDocument.Load(sXmlFile);
                     XDocument xdoc = XDocument.Load(".\\Scripts\\DatabaseUpdateValues.xml");
-                    var q = from node in xdoc.Descendants("ReplaceToken")                            
-                            let pattr = node.Parent.Attribute("name")
-                            let attr = node.Attribute("name")
-                            where (attr != null && attr.Value == toDelete && pattr.Value == tViewScripts.SelectedNode.Parent.Text)
-                            select node;
-                    q.ToList().ForEach(x => x.Remove());
-                    //xdoc.Save(sXmlFile);
+
+                    IEnumerable<XElement> queryTokens =
+                        from node in xdoc.Descendants("ReplaceToken")
+                        .Union(xdoc.Descendants("FilterToken"))
+                        let queries = node
+                        where queries != null && queries.Attribute("name").Value == tViewScripts.SelectedNode.Text && queries.Parent.Parent.Attribute("name").Value == tViewScripts.SelectedNode.Parent.Text
+                        select queries;
+                    
+                    queryTokens.ToList().ForEach(x => x.Remove());
+
                     xdoc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
 
                     tViewScripts.Nodes.Remove(tViewScripts.SelectedNode);
@@ -1236,7 +1236,6 @@ namespace IppBackups
             var q = from node in xdoc.Descendants(nType)
                     let pAttr = node.Parent.Attribute("name")
                     let attr = node.Attribute("name")
-                    //let inst = node.Attribute("instance")
                     where (attr != null && attr.Value == itemToDelete) || (attr.Value == itemToDelete && pAttr.Value == tViewScripts.SelectedNode.Parent.Text)
                     select node;
 
