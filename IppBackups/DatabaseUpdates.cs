@@ -604,6 +604,12 @@ namespace IppBackups
         private void cBox_Tables_SelectedIndexChanged(object sender, EventArgs e)
         {
             ClearScriptBuilder();
+            field.Clear();
+            fieldDatatypes.Clear();
+            for (int i = 0; i < max_row; i++)
+            {
+                cBox_Field[i].Items.Clear();
+            }
             
             /* Clear the script window */
             //UpdateScriptWindow();
