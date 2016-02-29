@@ -1053,6 +1053,16 @@ namespace IppBackups
                 doc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
                 startNode = doc.SelectSingleNode("Databases/Database[@name='" + _cur_Db + "']");
             }
+            else if (tViewScripts.SelectedNode.Tag == "ReplaceToken")
+            {
+                bool exists = false;
+                XmlNode repToken = doc.CreateNode(XmlNodeType.Element, "ReplaceToken", null);
+
+                XmlAttribute nameAttri = doc.CreateAttribute("name");
+                nameAttri.Value = tViewScripts.SelectedNode.Text;
+
+                repToken.Attributes.Append(nameAttri);
+            }
             else if (tViewScripts.SelectedNode.Tag == "Table")
             {
                 XmlNode updateNode = doc.SelectSingleNode("Databases/Database[@name='" + _cur_Db + "']/Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Text + "']");
@@ -1110,6 +1120,7 @@ namespace IppBackups
                 actionText = "New Query";
 
                 TreeNode newNode = new TreeNode("New Query");
+                newNode.Tag = "ReplaceToken";
 
                 tViewScripts.SelectedNode.Nodes.Add(newNode);
                 tViewScripts.SelectedNode = newNode;
