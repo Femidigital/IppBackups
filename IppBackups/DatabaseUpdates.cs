@@ -51,6 +51,12 @@ namespace IppBackups
         XmlNode copyNode;
         XmlNode targetNode;
 
+        string[] NumericDataTypes = new string[] { "bigint", "bit", "decimal", "int", "money", "numberic", "smallint", "smallmoney", "tinyint", "float", "real" };
+        string[] DateAndTimeDataTypes = new string[] { "date", "datetime2", "datetime", "datetimeoffset", "smalldatetime", "time"};
+        string[] CharacterDataTypes = new string[] { "char", "text", "varchar", "nchar", "ntext", "nvarchar" };
+        string[] BinaryStringsDataTypes = new string[] { "binary", "image", "varbinary"};
+        string[] OtherDataTypes = new string[] { "cursor", "hierarchyid", "sql_variant", "table", "timestamp", "uniqueidentier", "xml", "SpatialTypes" };
+
         enum Environment
         {
             TEST = 0,
@@ -342,7 +348,19 @@ namespace IppBackups
                     rTxtBox_Script.AppendText("\nSET ", Color.Blue);
                     rTxtBox_Script.AppendText("" + cBox_Field[i].SelectedItem + " ", Color.Green);
                     rTxtBox_Script.AppendText(" " + cBox_Operand[i].SelectedItem + "", Color.Green);
-                    rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
+                    if (NumericDataTypes.Contains(fieldDatatypes[i].ToString()))
+                    {
+                        rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
+                    }
+                    else if (CharacterDataTypes.Contains(fieldDatatypes[i].ToString()))
+                    {
+                        rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
+                    }
+                    else if (DateAndTimeDataTypes.Contains(fieldDatatypes[i].ToString()))
+                    {
+                        rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
+                    }
+
                 }
                 else if (cBox_Logic[i].SelectedItem != null && cBox_Logic[i].SelectedItem != "WHERE")
                 {
@@ -350,7 +368,18 @@ namespace IppBackups
                     rTxtBox_Script.AppendText(", ", Color.Green);
                     rTxtBox_Script.AppendText("" + cBox_Field[i].SelectedItem + " ", Color.Green);
                     rTxtBox_Script.AppendText(" " + cBox_Operand[i].SelectedItem + "", Color.Green);
-                    rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
+                    if (NumericDataTypes.Contains(fieldDatatypes[i].ToString()))
+                    {
+                        rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
+                    }
+                    else if (CharacterDataTypes.Contains(fieldDatatypes[i].ToString()))
+                    {
+                        rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
+                    }
+                    else if (DateAndTimeDataTypes.Contains(fieldDatatypes[i].ToString()))
+                    {
+                        rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
+                    }
                 }
                 else if (cBox_Logic[i].SelectedItem == "WHERE")
                 {
@@ -360,7 +389,18 @@ namespace IppBackups
                         rTxtBox_Script.AppendText("\nWHERE ", Color.Blue);
                         rTxtBox_Script.AppendText("" + cBox_Field[i].SelectedItem + " ", Color.Green);
                         rTxtBox_Script.AppendText(" " + cBox_Operand[i].SelectedItem + "", Color.Green);
-                        rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
+                        if (NumericDataTypes.Contains(fieldDatatypes[i].ToString()))
+                        {
+                            rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
+                        }
+                        else if (CharacterDataTypes.Contains(fieldDatatypes[i].ToString()))
+                        {
+                            rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
+                        }
+                        else if (DateAndTimeDataTypes.Contains(fieldDatatypes[i].ToString()))
+                        {
+                            rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
+                        }
                     }
                 }
             }
@@ -543,7 +583,18 @@ namespace IppBackups
                     rTxtBox_Script.AppendText("" + cBox_Field[i].SelectedItem + " ", Color.Green);
                     rTxtBox_Script.AppendText(" " + cBox_Operand[i].SelectedItem + " ", Color.Green);
                     // Check Field datatype, and determine value assignment type.
-                    rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
+                    if (NumericDataTypes.Contains(fieldDatatypes[i].ToString()))
+                    {
+                        rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
+                    }
+                    else if (CharacterDataTypes.Contains(fieldDatatypes[i].ToString()))
+                    {
+                        rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
+                    }
+                    else if (DateAndTimeDataTypes.Contains(fieldDatatypes[i].ToString()))
+                    {
+                        rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
+                    }
                 }
                 else if (cBox_Logic[i].SelectedItem != null && cBox_Logic[i].SelectedItem != "WHERE")
                 {
@@ -558,7 +609,18 @@ namespace IppBackups
                     rTxtBox_Script.AppendText("" + cBox_Field[i].SelectedItem + " ", Color.Green);
                     rTxtBox_Script.AppendText(" " + cBox_Operand[i].SelectedItem + " ", Color.Green);
                     // Check Field datatype, and determine value assignment type.
-                    rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
+                    if (NumericDataTypes.Contains(fieldDatatypes[i].ToString()))
+                    {
+                        rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
+                    }
+                    else if (CharacterDataTypes.Contains(fieldDatatypes[i].ToString()))
+                    {
+                        rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
+                    }
+                    else if (DateAndTimeDataTypes.Contains(fieldDatatypes[i].ToString()))
+                    {
+                        rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
+                    }
                 }
                 else if (cBox_Logic[i].SelectedItem == "WHERE")
                 {
@@ -569,7 +631,18 @@ namespace IppBackups
                         rTxtBox_Script.AppendText("" + cBox_Field[i].SelectedItem + " ", Color.Green);
                         rTxtBox_Script.AppendText(" " + cBox_Operand[i].SelectedItem + " ", Color.Green);
                         // Check Field datatype, and determine value assignment type.
-                        rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
+                        if (NumericDataTypes.Contains(fieldDatatypes[i].ToString()))
+                        {
+                            rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
+                        }
+                        else if (CharacterDataTypes.Contains(fieldDatatypes[i].ToString()))
+                        {
+                            rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
+                        }
+                        else if (DateAndTimeDataTypes.Contains(fieldDatatypes[i].ToString()))
+                        {
+                            rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
+                        }
                     }
                 }
             }
@@ -581,7 +654,18 @@ namespace IppBackups
                     rTxtBox_Script.AppendText("" + cBox_Logic[i].SelectedItem + " ", Color.Blue);
                     rTxtBox_Script.AppendText("" + cBox_Field[i].SelectedItem + " ", Color.Green);
                     rTxtBox_Script.AppendText("" + cBox_Operand[i].SelectedItem + " ", Color.Green);
-                    rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
+                    if (NumericDataTypes.Contains(fieldDatatypes[i].ToString()))
+                    {
+                        rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
+                    }
+                    else if (CharacterDataTypes.Contains(fieldDatatypes[i].ToString()))
+                    {
+                        rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
+                    }
+                    else if (DateAndTimeDataTypes.Contains(fieldDatatypes[i].ToString()))
+                    {
+                        rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
+                    }
                 }
                 else if (cBox_Logic[i].SelectedItem == "WHERE")
                 {
@@ -589,7 +673,18 @@ namespace IppBackups
                     rTxtBox_Script.AppendText("\nWHERE ", Color.Blue);
                     rTxtBox_Script.AppendText("" + cBox_Field[i].SelectedItem + " ", Color.Green);
                     rTxtBox_Script.AppendText(" " + cBox_Operand[i].SelectedItem + " ", Color.Green);
-                    rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
+                    if (NumericDataTypes.Contains(fieldDatatypes[i].ToString()))
+                    {
+                        rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
+                    }
+                    else if (CharacterDataTypes.Contains(fieldDatatypes[i].ToString()))
+                    {
+                        rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
+                    }
+                    else if (DateAndTimeDataTypes.Contains(fieldDatatypes[i].ToString()))
+                    {
+                        rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
+                    }
                 }
             }
             else if (rBtn_Replace.Checked)
