@@ -542,6 +542,7 @@ namespace IppBackups
                     rTxtBox_Script.AppendText("SET ", Color.Blue);
                     rTxtBox_Script.AppendText("" + cBox_Field[i].SelectedItem + " ", Color.Green);
                     rTxtBox_Script.AppendText(" " + cBox_Operand[i].SelectedItem + " ", Color.Green);
+                    // Check Field datatype, and determine value assignment type.
                     rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
                 }
                 else if (cBox_Logic[i].SelectedItem != null && cBox_Logic[i].SelectedItem != "WHERE")
@@ -556,6 +557,7 @@ namespace IppBackups
                     }
                     rTxtBox_Script.AppendText("" + cBox_Field[i].SelectedItem + " ", Color.Green);
                     rTxtBox_Script.AppendText(" " + cBox_Operand[i].SelectedItem + " ", Color.Green);
+                    // Check Field datatype, and determine value assignment type.
                     rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
                 }
                 else if (cBox_Logic[i].SelectedItem == "WHERE")
@@ -566,6 +568,7 @@ namespace IppBackups
                         rTxtBox_Script.AppendText("\nWHERE ", Color.Blue);
                         rTxtBox_Script.AppendText("" + cBox_Field[i].SelectedItem + " ", Color.Green);
                         rTxtBox_Script.AppendText(" " + cBox_Operand[i].SelectedItem + " ", Color.Green);
+                        // Check Field datatype, and determine value assignment type.
                         rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
                     }
                 }
@@ -1061,7 +1064,37 @@ namespace IppBackups
                 XmlAttribute nameAttri = doc.CreateAttribute("name");
                 nameAttri.Value = tViewScripts.SelectedNode.Text;
 
+                XmlAttribute typeAttri = doc.CreateAttribute("type");
+                typeAttri.Value = "";
+
+                XmlAttribute dmlAttri = doc.CreateAttribute("dml");
+                dmlAttri.Value = "";
+
                 repToken.Attributes.Append(nameAttri);
+                repToken.Attributes.Append(typeAttri);
+                repToken.Attributes.Append(dmlAttri);
+              
+                foreach (XmlNode tblNode in doc.SelectSingleNode("/Databases/Database[@name='" + _cur_Db + "']/Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Parent.Text + "']"))
+                {
+                    if(tblNode.Name == "Tokens")
+                    {
+                        exists = true;
+                    }
+                }
+
+                if (!exists)
+                {
+                    XmlNode tokenNode = doc.CreateNode(XmlNodeType.Element, "Tokens", null);
+                    tokenNode.AppendChild(repToken);
+                    doc.SelectSingleNode("/Databases/Database[@name='" + _cur_Db + "']/Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Parent.Text + "']").InsertAfter(tokenNode, doc.SelectSingleNode("/Databases/Database[@name='" + _cur_Db + "']/Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Parent.Text + "']").LastChild);
+
+                }
+                else
+                {
+                    doc.SelectSingleNode("/Databases/Database[@name='" + _cur_Db + "']/Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Parent.Text + "']/Tokens").InsertAfter(repToken, doc.SelectSingleNode("/Databases/Database[@name='" + _cur_Db + "']/Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Parent.Text + "']/Tokens").LastChild);
+                }
+                doc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
+                startNode = doc.SelectSingleNode("/Databases/Database[@name='" + _cur_Db + "']/Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Parent.Text + "']");
             }
             else if (tViewScripts.SelectedNode.Tag == "Table")
             {
@@ -1118,8 +1151,19 @@ namespace IppBackups
             {
                 //bServer = true;
                 actionText = "New Query";
+                string queryName = "";
 
-                TreeNode newNode = new TreeNode("New Query");
+                if (cBox_Tables.SelectedItem == null)
+                {
+                    queryName = "New Query";
+                }
+                else
+                {
+                    string selectedTbl = cBox_Tables.SelectedItem.ToString();
+                    queryName = selectedTbl.Substring(7,selectedTbl.Length - 8);
+                }
+                //TreeNode newNode = new TreeNode("New Query");
+                TreeNode newNode = new TreeNode(queryName);
                 newNode.Tag = "ReplaceToken";
 
                 tViewScripts.SelectedNode.Nodes.Add(newNode);
