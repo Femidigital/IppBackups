@@ -52,10 +52,10 @@ namespace IppBackups
         XmlNode targetNode;
 
         string[] NumericDataTypes = new string[] { "bigint", "bit", "decimal", "int", "money", "numberic", "smallint", "smallmoney", "tinyint", "float", "real" };
-        string[] DateAndTimeDataTypes = new string[] { "date", "datetime2", "datetime", "datetimeoffset", "smalldatetime", "time"};
-        string[] CharacterDataTypes = new string[] { "char", "text", "varchar", "nchar", "ntext", "nvarchar" };
-        string[] BinaryStringsDataTypes = new string[] { "binary", "image", "varbinary"};
-        string[] OtherDataTypes = new string[] { "cursor", "hierarchyid", "sql_variant", "table", "timestamp", "uniqueidentier", "xml", "SpatialTypes" };
+        string[] DateAndTimeDataTypes = new string[] { "date", "datetime2", "datetime", "datetimeoffset", "smalldatetime", "time" };
+        string[] CharacterDataTypes = new string[] { "char", "text", "varchar", "nchar", "ntext", "nvarchar", "uniqueidentifier" };
+        string[] BinaryStringsDataTypes = new string[] { "binary", "image", "varbinary" };
+        string[] OtherDataTypes = new string[] { "cursor", "hierarchyid", "sql_variant", "table", "timestamp", "xml", "SpatialTypes" };
 
         enum Environment
         {
@@ -114,6 +114,13 @@ namespace IppBackups
 
             operand.Add("=");
             operand.Add("<>");
+            /*operand.Add(">");
+            operand.Add("=>");
+            operand.Add("<");
+            operand.Add("<=");
+            operand.Add("BETWEEN");
+            operand.Add("ISNULL");
+            operand.Add("IS NOT NULL");*/
 
             for(int i = 0; i < max_row; i++)
             {
@@ -520,8 +527,8 @@ namespace IppBackups
                             tlp_ScriptBuilder.RowCount++;
                             tlp_ScriptBuilder.RowStyles.Insert(tlp_ScriptBuilder.RowCount - 2, new RowStyle(SizeType.AutoSize));
 
-                            tlp_ScriptBuilder.Controls.Add(rowLabel[i], 0, y - 1);
-                            rowLabel[i].Text = i.ToString();
+                            //tlp_ScriptBuilder.Controls.Add(rowLabel[i], 0, y - 1);
+                            //rowLabel[i].Text = i.ToString();
                             if (y > min_rowCount || rBtn_Delete.Checked)
                                 tlp_ScriptBuilder.Controls.Add(cBox_Logic[i], 1, y - 1);
                             tlp_ScriptBuilder.Controls.Add(cBox_Field[i], 2, y - 1);
@@ -583,15 +590,15 @@ namespace IppBackups
                     rTxtBox_Script.AppendText("" + cBox_Field[i].SelectedItem + " ", Color.Green);
                     rTxtBox_Script.AppendText(" " + cBox_Operand[i].SelectedItem + " ", Color.Green);
                     // Check Field datatype, and determine value assignment type.
-                    if (NumericDataTypes.Contains(fieldDatatypes[i].ToString()))
+                    if (NumericDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
                     {
                         rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
                     }
-                    else if (CharacterDataTypes.Contains(fieldDatatypes[i].ToString()))
+                    else if (CharacterDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
                     {
                         rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
                     }
-                    else if (DateAndTimeDataTypes.Contains(fieldDatatypes[i].ToString()))
+                    else if (DateAndTimeDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
                     {
                         rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
                     }
@@ -609,15 +616,15 @@ namespace IppBackups
                     rTxtBox_Script.AppendText("" + cBox_Field[i].SelectedItem + " ", Color.Green);
                     rTxtBox_Script.AppendText(" " + cBox_Operand[i].SelectedItem + " ", Color.Green);
                     // Check Field datatype, and determine value assignment type.
-                    if (NumericDataTypes.Contains(fieldDatatypes[i].ToString()))
+                    if (NumericDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
                     {
                         rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
                     }
-                    else if (CharacterDataTypes.Contains(fieldDatatypes[i].ToString()))
+                    else if (CharacterDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
                     {
                         rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
                     }
-                    else if (DateAndTimeDataTypes.Contains(fieldDatatypes[i].ToString()))
+                    else if (DateAndTimeDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
                     {
                         rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
                     }
@@ -631,15 +638,15 @@ namespace IppBackups
                         rTxtBox_Script.AppendText("" + cBox_Field[i].SelectedItem + " ", Color.Green);
                         rTxtBox_Script.AppendText(" " + cBox_Operand[i].SelectedItem + " ", Color.Green);
                         // Check Field datatype, and determine value assignment type.
-                        if (NumericDataTypes.Contains(fieldDatatypes[i].ToString()))
+                        if (NumericDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
                         {
                             rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
                         }
-                        else if (CharacterDataTypes.Contains(fieldDatatypes[i].ToString()))
+                        else if (CharacterDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
                         {
                             rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
                         }
-                        else if (DateAndTimeDataTypes.Contains(fieldDatatypes[i].ToString()))
+                        else if (DateAndTimeDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
                         {
                             rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
                         }
@@ -654,15 +661,15 @@ namespace IppBackups
                     rTxtBox_Script.AppendText("" + cBox_Logic[i].SelectedItem + " ", Color.Blue);
                     rTxtBox_Script.AppendText("" + cBox_Field[i].SelectedItem + " ", Color.Green);
                     rTxtBox_Script.AppendText("" + cBox_Operand[i].SelectedItem + " ", Color.Green);
-                    if (NumericDataTypes.Contains(fieldDatatypes[i].ToString()))
+                    if (NumericDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
                     {
                         rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
                     }
-                    else if (CharacterDataTypes.Contains(fieldDatatypes[i].ToString()))
+                    else if (CharacterDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
                     {
                         rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
                     }
-                    else if (DateAndTimeDataTypes.Contains(fieldDatatypes[i].ToString()))
+                    else if (DateAndTimeDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
                     {
                         rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
                     }
@@ -673,15 +680,15 @@ namespace IppBackups
                     rTxtBox_Script.AppendText("\nWHERE ", Color.Blue);
                     rTxtBox_Script.AppendText("" + cBox_Field[i].SelectedItem + " ", Color.Green);
                     rTxtBox_Script.AppendText(" " + cBox_Operand[i].SelectedItem + " ", Color.Green);
-                    if (NumericDataTypes.Contains(fieldDatatypes[i].ToString()))
+                    if (NumericDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
                     {
                         rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
                     }
-                    else if (CharacterDataTypes.Contains(fieldDatatypes[i].ToString()))
+                    else if (CharacterDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
                     {
                         rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
                     }
-                    else if (DateAndTimeDataTypes.Contains(fieldDatatypes[i].ToString()))
+                    else if (DateAndTimeDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
                     {
                         rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
                     }
