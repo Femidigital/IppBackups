@@ -43,6 +43,7 @@ namespace IppBackups
         Label[] rowLabel = new Label[5];
         TextBox[] txtBox_Value = new TextBox[5];
         Label lastRowMark = new Label() { Text = "" };
+        
         string sXmlFile = "";
         bool afterWhile = false;
         bool scriptFromTreeView = false;
@@ -50,7 +51,10 @@ namespace IppBackups
         TreeNode cloneNode;
         XmlNode copyNode;
         XmlNode targetNode;
-        Image delImage = Image.FromFile( "..\\..\\Resources\\Images\\delete.png");
+        Image delImage = Image.FromFile("..\\..\\Resources\\Images\\delete.png");
+        Image acceptImage = Image.FromFile("..\\..\\Resources\\Images\\accept.png");
+        PictureBox[] newRowBtn = new PictureBox[5];
+        
 
         string[] NumericDataTypes = new string[] { "bigint", "bit", "decimal", "int", "money", "numberic", "smallint", "smallmoney", "tinyint", "float", "real" };
         string[] DateAndTimeDataTypes = new string[] { "date", "datetime2", "datetime", "datetimeoffset", "smalldatetime", "time" };
@@ -98,8 +102,9 @@ namespace IppBackups
             tlp_ScriptBuilder.Controls.Add(new Label() { Text = "Operator: ", Anchor = AnchorStyles.None, AutoSize = true }, 3, 0);
             tlp_ScriptBuilder.Controls.Add(new Label() { Text = "Value: ", Anchor = AnchorStyles.None, AutoSize = true }, 4, 0);
 
-            lastRowMark.Size = new Size(10, 10);
-            lastRowMark.Image = delImage;
+            lastRowMark.Size = new Size(20, 20);
+            //delImage.Size = new System.Drawing.Size(20, 20);
+            lastRowMark.Image = acceptImage;
             tlp_ScriptBuilder.Controls.Add(lastRowMark, 0, tlp_ScriptBuilder.RowCount - 1);            
 
             cur_database = database;
@@ -127,10 +132,17 @@ namespace IppBackups
 
             for(int i = 0; i < max_row; i++)
             {
+                newRowBtn[i] = new PictureBox();
+                newRowBtn[i].Size = new Size(20, 20);
+                newRowBtn[i].ImageLocation = "";
+
                 rowLabel[i] = new Label();
                 rowLabel[i].AutoSize = true;
                 rowLabel[i].Anchor = AnchorStyles.Left;
-                rowLabel[i].Text = i.ToString();
+                rowLabel[i].Size = new Size(20, 20);
+                rowLabel[i].Image = delImage;
+                rowLabel[i].Text = "";
+                //rowLabel[i].Text = i.ToString();
 
                 cBox_Logic[i] = new ComboBox();
                 cBox_Logic[i].Items.AddRange(logic.ToArray());
@@ -530,8 +542,18 @@ namespace IppBackups
                             tlp_ScriptBuilder.RowCount++;
                             tlp_ScriptBuilder.RowStyles.Insert(tlp_ScriptBuilder.RowCount - 2, new RowStyle(SizeType.AutoSize));
 
-                            //tlp_ScriptBuilder.Controls.Add(rowLabel[i], 0, y - 1);
-                            //rowLabel[i].Text = i.ToString();
+                            newRowBtn[i] = new PictureBox();
+                            newRowBtn[i].Size = new Size(20, 20);
+                            newRowBtn[i].ImageLocation = "..\\..\\Resources\\Images\\delete.png";
+                            tlp_ScriptBuilder.Controls.Add(newRowBtn[i]);
+
+                            /*rowLabel[i].Size = new Size(20,20);
+                            rowLabel[i].Image = delImage;
+                            rowLabel[i].Text = " ";
+                            tlp_ScriptBuilder.Controls.Add(rowLabel[i], 0, y - 1);
+                            //rowLabel[i].Text = "";
+                            //rowLabel[i].Text = i.ToString();*/
+
                             if (y > min_rowCount || rBtn_Delete.Checked)
                                 tlp_ScriptBuilder.Controls.Add(cBox_Logic[i], 1, y - 1);
                             tlp_ScriptBuilder.Controls.Add(cBox_Field[i], 2, y - 1);
@@ -1018,8 +1040,10 @@ namespace IppBackups
                                     //int y = tlp_ScriptBuilder.RowCount;
                                     tlp_ScriptBuilder.RowStyles.Insert(tlp_ScriptBuilder.RowCount - 2, new RowStyle(SizeType.AutoSize));
 
+                                    rowLabel[i].Size = new Size(20, 20);
+                                    rowLabel[i].Image = delImage;
                                     tlp_ScriptBuilder.Controls.Add(rowLabel[i], 0, y - 1);
-                                    rowLabel[i].Text = i.ToString();
+                                    //rowLabel[i].Text = i.ToString();
                                     if (i > min_rowCount - 2 || rBtn_Delete.Checked)
                                         tlp_ScriptBuilder.Controls.Add(cBox_Logic[i], 1, y - 1);
                                     tlp_ScriptBuilder.Controls.Add(cBox_Field[i], 2, y - 1);
