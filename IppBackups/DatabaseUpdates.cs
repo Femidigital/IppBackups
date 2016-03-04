@@ -53,7 +53,12 @@ namespace IppBackups
         XmlNode targetNode;
         Image delImage = Image.FromFile("..\\..\\Resources\\Images\\delete.png");
         Image acceptImage = Image.FromFile("..\\..\\Resources\\Images\\accept.png");
+        Image addImage = Image.FromFile("..\\..\\Resources\\Images\\add.png");
         PictureBox[] newRowBtn = new PictureBox[5];
+        PictureBox addRowBtnPic = new PictureBox();
+        Button[] delRowBtn = new Button[5];
+        Button addRowBtn = new Button();
+        Button acceptBtn = new Button();
         
 
         string[] NumericDataTypes = new string[] { "bigint", "bit", "decimal", "int", "money", "numberic", "smallint", "smallmoney", "tinyint", "float", "real" };
@@ -96,7 +101,10 @@ namespace IppBackups
             tlp_ScriptBuilder.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             tlp_ScriptBuilder.GrowStyle = System.Windows.Forms.TableLayoutPanelGrowStyle.AddRows;
 
-            tlp_ScriptBuilder.Controls.Add(new Label() { Text = "", Anchor = AnchorStyles.Left, AutoSize = true }, 0, 0);
+            //tlp_ScriptBuilder.Controls.Add(new Label() { Text = "", Anchor = AnchorStyles.Left, AutoSize = true }, 0, 0);
+            addRowBtnPic.ImageLocation = "..\\..\\Resources\\Images\\add.png";
+            addRowBtnPic.Click += new EventHandler(addRowBtnPic_Click);
+            tlp_ScriptBuilder.Controls.Add(addRowBtnPic, 0, 0);
             tlp_ScriptBuilder.Controls.Add(new Label() { Text = "Logical:", Anchor = AnchorStyles.Left, AutoSize = true }, 1, 0);
             tlp_ScriptBuilder.Controls.Add(new Label() { Text = "Feild: ", Anchor = AnchorStyles.None, AutoSize = true }, 2, 0);
             tlp_ScriptBuilder.Controls.Add(new Label() { Text = "Operator: ", Anchor = AnchorStyles.None, AutoSize = true }, 3, 0);
@@ -136,13 +144,18 @@ namespace IppBackups
                 newRowBtn[i].Size = new Size(20, 20);
                 newRowBtn[i].ImageLocation = "";
 
-                rowLabel[i] = new Label();
+
+                //delRowBtn[i] = new Button();
+                //delRowBtn[i].Click += new EventHandler(delRowBtn_Click);
+
+
+                /*rowLabel[i] = new Label();
                 rowLabel[i].AutoSize = true;
                 rowLabel[i].Anchor = AnchorStyles.Left;
                 rowLabel[i].Size = new Size(20, 20);
                 rowLabel[i].Image = delImage;
                 rowLabel[i].Text = "";
-                //rowLabel[i].Text = i.ToString();
+                //rowLabel[i].Text = i.ToString();*/
 
                 cBox_Logic[i] = new ComboBox();
                 cBox_Logic[i].Items.AddRange(logic.ToArray());
@@ -545,7 +558,8 @@ namespace IppBackups
                             newRowBtn[i] = new PictureBox();
                             newRowBtn[i].Size = new Size(20, 20);
                             newRowBtn[i].ImageLocation = "..\\..\\Resources\\Images\\delete.png";
-                            tlp_ScriptBuilder.Controls.Add(newRowBtn[i]);
+                            newRowBtn[i].Click += new EventHandler(newRowBtn_Click);
+                            tlp_ScriptBuilder.Controls.Add(newRowBtn[i], 0, y - 1);
 
                             /*rowLabel[i].Size = new Size(20,20);
                             rowLabel[i].Image = delImage;
@@ -578,6 +592,22 @@ namespace IppBackups
                 MessageBox.Show("SQL Syntax error");
             }
 
+        }
+
+        private void delRowBtn_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Delete Row Button Clicked");
+        }
+
+        private void newRowBtn_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("New Row Button Clicked");
+        }
+
+        private void addRowBtnPic_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Add row button clicked");
+            //tlp_ScriptBuilder_MouseClick();
         }
 
         private bool CheckSQL_Syntax()
