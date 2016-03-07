@@ -55,7 +55,9 @@ namespace IppBackups
         Image acceptImage = Image.FromFile("..\\..\\Resources\\Images\\accept.png");
         Image addImage = Image.FromFile("..\\..\\Resources\\Images\\add.png");
         PictureBox[] newRowBtn = new PictureBox[5];
+        PictureBox[] delRowBtnPic = new PictureBox[5];
         PictureBox addRowBtnPic = new PictureBox();
+        PictureBox acceptBtnPic = new PictureBox();
         Button[] delRowBtn = new Button[5];
         Button addRowBtn = new Button();
         Button acceptBtn = new Button();
@@ -103,17 +105,19 @@ namespace IppBackups
 
             //tlp_ScriptBuilder.Controls.Add(new Label() { Text = "", Anchor = AnchorStyles.Left, AutoSize = true }, 0, 0);
             addRowBtnPic.ImageLocation = "..\\..\\Resources\\Images\\add.png";
-            addRowBtnPic.Click += new EventHandler(addRowBtnPic_Click);
+            addRowBtnPic.Click += new EventHandler(addRowBtnPic_Click);            
             tlp_ScriptBuilder.Controls.Add(addRowBtnPic, 0, 0);
             tlp_ScriptBuilder.Controls.Add(new Label() { Text = "Logical:", Anchor = AnchorStyles.Left, AutoSize = true }, 1, 0);
             tlp_ScriptBuilder.Controls.Add(new Label() { Text = "Feild: ", Anchor = AnchorStyles.None, AutoSize = true }, 2, 0);
             tlp_ScriptBuilder.Controls.Add(new Label() { Text = "Operator: ", Anchor = AnchorStyles.None, AutoSize = true }, 3, 0);
             tlp_ScriptBuilder.Controls.Add(new Label() { Text = "Value: ", Anchor = AnchorStyles.None, AutoSize = true }, 4, 0);
 
-            lastRowMark.Size = new Size(20, 20);
-            //delImage.Size = new System.Drawing.Size(20, 20);
-            lastRowMark.Image = acceptImage;
-            tlp_ScriptBuilder.Controls.Add(lastRowMark, 0, tlp_ScriptBuilder.RowCount - 1);            
+            //lastRowMark.Size = new Size(20, 20);
+            //lastRowMark.Image = acceptImage;
+            //tlp_ScriptBuilder.Controls.Add(lastRowMark, 0, tlp_ScriptBuilder.RowCount - 1);
+            acceptBtnPic.ImageLocation = "..\\..\\Resources\\Images\\accept.png";
+            tlp_ScriptBuilder.Controls.Add(acceptBtnPic, 0, tlp_ScriptBuilder.RowCount - 1);
+            acceptBtnPic.Click += new EventHandler(acceptBtnPic_Click);
 
             cur_database = database;
 
@@ -140,9 +144,9 @@ namespace IppBackups
 
             for(int i = 0; i < max_row; i++)
             {
-                newRowBtn[i] = new PictureBox();
-                newRowBtn[i].Size = new Size(20, 20);
-                newRowBtn[i].ImageLocation = "";
+                delRowBtnPic[i] = new PictureBox();
+                delRowBtnPic[i].Size = new Size(20, 20);
+                delRowBtnPic[i].ImageLocation = "";
 
 
                 //delRowBtn[i] = new Button();
@@ -555,11 +559,11 @@ namespace IppBackups
                             tlp_ScriptBuilder.RowCount++;
                             tlp_ScriptBuilder.RowStyles.Insert(tlp_ScriptBuilder.RowCount - 2, new RowStyle(SizeType.AutoSize));
 
-                            newRowBtn[i] = new PictureBox();
-                            newRowBtn[i].Size = new Size(20, 20);
-                            newRowBtn[i].ImageLocation = "..\\..\\Resources\\Images\\delete.png";
-                            newRowBtn[i].Click += new EventHandler(newRowBtn_Click);
-                            tlp_ScriptBuilder.Controls.Add(newRowBtn[i], 0, y - 1);
+                            delRowBtnPic[i] = new PictureBox();
+                            delRowBtnPic[i].Size = new Size(20, 20);
+                            delRowBtnPic[i].ImageLocation = "..\\..\\Resources\\Images\\delete.png";
+                            delRowBtnPic[i].Click += new EventHandler(delRowBtn_Click);
+                            tlp_ScriptBuilder.Controls.Add(delRowBtnPic[i], 0, y - 1);
 
                             /*rowLabel[i].Size = new Size(20,20);
                             rowLabel[i].Image = delImage;
@@ -577,7 +581,9 @@ namespace IppBackups
                             TableLayoutPanelCellPosition pos = tlp_ScriptBuilder.GetCellPosition(txtBox_Value[i]);
                             txtBox_Value[i].Width = tlp_ScriptBuilder.GetColumnWidths()[pos.Column];
 
-                            tlp_ScriptBuilder.Controls.Add(lastRowMark, 0, y);
+                            //tlp_ScriptBuilder.Controls.Add(lastRowMark, 0, y);
+                            //acceptBtnPic.Click += new EventHandler(acceptBtnPic_Click);
+                            tlp_ScriptBuilder.Controls.Add(acceptBtnPic, 0, y);
 
                         }
                     }
@@ -596,7 +602,7 @@ namespace IppBackups
 
         private void delRowBtn_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Delete Row Button Clicked");
+            MessageBox.Show("Button Clicked: " + sender.ToString() + " Event: " + e.ToString());
         }
 
         private void newRowBtn_Click(object sender, EventArgs e)
@@ -606,8 +612,33 @@ namespace IppBackups
 
         private void addRowBtnPic_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Add row button clicked");
-            //tlp_ScriptBuilder_MouseClick();
+            tlp_ScriptBuilder_MouseClick(addRowBtnPic, (MouseEventArgs)e);
+        }
+
+        private void acceptBtnPic_Click(object sender, EventArgs e)
+        {
+            string strMsg = String.Format("Are you sure you want to commit these pending changes?");
+
+            
+            if (tlp_ScriptBuilder.RowCount - min_rowCount > 1)
+            {
+                if (MessageBox.Show(strMsg, "Close Window", MessageBoxButtons.YesNo) != DialogResult.No)
+                {
+                    if (tViewScripts.SelectedNode != null)
+                    {
+                        string selectedNode = tViewScripts.SelectedNode.Text;
+                        MessageBox.Show("Updating " + selectedNode);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Creating new query");
+                    }
+                }
+                //else
+                //{
+                //    Close();
+                //}
+            }
         }
 
         private bool CheckSQL_Syntax()
@@ -813,8 +844,8 @@ namespace IppBackups
                 j = i - min_rowCount;
                 if (j >= 1)
                 {
-                    tlp_ScriptBuilder.Controls.Remove(rowLabel[j-1]);
-                    rowLabel[j-1].Text = "";
+                    tlp_ScriptBuilder.Controls.Remove(delRowBtnPic[j-1]);
+                    delRowBtnPic[j - 1].Text = "";
                     tlp_ScriptBuilder.Controls.Remove(cBox_Logic[j-1]);
                     cBox_Logic[j-1].SelectedIndex = -1;
                     tlp_ScriptBuilder.Controls.Remove(cBox_Field[j-1]);
@@ -1070,10 +1101,13 @@ namespace IppBackups
                                     //int y = tlp_ScriptBuilder.RowCount;
                                     tlp_ScriptBuilder.RowStyles.Insert(tlp_ScriptBuilder.RowCount - 2, new RowStyle(SizeType.AutoSize));
 
-                                    rowLabel[i].Size = new Size(20, 20);
+                                    /*rowLabel[i].Size = new Size(20, 20);
                                     rowLabel[i].Image = delImage;
-                                    tlp_ScriptBuilder.Controls.Add(rowLabel[i], 0, y - 1);
+                                    tlp_ScriptBuilder.Controls.Add(rowLabel[i], 0, y - 1);*/
                                     //rowLabel[i].Text = i.ToString();
+                                    delRowBtnPic[i].Size = new Size(20, 20);
+                                    delRowBtnPic[i].ImageLocation = "..\\..\\Resources\\Images\\delete.png"; 
+                                    tlp_ScriptBuilder.Controls.Add(delRowBtnPic[i], 0, y - 1);
                                     if (i > min_rowCount - 2 || rBtn_Delete.Checked)
                                         tlp_ScriptBuilder.Controls.Add(cBox_Logic[i], 1, y - 1);
                                     tlp_ScriptBuilder.Controls.Add(cBox_Field[i], 2, y - 1);
@@ -1083,7 +1117,9 @@ namespace IppBackups
                                     TableLayoutPanelCellPosition pos = tlp_ScriptBuilder.GetCellPosition(txtBox_Value[i]);
                                     txtBox_Value[i].Width = tlp_ScriptBuilder.GetColumnWidths()[pos.Column];
 
-                                    tlp_ScriptBuilder.Controls.Add(lastRowMark, 0, y);
+
+                                    //tlp_ScriptBuilder.Controls.Add(lastRowMark, 0, y);
+                                    tlp_ScriptBuilder.Controls.Add(acceptBtnPic, 0, y);
                                     ScriptContent();
                                     i++;
                                 }
