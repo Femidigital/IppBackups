@@ -925,9 +925,11 @@ namespace IppBackups
             //XmlDocument doc = new XmlDocument();
             doc.Load(sXmlFile);
 
-            XmlNodeList curDatabase = doc.SelectNodes("Databases/Database[@name='" + _cur_Db + "']/Tables/Table");
-            //XmlNode startNode = doc.SelectSingleNode("Databases/Database[@name='" + _cur_Db + "']");
-            startNode = doc.SelectSingleNode("Databases/Database[@name='" + _cur_Db + "']");
+            //XmlNodeList curDatabase = doc.SelectNodes("Databases/Database[@name='" + _cur_Db + "']/Tables/Table");
+            XmlNodeList curDatabase = doc.SelectNodes("Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table");
+           
+            //startNode = doc.SelectSingleNode("Databases/Database[@name='" + _cur_Db + "']");
+            startNode = doc.SelectSingleNode("Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')" + "='" + _cur_Db.ToLower() + "']");
 
             tViewScripts.Nodes.Clear();
             tViewScripts.Nodes.Add(new TreeNode(_cur_Db));
