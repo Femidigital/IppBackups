@@ -631,7 +631,60 @@ namespace IppBackups
                     }
                     else
                     {
-                        MessageBox.Show("Creating new query");
+                        string selectedTbl = cBox_Tables.SelectedItem.ToString();
+                        string queryName = selectedTbl.Substring(7, selectedTbl.Length - 8);
+
+                        
+
+                        // Check if tViewScripts has a Table node with current selected table name, if not create a new table node and append to root.
+
+                        // Check if tViewScripts has an Environment node with current environment name, if not create a new environment node and append to current table node.
+
+                        // Check if tViewScripts there is an existing query with the same name, if so display message - else append new query to environment node.
+
+                        foreach (TreeNode tn in tViewScripts.Nodes)
+                        {
+                            foreach (TreeNode cn in tn.Nodes)
+                            {
+                                //if (tViewScripts.Nodes.ContainsKey(cur_environment))
+                                if (cn.Tag == "Table" && cn.Text == queryName)
+                                {
+                                    MessageBox.Show(cBox_Tables.SelectedText + " table already exists");
+                                    //MessageBox.Show(cur_environment + " already exists");
+                                    foreach(TreeNode qn in cn.Nodes)
+                                    {
+                                        if(qn.Tag == "ReplaceToken" && qn.Text == queryName)
+                                        {
+                                            MessageBox.Show(queryName + " query node already exists");
+                                        }
+                                        else
+                                        {
+                                            MessageBox.Show("Creating a new query node");
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Creating new table node as " + queryName);
+                                    TreeNode tblNode = new TreeNode(queryName);
+                                    tblNode.Tag = "Table";
+                                }
+                            }
+                        }
+                        /*
+                        TreeNode newNode = new TreeNode(queryName);
+                        newNode.Tag = "ReplaceToken";
+
+                        //tViewScripts.SelectedNode.Nodes.Add(newNode);
+                        tViewScripts.Nodes.Add(newNode);
+                        tViewScripts.SelectedNode = newNode;
+
+                        // Update XML file
+                        XmlNode updateNode = doc.SelectSingleNode("Databases/Database[@name='" + queryName + "']/Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Text + "']");
+                        //targetNode = startNode.SelectSingleNode("Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Text + "']/Tokens");
+                        targetNode = startNode.SelectSingleNode("Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Text + "']");
+                        targetNode.AppendChild(copyNode);
+                        */
                     }
                 }
                 //else
