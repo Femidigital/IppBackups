@@ -651,15 +651,27 @@ namespace IppBackups
                                 {
                                     MessageBox.Show(cBox_Tables.SelectedText + " table already exists");
                                     //MessageBox.Show(cur_environment + " already exists");
-                                    foreach(TreeNode qn in cn.Nodes)
+                                    foreach (TreeNode en in cn.Nodes)
                                     {
-                                        if(qn.Tag == "ReplaceToken" && qn.Text == queryName)
+                                        if (en.Tag == "Environment" && en.Text == cur_environment)
                                         {
-                                            MessageBox.Show(queryName + " query node already exists");
+                                            MessageBox.Show(cur_environment + "already exits");
+                                            
+                                            foreach (TreeNode qn in en.Nodes)
+                                            {
+                                                if (qn.Tag == "ReplaceToken" && qn.Text == queryName)
+                                                {
+                                                    MessageBox.Show(queryName + " query node already exists, you want to overwrite it?");
+                                                }
+                                                else
+                                                {
+                                                    MessageBox.Show("Creating a new query node");
+                                                }
+                                            }
                                         }
                                         else
                                         {
-                                            MessageBox.Show("Creating a new query node");
+                                            MessageBox.Show("Creating new environment node as " + cur_environment);
                                         }
                                     }
                                 }
@@ -668,6 +680,23 @@ namespace IppBackups
                                     MessageBox.Show("Creating new table node as " + queryName);
                                     TreeNode tblNode = new TreeNode(queryName);
                                     tblNode.Tag = "Table";
+
+                                    TreeNode qNode = new TreeNode(queryName);
+                                    qNode.Tag = "ReplaceToken";
+
+                                    TreeNode envNode = new TreeNode(cur_environment);
+                                    envNode.Tag = "Environment";
+
+                                    envNode.Nodes.Add(qNode);
+                                    tblNode.Nodes.Add(envNode);
+
+                                    TreeNode parentNode = tViewScripts.SelectedNode ?? tViewScripts.Nodes[0];
+                                    if (parentNode != null)
+                                    {
+                                        parentNode.Nodes.Add(tblNode);
+                                        //parentNode.SelectedNode = tblNode;
+                                        tblNode.Expand();
+                                    }
                                 }
                             }
                         }
