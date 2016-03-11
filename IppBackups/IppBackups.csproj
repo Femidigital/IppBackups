@@ -154,6 +154,7 @@
     <Content Include="Gear.ico" />
     <Content Include="Resources\Images\accept.png" />
     <Content Include="Resources\Images\add.png" />
+    <Content Include="Resources\Images\add2.png" />
     <Content Include="Resources\Images\big_tree.jpg" />
     <Content Include="Resources\Images\delete.png" />
     <Content Include="Resources\Images\gear03.png" />
