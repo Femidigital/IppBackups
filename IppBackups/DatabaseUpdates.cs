@@ -672,6 +672,25 @@ namespace IppBackups
                                         else
                                         {
                                             MessageBox.Show("Creating new environment node as " + cur_environment);
+
+                                            TreeNode qNode = new TreeNode(queryName);
+                                            qNode.Tag = "ReplaceToken";
+
+                                            TreeNode envNode = new TreeNode(cur_environment);
+                                            envNode.Tag = "Environment";
+
+                                            envNode.Nodes.Add(qNode);
+                                            //en.Nodes.Add(envNode);
+
+                                            TreeNode parentNode = tViewScripts.SelectedNode ?? tViewScripts.Nodes[0];
+                                            if (parentNode != null)
+                                            {
+                                                //parentNode.Nodes.Add(envNode);
+                                                cn.Nodes.Add(envNode);
+                                                //parentNode.SelectedNode = tblNode;
+                                                tViewScripts.SelectedNode = envNode;
+                                                envNode.ExpandAll();
+                                            }
                                         }
                                     }
                                 }
@@ -695,7 +714,15 @@ namespace IppBackups
                                     {
                                         parentNode.Nodes.Add(tblNode);
                                         //parentNode.SelectedNode = tblNode;
-                                        tblNode.Expand();
+                                        tViewScripts.SelectedNode = tblNode;
+                                        tblNode.ExpandAll();
+
+                                        
+                                        // Update the xml file with newly created node.
+                                        XmlNode updateNode = doc.SelectSingleNode("Databases/Database[@name='" + cur_database + "']/Tables/Table[@name='"+ queryName +"']/Environments");
+                                        targetNode = startNode.SelectSingleNode("Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Text + "']");
+                                        targetNode.AppendChild(copyNode);
+                                        
                                     }
                                 }
                             }

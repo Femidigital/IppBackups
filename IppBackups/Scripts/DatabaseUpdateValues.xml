@@ -1158,7 +1158,7 @@
     <Tables>
       <Table name="MyDownload">
         <Environments>
-          <Environment name="DEV">
+          <Environment name="UAT">
             <Tokens>
               <ReplaceToken name="MyDownload" type="ColumnToken" dml="UPDATE">
                 <Token set="" columnName="DocumentNumber" operand="=" value="000000000030331463" />
