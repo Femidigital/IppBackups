@@ -375,13 +375,13 @@ namespace IppBackups
 
                     foreach (XmlNode token in rtNodeToReplace.ChildNodes )
                     {
-                        if (cBox_Logic[i].SelectedItem.ToString() == null)
+                        if (i > 0)
                         {
-                            token.Attributes["set"].Value = "";
+                            token.Attributes["set"].Value = cBox_Logic[i].SelectedItem.ToString();                            
                         }
                         else
                         {
-                            token.Attributes["set"].Value = cBox_Logic[i].SelectedItem.ToString();
+                            token.Attributes["set"].Value = "";
                         }
                         token.Attributes["columnName"].Value = cBox_Field[i].SelectedItem.ToString();
                         token.Attributes["operand"].Value = cBox_Operand[i].SelectedItem.ToString();
@@ -643,7 +643,47 @@ namespace IppBackups
 
         private void delRowBtn_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Button Clicked: " + sender.ToString() + " Event: " + e.ToString());
+            /*foreach(Control c in this.tlp_ScriptBuilder.Controls)
+            {
+                //MessageBox.Show("Button Clicked: " + this.tlp_ScriptBuilder.GetRow(c) + " Event: " + e.ToString()); 
+                MessageBox.Show("Button Clicked: " + );
+            }*/
+
+            //int row_index_to_remove = delRowBtnPic.IndexOf(sender As PictureBox);
+            int row_index_to_remove = int.Parse((sender as PictureBox).Tag.ToString());
+            MessageBox.Show("Button Clicked: " + row_index_to_remove.ToString() + " Event: " + e.ToString());
+            //int row_index_to_remove = tlp_ScriptBuilder.GetPositionFromControl(sender);
+            //Point p = tlp_ScriptBuilder.PointToClient(new Point(e.X, e.Y));
+            //int row_index_to_remove = tlp_ScriptBuilder.GetRow(sender);
+
+            if (row_index_to_remove >= tlp_ScriptBuilder.RowCount)
+            {
+                return;
+            }
+
+            // delete all controls of row that needs to be deleted.
+            for (int i = 0; i < tlp_ScriptBuilder.ColumnCount; i++)
+            {
+                var control = tlp_ScriptBuilder.GetControlFromPosition(i, row_index_to_remove);
+                tlp_ScriptBuilder.Controls.Remove(control);
+            }
+
+            // move up row controls that comes after row that needs to be removed.
+            for (int i = row_index_to_remove + 1; i < tlp_ScriptBuilder.RowCount; i++)
+            {
+                for (int j = 0; j < tlp_ScriptBuilder.ColumnCount; j++)
+                {
+                    var control = tlp_ScriptBuilder.GetControlFromPosition(j, i);
+                    if (control != null)
+                    {
+                        tlp_ScriptBuilder.SetRow(control, i - 1);
+                    }
+                }
+            }
+
+            // remove the last row
+            tlp_ScriptBuilder.RowStyles.RemoveAt(tlp_ScriptBuilder.RowCount - 1);
+            tlp_ScriptBuilder.RowCount--;
         }
 
         private void newRowBtn_Click(object sender, EventArgs e)
@@ -1428,7 +1468,9 @@ namespace IppBackups
                                     tlp_ScriptBuilder.Controls.Add(rowLabel[i], 0, y - 1);*/
                                     //rowLabel[i].Text = i.ToString();
                                     delRowBtnPic[i].Size = new Size(19, 19);
+                                    delRowBtnPic[i].Tag = i;
                                     delRowBtnPic[i].ImageLocation = "..\\..\\Resources\\Images\\delete.png";
+                                    delRowBtnPic[i].Click += new EventHandler(delRowBtn_Click);
                                     tlp_ScriptBuilder.Controls.Add(delRowBtnPic[i], 0, y - 1);
                                     if (i > min_rowCount - 2 || rBtn_Delete.Checked)
                                         tlp_ScriptBuilder.Controls.Add(cBox_Logic[i], 1, y - 1);
