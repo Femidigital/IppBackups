@@ -368,14 +368,34 @@ namespace IppBackups
                     XmlNode rtNodeToReplace = doc.SelectSingleNode("//Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table[@name='" + tblName + "']/Environments/Environment[@name='" + cur_environment + "']/Tokens/ReplaceToken[@name='" + tblName + "']");
                     XmlNode ftNodeToReplace = doc.SelectSingleNode("//Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table[@name='" + tblName + "']/Environments/Environment[@name='" + cur_environment + "']/Tokens/FilterToken[@name='" + tblName + "']");
 
-                    foreach (XmlNode token in rtNodeToReplace )
+                    int scriptLine = tlp_ScriptBuilder.RowCount;
+                    int rtNodeCount = rtNodeToReplace.ChildNodes.Count;
+                    int ftNodeCount = ftNodeToReplace.ChildNodes.Count;
+                    int i = 0;
+
+                    foreach (XmlNode token in rtNodeToReplace.ChildNodes )
                     {
-                        //token["set"]
+                        if (cBox_Logic[i].SelectedItem.ToString() == null)
+                        {
+                            token.Attributes["set"].Value = "";
+                        }
+                        else
+                        {
+                            token.Attributes["set"].Value = cBox_Logic[i].SelectedItem.ToString();
+                        }
+                        token.Attributes["columnName"].Value = cBox_Field[i].SelectedItem.ToString();
+                        token.Attributes["operand"].Value = cBox_Operand[i].SelectedItem.ToString();
+                        token.Attributes["value"].Value = txtBox_Value[i].Text;
+                        i++;
                     }
 
-                    foreach (XmlNode token in ftNodeToReplace)
+                    foreach (XmlNode token in ftNodeToReplace.ChildNodes)
                     {
-                        // update node values
+                        token.Attributes["set"].Value = cBox_Logic[i].SelectedItem.ToString();
+                        token.Attributes["columnName"].Value = cBox_Field[i].SelectedItem.ToString();
+                        token.Attributes["operand"].Value = cBox_Operand[i].SelectedItem.ToString();
+                        token.Attributes["value"].Value = txtBox_Value[i].Text;
+                        i++;
                     }
                 }
 
