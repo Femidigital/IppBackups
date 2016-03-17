@@ -643,18 +643,8 @@ namespace IppBackups
 
         private void delRowBtn_Click(object sender, EventArgs e)
         {
-            /*foreach(Control c in this.tlp_ScriptBuilder.Controls)
-            {
-                //MessageBox.Show("Button Clicked: " + this.tlp_ScriptBuilder.GetRow(c) + " Event: " + e.ToString()); 
-                MessageBox.Show("Button Clicked: " + );
-            }*/
 
-            //int row_index_to_remove = delRowBtnPic.IndexOf(sender As PictureBox);
-            int row_index_to_remove = int.Parse((sender as PictureBox).Tag.ToString());
-            MessageBox.Show("Button Clicked: " + row_index_to_remove.ToString() + " Event: " + e.ToString());
-            //int row_index_to_remove = tlp_ScriptBuilder.GetPositionFromControl(sender);
-            //Point p = tlp_ScriptBuilder.PointToClient(new Point(e.X, e.Y));
-            //int row_index_to_remove = tlp_ScriptBuilder.GetRow(sender);
+            int row_index_to_remove = int.Parse((sender as PictureBox).Tag.ToString()) + 1;
 
             if (row_index_to_remove >= tlp_ScriptBuilder.RowCount)
             {
@@ -684,6 +674,8 @@ namespace IppBackups
             // remove the last row
             tlp_ScriptBuilder.RowStyles.RemoveAt(tlp_ScriptBuilder.RowCount - 1);
             tlp_ScriptBuilder.RowCount--;
+            UpdateScriptWindow();
+            ScriptContent();
         }
 
         private void newRowBtn_Click(object sender, EventArgs e)
