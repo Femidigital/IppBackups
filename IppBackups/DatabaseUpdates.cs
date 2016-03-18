@@ -589,7 +589,7 @@ namespace IppBackups
                         //UpdateScriptWindow();
                         if (tlp_ScriptBuilder.RowCount > min_rowCount)
                         {
-                            ScriptContent();
+                            ScriptContent(tlp_ScriptBuilder.RowCount);
                         }
 
                         int i = y - min_rowCount;
@@ -656,7 +656,31 @@ namespace IppBackups
             {
                 var control = tlp_ScriptBuilder.GetControlFromPosition(i, row_index_to_remove);
                 tlp_ScriptBuilder.Controls.Remove(control);
+                control.Dispose();
+                //fieldDatatypes.RemoveAt[row_index_to_remove];
+
+                //myArray = myArray.Where((source, index) => index != indexToRemove).ToArray();
+                //cBox_Field = cBox_Field.Where((source, index) => != i).ToArray();
+                //tlp_ScriptBuilder.Controls.Remove(cBox_Field[row_index_to_remove]);
+                //tlp_ScriptBuilder.Controls.Remove(cBox_Logic[row_index_to_remove]);
+                //tlp_ScriptBuilder.Controls.Remove(cBox_Operand[row_index_to_remove]);
+                //tlp_ScriptBuilder.Controls.Remove(txtBox_Value[row_index_to_remove]);
+                //cBox_Field[row_index_to_remove].Dispose();
+                //cBox_Logic[row_index_to_remove].Dispose();
+                //cBox_Operand[row_index_to_remove].Dispose();
+                //txtBox_Value[row_index_to_remove].Dispose();
             }
+
+            /*tlp_ScriptBuilder.Controls.Remove(delRowBtnPic[row_index_to_remove - 1]);
+            tlp_ScriptBuilder.Controls.Remove(cBox_Field[row_index_to_remove - 1]);
+            tlp_ScriptBuilder.Controls.Remove(cBox_Logic[row_index_to_remove - 1]);
+            tlp_ScriptBuilder.Controls.Remove(cBox_Operand[row_index_to_remove - 1]);
+            tlp_ScriptBuilder.Controls.Remove(txtBox_Value[row_index_to_remove - 1])*/
+           /* delRowBtnPic[row_index_to_remove - 1].Dispose();
+            cBox_Field[row_index_to_remove - 1].Dispose();
+            cBox_Logic[row_index_to_remove - 1].Dispose();
+            cBox_Operand[row_index_to_remove - 1].Dispose();
+            txtBox_Value[row_index_to_remove - 1].Dispose();*/
 
             // move up row controls that comes after row that needs to be removed.
             for (int i = row_index_to_remove + 1; i < tlp_ScriptBuilder.RowCount; i++)
@@ -675,7 +699,14 @@ namespace IppBackups
             tlp_ScriptBuilder.RowStyles.RemoveAt(tlp_ScriptBuilder.RowCount - 1);
             tlp_ScriptBuilder.RowCount--;
             UpdateScriptWindow();
-            ScriptContent();
+            for (int i = 0; i < tlp_ScriptBuilder.RowCount; i++)
+            {
+                int cur_rowToProcess = i + 3;
+                if (i < tlp_ScriptBuilder.RowCount - 1)
+                {
+                    ScriptContent(cur_rowToProcess);
+                }
+            }
         }
 
         private void newRowBtn_Click(object sender, EventArgs e)
@@ -1009,9 +1040,10 @@ namespace IppBackups
             return goodToGo;
         }
 
-        private void ScriptContent()
+        private void ScriptContent(int lastRowMarker)
         {
-            int i = tlp_ScriptBuilder.RowCount - (min_rowCount + 1);
+            //int i = tlp_ScriptBuilder.RowCount - (min_rowCount + 1);
+            int i = lastRowMarker - (min_rowCount + 1);
 
             if (rBtn_Update.Checked)
             {
@@ -1476,7 +1508,7 @@ namespace IppBackups
 
                                     //tlp_ScriptBuilder.Controls.Add(lastRowMark, 0, y);
                                     tlp_ScriptBuilder.Controls.Add(acceptBtnPic, 0, y);
-                                    ScriptContent();
+                                    ScriptContent(tlp_ScriptBuilder.RowCount);
                                     i++;
                                 }
                                 if (rBtn_Replace.Checked)
