@@ -656,32 +656,25 @@ namespace IppBackups
             {
                 var control = tlp_ScriptBuilder.GetControlFromPosition(i, row_index_to_remove);
                 tlp_ScriptBuilder.Controls.Remove(control);
-                control.Dispose();
-                //fieldDatatypes.RemoveAt[row_index_to_remove];
 
-                //myArray = myArray.Where((source, index) => index != indexToRemove).ToArray();
-                //cBox_Field = cBox_Field.Where((source, index) => != i).ToArray();
-                //tlp_ScriptBuilder.Controls.Remove(cBox_Field[row_index_to_remove]);
-                //tlp_ScriptBuilder.Controls.Remove(cBox_Logic[row_index_to_remove]);
-                //tlp_ScriptBuilder.Controls.Remove(cBox_Operand[row_index_to_remove]);
-                //tlp_ScriptBuilder.Controls.Remove(txtBox_Value[row_index_to_remove]);
-                //cBox_Field[row_index_to_remove].Dispose();
-                //cBox_Logic[row_index_to_remove].Dispose();
-                //cBox_Operand[row_index_to_remove].Dispose();
-                //txtBox_Value[row_index_to_remove].Dispose();
+                if (i == 1)
+                {
+                    cBox_Logic[row_index_to_remove - 1].Dispose();
+                }
+                else if (i == 2)
+                {
+                    cBox_Field[row_index_to_remove - 1].Dispose();
+                }
+                else if (i == 3)
+                {
+                    cBox_Operand[row_index_to_remove - 1].Dispose();
+                }
+                else if (i == 4)
+                {
+                    txtBox_Value[row_index_to_remove - 1].Dispose();
+                }
             }
-
-            /*tlp_ScriptBuilder.Controls.Remove(delRowBtnPic[row_index_to_remove - 1]);
-            tlp_ScriptBuilder.Controls.Remove(cBox_Field[row_index_to_remove - 1]);
-            tlp_ScriptBuilder.Controls.Remove(cBox_Logic[row_index_to_remove - 1]);
-            tlp_ScriptBuilder.Controls.Remove(cBox_Operand[row_index_to_remove - 1]);
-            tlp_ScriptBuilder.Controls.Remove(txtBox_Value[row_index_to_remove - 1])*/
-           /* delRowBtnPic[row_index_to_remove - 1].Dispose();
-            cBox_Field[row_index_to_remove - 1].Dispose();
-            cBox_Logic[row_index_to_remove - 1].Dispose();
-            cBox_Operand[row_index_to_remove - 1].Dispose();
-            txtBox_Value[row_index_to_remove - 1].Dispose();*/
-
+            
             // move up row controls that comes after row that needs to be removed.
             for (int i = row_index_to_remove + 1; i < tlp_ScriptBuilder.RowCount; i++)
             {
@@ -699,7 +692,16 @@ namespace IppBackups
             tlp_ScriptBuilder.RowStyles.RemoveAt(tlp_ScriptBuilder.RowCount - 1);
             tlp_ScriptBuilder.RowCount--;
             UpdateScriptWindow();
-            for (int i = 0; i < tlp_ScriptBuilder.RowCount; i++)
+
+            // script DML statement
+
+            var checkedButton = grpBox_DML.Controls.OfType<RadioButton>()
+                        .FirstOrDefault(r => r.Checked);
+            
+            rTxtBox_Script.AppendText("\n" + checkedButton.Text + "", Color.Blue);
+            rTxtBox_Script.AppendText(" " + tbl + "\n", Color.Green);
+
+            for (int i = 0; i < tlp_ScriptBuilder.RowCount - 1; i++)
             {
                 int cur_rowToProcess = i + 3;
                 if (i < tlp_ScriptBuilder.RowCount - 1)
@@ -747,7 +749,7 @@ namespace IppBackups
                     {
                         queryFound = true;
                         string selectedNode = tViewScripts.SelectedNode.Text;
-                        MessageBox.Show("Updating " + selectedNode);
+                        //MessageBox.Show("Updating " + selectedNode);
                     }
                     else
                     {
@@ -759,26 +761,25 @@ namespace IppBackups
                                 if (cn.Tag == "Table" && cn.Text == queryName)
                                 {
                                     tblFound = true;
-                                    MessageBox.Show(cBox_Tables.SelectedText + " table already exists");
-                                    //MessageBox.Show(cur_environment + " already exists");
+                                    //MessageBox.Show(cBox_Tables.SelectedText + " table already exists");
                                     foreach (TreeNode en in cn.Nodes)
                                     {
                                         if (en.Tag == "Environment" && en.Text == cur_environment)
                                         {
                                             envFound = true;
-                                            MessageBox.Show(cur_environment + "already exits");
+                                            //MessageBox.Show(cur_environment + "already exits");
 
                                             foreach (TreeNode qn in en.Nodes)
                                             {
                                                 if (qn.Tag == "ReplaceToken" && qn.Text == queryName)
                                                 {
                                                     queryFound = true;
-                                                    MessageBox.Show(queryName + " query node already exists, you want to overwrite it?");
+                                                    //MessageBox.Show(queryName + " query node already exists, you want to overwrite it?");
                                                 }
                                                 else
                                                 {
                                                     queryFound = false;
-                                                    MessageBox.Show("Creating a new query node");
+                                                    //MessageBox.Show("Creating a new query node");
                                                 }
                                             }
                                         }
@@ -811,7 +812,7 @@ namespace IppBackups
                                 else
                                 {
                                     tblFound = false;
-                                    MessageBox.Show("Creating new table node as " + queryName);
+                                    //MessageBox.Show("Creating new table node as " + queryName);
                                     TreeNode tblNode = new TreeNode(queryName);
                                     tblNode.Tag = "Table";
 
@@ -838,8 +839,6 @@ namespace IppBackups
                     }
                     // Update the xml file with newly created node.                    
                     updateNode = doc.SelectSingleNode("Databases/Database[@name='" + cur_database + "']");
-                    //targetNode = startNode.SelectSingleNode("Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Text + "']");
-                    //targetNode.AppendChild(copyNode);
                     if (!queryFound)
                     {
                         int NoToken = tlp_ScriptBuilder.RowCount - 3;
@@ -848,7 +847,7 @@ namespace IppBackups
                         //Create a new Tokens Node
                         XmlNode tokens = doc.CreateNode(XmlNodeType.Element, "Tokens", null);
 
-                        MessageBox.Show("Creating new query XML node");
+                        //MessageBox.Show("Creating new query XML node");
                         repNode = doc.CreateNode(XmlNodeType.Element, "ReplaceToken", null);
                         XmlAttribute repName = doc.CreateAttribute("name");
                         repName.Value = tblName;
@@ -910,15 +909,6 @@ namespace IppBackups
                             token[i].Attributes.Append(operand);
                             token[i].Attributes.Append(value);
 
-                            //XmlNode node = doc.SelectSingleNode("//Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table[@name='" + tblName + "']/Environments/Environment[@name='" + cur_environment + "']");
-                            // XmlNode node = doc.SelectSingleNode("//Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables");
-
-                            //if (node != null)
-                            //{
-                            //    node.AppendChild(token[i]);
-                            //}
-                            //else
-                            //{
                             if (!whereClause)
                             {
                                 repNode.AppendChild(token[i]);
@@ -930,13 +920,8 @@ namespace IppBackups
 
                             //}
                         }
-
-                        //tokens.AppendChild(repNode);
-                        //tokens.AppendChild(filterToken);
-
                         /* end add tokens */
 
-                        //tokensNode.AppendChild(repNode);
 
                         if (!envFound)
                         {
@@ -963,26 +948,6 @@ namespace IppBackups
                                 envsXmlNode.AppendChild(envXmlNode);
                                 tblXmlNode.AppendChild(envsXmlNode);
 
-                                /*envsXmlNode = doc.CreateNode(XmlNodeType.Element, "Environments", null);
-                                envXmlNode = doc.CreateNode(XmlNodeType.Element, "Environment", null);
-                                XmlAttribute envNameAtt = doc.CreateAttribute("name");
-                                envNameAtt.Value = cur_environment;
-                                envXmlNode.Attributes.Append(envNameAtt);
-
-                                tokensNode = doc.CreateNode(XmlNodeType.Element, "Tokens", null);*/
-
-                                /*repNode = doc.CreateNode(XmlNodeType.Element, "ReplaceToken", null);
-                                XmlAttribute repName = doc.CreateAttribute("set");
-                                repName.Value = "";
-                                XmlAttribute repType = doc.CreateAttribute("type");
-                                repType.Value = "";
-                                XmlAttribute repDML = doc.CreateAttribute("dml");
-                                repDML.Value = "";
-
-                                repNode.Attributes.Append(repName);
-                                repNode.Attributes.Append(repType);
-                                repNode.Attributes.Append(repDML);*/
-
                                 doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables").InsertAfter(tblXmlNode, doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables").LastChild);
 
 
@@ -1008,7 +973,6 @@ namespace IppBackups
                         
                     }
 
-                    //doc.SelectSingleNode("/Databases/Database[@name='" + _cur_Db + "']/Tables/Table/Environments").InsertAfter(updateNode, doc.SelectSingleNode("/Databases/Database[@name='" + _cur_Db + "']/Tables/Table/Environments").LastChild);
                     doc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
                 }
                 //else
@@ -1049,22 +1013,27 @@ namespace IppBackups
             {
                 if (cBox_Logic[i].SelectedItem == null)
                 {
-                    // script += "SET " + cBox_Field[i].SelectedItem + " " + cBox_Operand[i].SelectedItem + " " + txtBox_Value[i].Text;
-                    rTxtBox_Script.AppendText("SET ", Color.Blue);
-                    rTxtBox_Script.AppendText("" + cBox_Field[i].SelectedItem + " ", Color.Green);
-                    rTxtBox_Script.AppendText(" " + cBox_Operand[i].SelectedItem + " ", Color.Green);
-                    // Check Field datatype, and determine value assignment type.
-                    if (NumericDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
+                    // Check if cBox_Field[i] has as selected value
+                    if (cBox_Field[i].SelectedIndex > -1)
                     {
-                        rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
-                    }
-                    else if (CharacterDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
-                    {
-                        rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
-                    }
-                    else if (DateAndTimeDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
-                    {
-                        rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
+                        // script += "SET " + cBox_Field[i].SelectedItem + " " + cBox_Operand[i].SelectedItem + " " + txtBox_Value[i].Text;
+                        rTxtBox_Script.AppendText("SET ", Color.Blue);
+                        rTxtBox_Script.AppendText("" + cBox_Field[i].SelectedItem + " ", Color.Green);
+                        rTxtBox_Script.AppendText(" " + cBox_Operand[i].SelectedItem + " ", Color.Green);
+                    
+                        // Check Field datatype, and determine value assignment type.
+                        if (NumericDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
+                        {
+                            rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
+                        }
+                        else if (CharacterDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
+                        {
+                            rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
+                        }
+                        else if (DateAndTimeDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
+                        {
+                            rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
+                        }
                     }
                 }
                 else if (cBox_Logic[i].SelectedItem != null && cBox_Logic[i].SelectedItem != "WHERE")
@@ -1077,28 +1046,10 @@ namespace IppBackups
                     {
                         rTxtBox_Script.AppendText("" + cBox_Logic[i].SelectedItem + " ", Color.Green);
                     }
-                    rTxtBox_Script.AppendText("" + cBox_Field[i].SelectedItem + " ", Color.Green);
-                    rTxtBox_Script.AppendText(" " + cBox_Operand[i].SelectedItem + " ", Color.Green);
-                    // Check Field datatype, and determine value assignment type.
-                    if (NumericDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
+
+                    // Check if cBox_Field[i] has as selected value
+                    if (cBox_Field[i].SelectedIndex > -1)
                     {
-                        rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
-                    }
-                    else if (CharacterDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
-                    {
-                        rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
-                    }
-                    else if (DateAndTimeDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
-                    {
-                        rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
-                    }
-                }
-                else if (cBox_Logic[i].SelectedItem == "WHERE")
-                {
-                    if (CheckSQL_Syntax())
-                    {
-                        //script += "\nWHERE " + cBox_Field[i].SelectedItem + " " + cBox_Operand[i].SelectedItem + " " + txtBox_Value[i].Text;
-                        rTxtBox_Script.AppendText("\nWHERE ", Color.Blue);
                         rTxtBox_Script.AppendText("" + cBox_Field[i].SelectedItem + " ", Color.Green);
                         rTxtBox_Script.AppendText(" " + cBox_Operand[i].SelectedItem + " ", Color.Green);
                         // Check Field datatype, and determine value assignment type.
@@ -1116,45 +1067,83 @@ namespace IppBackups
                         }
                     }
                 }
+                else if (cBox_Logic[i].SelectedItem == "WHERE")
+                {
+                    if (CheckSQL_Syntax())
+                    {
+                        //script += "\nWHERE " + cBox_Field[i].SelectedItem + " " + cBox_Operand[i].SelectedItem + " " + txtBox_Value[i].Text;
+                        rTxtBox_Script.AppendText("\nWHERE ", Color.Blue);
+
+                        // Check if cBox_Field[i] has as selected value
+                        if (cBox_Field[i].SelectedIndex > -1)
+                        {
+                            rTxtBox_Script.AppendText("" + cBox_Field[i].SelectedItem + " ", Color.Green);
+                            rTxtBox_Script.AppendText(" " + cBox_Operand[i].SelectedItem + " ", Color.Green);
+                            // Check Field datatype, and determine value assignment type.
+                            if (NumericDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
+                            {
+                                rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
+                            }
+                            else if (CharacterDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
+                            {
+                                rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
+                            }
+                            else if (DateAndTimeDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
+                            {
+                                rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
+                            }
+                        }
+                    }
+                }
             }
             else if (rBtn_Delete.Checked)
             {
                 if (cBox_Logic[i].SelectedItem != null && cBox_Logic[i].SelectedItem != "WHERE")
                 {
                     //script += cBox_Logic[i].SelectedItem + " " + cBox_Field[i].SelectedItem + " " + cBox_Operand[i].SelectedItem + " " + txtBox_Value[i].Text;
-                    rTxtBox_Script.AppendText("" + cBox_Logic[i].SelectedItem + " ", Color.Blue);
-                    rTxtBox_Script.AppendText("" + cBox_Field[i].SelectedItem + " ", Color.Green);
-                    rTxtBox_Script.AppendText("" + cBox_Operand[i].SelectedItem + " ", Color.Green);
-                    if (NumericDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
+
+                    // Check if cBox_Field[i] has as selected value
+                    if (cBox_Field[i].SelectedIndex > -1)
                     {
-                        rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
-                    }
-                    else if (CharacterDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
-                    {
-                        rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
-                    }
-                    else if (DateAndTimeDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
-                    {
-                        rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
+                        rTxtBox_Script.AppendText("" + cBox_Logic[i].SelectedItem + " ", Color.Blue);
+                        rTxtBox_Script.AppendText("" + cBox_Field[i].SelectedItem + " ", Color.Green);
+                        rTxtBox_Script.AppendText("" + cBox_Operand[i].SelectedItem + " ", Color.Green);
+                        if (NumericDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
+                        {
+                            rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
+                        }
+                        else if (CharacterDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
+                        {
+                            rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
+                        }
+                        else if (DateAndTimeDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
+                        {
+                            rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
+                        }
                     }
                 }
                 else if (cBox_Logic[i].SelectedItem == "WHERE")
                 {
                     //script += "WHERE " + cBox_Field[i].SelectedItem + " " + cBox_Operand[i].SelectedItem + " " + txtBox_Value[i].Text;
-                    rTxtBox_Script.AppendText("\nWHERE ", Color.Blue);
-                    rTxtBox_Script.AppendText("" + cBox_Field[i].SelectedItem + " ", Color.Green);
-                    rTxtBox_Script.AppendText(" " + cBox_Operand[i].SelectedItem + " ", Color.Green);
-                    if (NumericDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
+
+                    // Check if cBox_Field[i] has as selected value
+                    if (cBox_Field[i].SelectedIndex > -1)
                     {
-                        rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
-                    }
-                    else if (CharacterDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
-                    {
-                        rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
-                    }
-                    else if (DateAndTimeDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
-                    {
-                        rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
+                        rTxtBox_Script.AppendText("\nWHERE ", Color.Blue);
+                        rTxtBox_Script.AppendText("" + cBox_Field[i].SelectedItem + " ", Color.Green);
+                        rTxtBox_Script.AppendText(" " + cBox_Operand[i].SelectedItem + " ", Color.Green);
+                        if (NumericDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
+                        {
+                            rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
+                        }
+                        else if (CharacterDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
+                        {
+                            rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
+                        }
+                        else if (DateAndTimeDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
+                        {
+                            rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
+                        }
                     }
                 }
             }
