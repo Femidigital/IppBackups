@@ -709,6 +709,14 @@ namespace IppBackups
                     ScriptContent(cur_rowToProcess);
                 }
             }
+
+
+            // Remove empty elements from the control arrays.
+            //cBox_Logic = cBox_Logic.Where(x => !cBox_Logic.IsNullOrEmpty(x)).ToArray();
+
+
+            // Update the script file.
+            SaveScriptFile();
         }
 
         private void newRowBtn_Click(object sender, EventArgs e)
@@ -974,6 +982,9 @@ namespace IppBackups
                     }
 
                     doc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
+
+                    // Update script file
+                    SaveScriptFile();
                 }
                 //else
                 //{
@@ -1876,6 +1887,11 @@ namespace IppBackups
             // xdoc.Save(sXmlFile);
             xdoc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
             MessageBox.Show("Removed " + itemToDelete);
+        }
+
+        private void SaveScriptFile()
+        {
+            MessageBox.Show("Saving " + _cur_Db + "_" + tblName + "_" + cur_environment + ".sql");
         }
 
     }
