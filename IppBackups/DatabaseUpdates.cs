@@ -657,7 +657,11 @@ namespace IppBackups
                 var control = tlp_ScriptBuilder.GetControlFromPosition(i, row_index_to_remove);
                 tlp_ScriptBuilder.Controls.Remove(control);
 
-                if (i == 1)
+                if(i == 0)
+                {
+                    delRowBtnPic[row_index_to_remove - 1].Dispose();
+                }
+                else if (i == 1)
                 {
                     cBox_Logic[row_index_to_remove - 1].Dispose();
                 }
@@ -1201,7 +1205,21 @@ namespace IppBackups
                         // do something with each column for that table
 
                         field.Add(column.Name);
-                        fieldDatatypes.Add(column.DataType.ToString());
+                        if (column.DataType.ToString().ToUpper() == "NVARCHAR")
+                        {
+                            if (column.DataType.MaximumLength == -1)
+                            {
+                                fieldDatatypes.Add(column.DataType.ToString() + "(max)");
+                            }
+                            else
+                            {
+                                fieldDatatypes.Add(column.DataType.ToString() + "(" + column.DataType.MaximumLength + ")");
+                            }
+                        }
+                        else
+                        {
+                            fieldDatatypes.Add(column.DataType.ToString());
+                        }
                         //field.Add(column.Name, column.DataType.ToString());
                     }
                 }
@@ -1386,10 +1404,10 @@ namespace IppBackups
                 rTxtBox_Script.AppendText("\nDECLARE ", Color.Blue);
                 rTxtBox_Script.AppendText("@Current" + cBox_Field[0].SelectedItem, Color.Black);
                 rTxtBox_Script.AppendText(" " + fieldDatatypes[cBox_Field[0].SelectedIndex].ToUpper() + "", Color.Blue);
-                if (fieldDatatypes[cBox_Field[0].SelectedIndex].ToUpper() == "NVARCHAR")
+                /*if (fieldDatatypes[cBox_Field[0].SelectedIndex].ToUpper() == "NVARCHAR")
                 {
                     rTxtBox_Script.AppendText("(" + fieldDatatypes[cBox_Field[0].SelectedIndex].Length + ")");
-                }
+                }*/
                 rTxtBox_Script.AppendText("\nSET ", Color.Blue);
                 rTxtBox_Script.AppendText("@Current" + cBox_Field[0].SelectedItem + " = (", Color.Black);
                 rTxtBox_Script.AppendText(" SELECT ", Color.Black);
