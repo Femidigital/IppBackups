@@ -1909,7 +1909,8 @@ namespace IppBackups
 
         private void SaveScriptFile()
         {
-            MessageBox.Show("Saving " + _cur_Db + "_" + tblName + "_" + cur_environment + ".sql");
+            string scriptFile = _cur_Db + "_" + tblName + "_" + cur_environment + ".sql";
+            MessageBox.Show("Saving " + scriptFile);
         }
 
     }
