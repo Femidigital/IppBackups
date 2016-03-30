@@ -1032,7 +1032,6 @@ namespace IppBackups
                     // Check if cBox_Field[i] has as selected value
                     if (cBox_Field[i].SelectedIndex > -1)
                     {
-                        string testString = fieldDatatypes[cBox_Field[i].SelectedIndex].ToString().Substring(0, 8);
                         // script += "SET " + cBox_Field[i].SelectedItem + " " + cBox_Operand[i].SelectedItem + " " + txtBox_Value[i].Text;
                         rTxtBox_Script.AppendText("SET ", Color.Blue);
                         rTxtBox_Script.AppendText("" + cBox_Field[i].SelectedItem + " ", Color.Green);
