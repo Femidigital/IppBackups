@@ -13,6 +13,7 @@ using Microsoft.SqlServer.Management.Smo;
 using Microsoft.SqlServer.Management.Smo.Wmi;
 using Microsoft.SqlServer.Management.Common;
 using Microsoft.SqlServer.Management.Sdk.Sfc;
+using System.IO;
 
 namespace IppBackups
 {
@@ -1031,6 +1032,7 @@ namespace IppBackups
                     // Check if cBox_Field[i] has as selected value
                     if (cBox_Field[i].SelectedIndex > -1)
                     {
+                        string testString = fieldDatatypes[cBox_Field[i].SelectedIndex].ToString().Substring(0, 8);
                         // script += "SET " + cBox_Field[i].SelectedItem + " " + cBox_Operand[i].SelectedItem + " " + txtBox_Value[i].Text;
                         rTxtBox_Script.AppendText("SET ", Color.Blue);
                         rTxtBox_Script.AppendText("" + cBox_Field[i].SelectedItem + " ", Color.Green);
@@ -1044,6 +1046,16 @@ namespace IppBackups
                         else if (CharacterDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
                         {
                             rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
+                        }
+                        else if(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString().Contains("("))
+                        {
+                            int posFound =   fieldDatatypes[cBox_Field[i].SelectedIndex].ToString().IndexOf("(");
+                            string strippedBackect = fieldDatatypes[cBox_Field[i].SelectedIndex].ToString().Substring(0, posFound);
+
+                            if (CharacterDataTypes.Contains(strippedBackect))
+                            {
+                                rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
+                            }
                         }
                         else if (DateAndTimeDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
                         {
@@ -1064,7 +1076,7 @@ namespace IppBackups
 
                     // Check if cBox_Field[i] has as selected value
                     if (cBox_Field[i].SelectedIndex > -1)
-                    {
+                    {                      
                         rTxtBox_Script.AppendText("" + cBox_Field[i].SelectedItem + " ", Color.Green);
                         rTxtBox_Script.AppendText(" " + cBox_Operand[i].SelectedItem + " ", Color.Green);
                         // Check Field datatype, and determine value assignment type.
@@ -1075,6 +1087,16 @@ namespace IppBackups
                         else if (CharacterDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
                         {
                             rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
+                        }
+                        else if (fieldDatatypes[cBox_Field[i].SelectedIndex].ToString().Contains("("))
+                        {
+                            int posFound = fieldDatatypes[cBox_Field[i].SelectedIndex].ToString().IndexOf("(");
+                            string strippedBackect = fieldDatatypes[cBox_Field[i].SelectedIndex].ToString().Substring(0, posFound);
+
+                            if (CharacterDataTypes.Contains(strippedBackect))
+                            {
+                                rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
+                            }
                         }
                         else if (DateAndTimeDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
                         {
@@ -1102,6 +1124,16 @@ namespace IppBackups
                             else if (CharacterDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
                             {
                                 rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
+                            }
+                            else if (fieldDatatypes[cBox_Field[i].SelectedIndex].ToString().Contains("("))
+                            {
+                                int posFound = fieldDatatypes[cBox_Field[i].SelectedIndex].ToString().IndexOf("(");
+                                string strippedBackect = fieldDatatypes[cBox_Field[i].SelectedIndex].ToString().Substring(0, posFound);
+
+                                if (CharacterDataTypes.Contains(strippedBackect))
+                                {
+                                    rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
+                                }
                             }
                             else if (DateAndTimeDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
                             {
@@ -1131,6 +1163,16 @@ namespace IppBackups
                         {
                             rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
                         }
+                        else if (fieldDatatypes[cBox_Field[i].SelectedIndex].ToString().Contains("("))
+                        {
+                            int posFound = fieldDatatypes[cBox_Field[i].SelectedIndex].ToString().IndexOf("(");
+                            string strippedBackect = fieldDatatypes[cBox_Field[i].SelectedIndex].ToString().Substring(0, posFound);
+
+                            if (CharacterDataTypes.Contains(strippedBackect))
+                            {
+                                rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
+                            }
+                        }
                         else if (DateAndTimeDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
                         {
                             rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
@@ -1154,6 +1196,16 @@ namespace IppBackups
                         else if (CharacterDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
                         {
                             rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
+                        }
+                        else if (fieldDatatypes[cBox_Field[i].SelectedIndex].ToString().Contains("("))
+                        {
+                            int posFound = fieldDatatypes[cBox_Field[i].SelectedIndex].ToString().IndexOf("(");
+                            string strippedBackect = fieldDatatypes[cBox_Field[i].SelectedIndex].ToString().Substring(0, posFound);
+
+                            if (CharacterDataTypes.Contains(strippedBackect))
+                            {
+                                rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
+                            }
                         }
                         else if (DateAndTimeDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
                         {
@@ -1909,8 +1961,33 @@ namespace IppBackups
 
         private void SaveScriptFile()
         {
+            string scriptDirectory = "\\Script\\";
             string scriptFile = _cur_Db + "_" + tblName + "_" + cur_environment + ".sql";
-            MessageBox.Show("Saving " + scriptFile);
+            string scriptFileLocation = scriptDirectory + scriptFile;
+
+            if (File.Exists(scriptFile))
+            {
+                MessageBox.Show("Saving " + scriptFile);
+            }
+            else
+            {
+                MessageBox.Show("Creating new script file: " + scriptFile);
+            }
+
+            /*
+            string dbDataSubFolderPath = dataFilePath + "\\" + databaseName;
+            string dbLogSubFolderPath = logFilePath + "\\" + databaseName;
+            string CopiedBackup = "\\\\" + serverName + "\\" + System.IO.Path.Combine(localCopyBackup, databaseName + ".bak");
+            string targetCopy = CopiedBackup.Replace(":", "$");
+
+
+            if (!Directory.Exists(dbDataSubFolderPath))
+            {
+                //lbl_Oupt.Text += "Creating Database Data Subfolder: " + dbDataSubFolderPath + ".\n";
+                rTxtBox_Output.AppendText("Creating Database Data Subfolder: " + dbDataSubFolderPath + ".\n", Color.Black);
+                Directory.CreateDirectory(dbDataSubFolderPath);
+            }
+            */
         }
 
     }
