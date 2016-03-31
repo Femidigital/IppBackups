@@ -1966,12 +1966,21 @@ namespace IppBackups
 
             if (File.Exists(scriptFile))
             {
-                MessageBox.Show("Saving " + scriptFile);
+                MessageBox.Show("Deleting existing file and re-creating " + scriptFile);
+                File.Delete(scriptFile);
             }
             else
             {
                 MessageBox.Show("Creating new script file: " + scriptFile);
             }
+
+            System.IO.StreamWriter sqlFile = new StreamWriter(scriptFile);
+
+            foreach( var line in rTxtBox_Script.Lines)
+            {
+                sqlFile.WriteLine(line);
+            }
+            
 
             /*
             string dbDataSubFolderPath = dataFilePath + "\\" + databaseName;
