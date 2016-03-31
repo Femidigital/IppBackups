@@ -1975,27 +1975,11 @@ namespace IppBackups
             }
 
             System.IO.StreamWriter sqlFile = new StreamWriter(scriptFile);
-
-            foreach( var line in rTxtBox_Script.Lines)
-            {
-                sqlFile.WriteLine(line);
-            }
-            
-
-            /*
-            string dbDataSubFolderPath = dataFilePath + "\\" + databaseName;
-            string dbLogSubFolderPath = logFilePath + "\\" + databaseName;
-            string CopiedBackup = "\\\\" + serverName + "\\" + System.IO.Path.Combine(localCopyBackup, databaseName + ".bak");
-            string targetCopy = CopiedBackup.Replace(":", "$");
-
-
-            if (!Directory.Exists(dbDataSubFolderPath))
-            {
-                //lbl_Oupt.Text += "Creating Database Data Subfolder: " + dbDataSubFolderPath + ".\n";
-                rTxtBox_Output.AppendText("Creating Database Data Subfolder: " + dbDataSubFolderPath + ".\n", Color.Black);
-                Directory.CreateDirectory(dbDataSubFolderPath);
-            }
-            */
+            sqlFile.WriteLine(rTxtBox_Script.Text);
+            sqlFile.Flush();
+            sqlFile.Close();
+           
+            //rTxtBox_Script.SaveFile(scriptFile, RichTextBoxStreamType.PlainText);
         }
 
     }
