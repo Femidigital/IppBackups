@@ -622,6 +622,7 @@ namespace IppBackups
                             tlp_ScriptBuilder.Controls.Add(txtBox_Value[i], 4, y - 1);
                             TableLayoutPanelCellPosition pos = tlp_ScriptBuilder.GetCellPosition(txtBox_Value[i]);
                             txtBox_Value[i].Width = tlp_ScriptBuilder.GetColumnWidths()[pos.Column];
+                            //txtBox_Value[i].Validating += new System.ComponentModel.CancelEventHandler(this.txtBox_Value_Validating);
 
                             //tlp_ScriptBuilder.Controls.Add(lastRowMark, 0, y);
                             //acceptBtnPic.Click += new EventHandler(acceptBtnPic_Click);
@@ -1031,49 +1032,137 @@ namespace IppBackups
             if (tlp_ScriptBuilder.RowCount > min_rowCount)
             {
                 //for(int i = min_rowCount + 1; i <tlp_ScriptBuilder.RowCount - 1; i++)
-                for (int i = 0; i < tlp_ScriptBuilder.RowCount - 1; i++)
+                for (int i = 0; i < tlp_ScriptBuilder.RowCount - min_rowCount; i++)
                 {
-                    // validate value in tBox_Value[i] against cBox_Field[i] datatype.
-                    /*if (txtBox_Value[i].Text = Convert.ChangeType(txtBox_Value[i].Text,fieldDatatypes[i]))
+                    if (cBox_Field[i].SelectedIndex != -1)
                     {
-
-                    }*/
-                    if (NumericDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex]))
-                    {
-                        MessageBox.Show("Validating numberic datatype for " + fieldDatatypes[cBox_Field[i].SelectedIndex]);
-                    }
-                    else if (DateAndTimeDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex]))
-                    {
-                        MessageBox.Show("Validating datetime datatype for " + fieldDatatypes[cBox_Field[i].SelectedIndex]);
-                    }
-                    else if (CharacterDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex]))
-                    {
-                        MessageBox.Show("Validating alphanumeric datatype for " + fieldDatatypes[cBox_Field[i].SelectedIndex]);
-                        //resultString = Regex.Replace(txtBox_Value[i].Text, @"^[{(]?[0-9A-F]{8}[-]?(0-9A-F]{4}[-]?{3}[0-9A-F]{12}[)}]?$", "'$0'", RegexOptions.IgnoreCase);
-                        Guid newGuid;
-
-                        if (Guid.TryParse(txtBox_Value[i].Text, out newGuid) == true)
+                        string sqlDataType = fieldDatatypes[cBox_Field[i].SelectedIndex];
+                        string chkValue = txtBox_Value[i].Text;
+                        // validate value in tBox_Value[i] against cBox_Field[i] datatype.
+                        /*if (txtBox_Value[i].Text = Convert.ChangeType(txtBox_Value[i].Text,fieldDatatypes[i]))
                         {
-                            goodToGo = true;
-                        }
-                        else
+
+                        }*/
+                        if (NumericDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex]))
                         {
-                            MessageBox.Show(txtBox_Value[i].Text + "is not a valid " + fieldDatatypes[cBox_Field[i].SelectedIndex]);
-                            goodToGo = false;
-                            break;
+                            //"bigint", "bit", "decimal", "int", "money", "numberic", "smallint", "smallmoney", "tinyint", "float", "real"
+                            MessageBox.Show("Validating numberic datatype for " + fieldDatatypes[cBox_Field[i].SelectedIndex]);
+
+                            switch (sqlDataType)
+                            {
+                                case "bigint":
+                                    long longText;
+                                    if (Int64.TryParse(chkValue, out longText) == true)
+                                    {
+                                        goodToGo = true;
+                                    }
+                                    else
+                                    {
+                                        MessageBox.Show(chkValue + " is not a valid " + sqlDataType + " value");
+                                        goodToGo = false;
+                                        break;
+                                    }
+                                    break;
+                                case "bit":
+                                    bool boolText;
+                                    if (Boolean.TryParse(chkValue, out boolText) == true)
+                                    {
+                                        goodToGo = true;
+                                    }
+                                    else
+                                    {
+                                        MessageBox.Show(chkValue + " is not a valid " + sqlDataType + " value");
+                                        goodToGo = false;
+                                        txtBox_Value_Validating(txtBox_Value[i]);
+                                        //return goodToGo;
+                                    }
+                                    break;
+                                case "decimal":
+                                case "int":
+                                    int intText;
+                                    if (Int32.TryParse(chkValue, out intText) == true)
+                                    {
+                                        goodToGo = true;
+                                    }
+                                    else
+                                    {
+                                        MessageBox.Show(chkValue + " is not a valid " + sqlDataType + " value");
+                                        goodToGo = false;
+                                        return goodToGo;
+                                    }
+                                    break;                       
+                                case "smallint":
+                                    Int16 smallText;
+                                    if (Int16.TryParse(chkValue, out smallText) == true)
+                                    {
+                                        goodToGo = true;
+                                    }
+                                    else
+                                    {
+                                        MessageBox.Show(chkValue + " is not a valid " + sqlDataType + " value");
+                                        goodToGo = false;
+                                        //txtBox_Value_Validating(txtBox_Value[i], (CancelEventArgs) e);
+                                        txtBox_Value_Validating(txtBox_Value[i]);
+                                        //return goodToGo;
+                                    }
+                                    break;
+                                case "numberic":
+                                case "money":
+                                case "smallmoney":
+                                    Decimal decimalText;
+                                    if (Decimal.TryParse(chkValue, out decimalText) == true)
+                                    {
+                                        goodToGo = true;
+                                    }
+                                    else
+                                    {
+                                        MessageBox.Show(chkValue + " is not a valid " + sqlDataType + " value");
+                                        goodToGo = false;
+                                        return goodToGo;
+                                    }
+                                    break;
+                                case "tinyint":
+                                case "float":
+                                case "real":
+                                    break;
+                                MessageBox.Show(txtBox_Value[i].Text + "is not a valid " + sqlDataType);
+                                goodToGo = false;
+                                break;
+                            }
                         }
-                    }
-                    else if (CharacterDataTypes.Contains( fieldDatatypes[cBox_Field[i].SelectedIndex].ToString().Substring(0, fieldDatatypes[cBox_Field[i].SelectedIndex].ToString().IndexOf("("))))
-                    {
-                        MessageBox.Show("Validating alphanumeric datatype for " + fieldDatatypes[cBox_Field[i].SelectedIndex]);
-                    }
-                    else if (BinaryStringsDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex]))
-                    {
-                        MessageBox.Show("Validating binary datatype for " + fieldDatatypes[cBox_Field[i].SelectedIndex]);
-                    }
-                    else if (OtherDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex]))
-                    {
-                        MessageBox.Show("Validating other datatype for " + fieldDatatypes[cBox_Field[i].SelectedIndex]);
+                        else if (DateAndTimeDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex]))
+                        {
+                            MessageBox.Show("Validating datetime datatype for " + fieldDatatypes[cBox_Field[i].SelectedIndex]);
+                        }
+                        else if (CharacterDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex]))
+                        {
+                            MessageBox.Show("Validating alphanumeric datatype for " + fieldDatatypes[cBox_Field[i].SelectedIndex]);
+                            //resultString = Regex.Replace(txtBox_Value[i].Text, @"^[{(]?[0-9A-F]{8}[-]?(0-9A-F]{4}[-]?{3}[0-9A-F]{12}[)}]?$", "'$0'", RegexOptions.IgnoreCase);
+                            Guid newGuid;
+
+                            if (Guid.TryParse(txtBox_Value[i].Text, out newGuid) == true)
+                            {
+                                goodToGo = true;
+                            }
+                            else
+                            {
+                                MessageBox.Show(txtBox_Value[i].Text + "is not a valid " + fieldDatatypes[cBox_Field[i].SelectedIndex]);
+                                goodToGo = false;
+                                break;
+                            }
+                        }
+                        else if (CharacterDataTypes.Contains( fieldDatatypes[cBox_Field[i].SelectedIndex].ToString().Substring(0, fieldDatatypes[cBox_Field[i].SelectedIndex].ToString().IndexOf("("))))
+                        {
+                            MessageBox.Show("Validating alphanumeric datatype for " + fieldDatatypes[cBox_Field[i].SelectedIndex]);
+                        }
+                        else if (BinaryStringsDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex]))
+                        {
+                            MessageBox.Show("Validating binary datatype for " + fieldDatatypes[cBox_Field[i].SelectedIndex]);
+                        }
+                        else if (OtherDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex]))
+                        {
+                            MessageBox.Show("Validating other datatype for " + fieldDatatypes[cBox_Field[i].SelectedIndex]);
+                        }
                     }
                 }
             }
@@ -2039,6 +2128,30 @@ namespace IppBackups
             sqlFile.WriteLine(rTxtBox_Script.Text);
             sqlFile.Flush();
             sqlFile.Close();
+        }
+
+        //private void txtBox_Value_Validating(object sender, CancelEventArgs e)
+        private void txtBox_Value_Validating(object sender)
+        {
+            Regex re = new Regex(@"^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$");
+
+            //if (re.IsMatch(tBox_IPaddress.Text) || tBox_IPaddress.Text == "")
+            for (int i = 0; i < tlp_ScriptBuilder.RowCount - 3; i++)
+            {
+                if (!re.IsMatch(txtBox_Value[i].Text))
+                {
+                    errorProvider1.SetError(txtBox_Value[i], "Valid Datatype is required");
+                    //e.Cancel = true;
+                    return;
+                }
+            }
+
+            /*if(tBox_IPaddress.Text == "")
+            {
+                errorProvider1.SetError(tBox_IPaddress, "Valid IP is required");
+                e.Cancel = true;
+                return;
+            }*/
         }
 
     }
