@@ -621,7 +621,8 @@ namespace IppBackups
 
                             tlp_ScriptBuilder.Controls.Add(txtBox_Value[i], 4, y - 1);
                             TableLayoutPanelCellPosition pos = tlp_ScriptBuilder.GetCellPosition(txtBox_Value[i]);
-                            txtBox_Value[i].Width = tlp_ScriptBuilder.GetColumnWidths()[pos.Column];
+                            //txtBox_Value[i].Tag = i;
+                            txtBox_Value[i].Width = tlp_ScriptBuilder.GetColumnWidths()[pos.Column] - 40;
                             //txtBox_Value[i].Validating += new System.ComponentModel.CancelEventHandler(this.txtBox_Value_Validating);
 
                             //tlp_ScriptBuilder.Controls.Add(lastRowMark, 0, y);
@@ -1060,7 +1061,8 @@ namespace IppBackups
                                     {
                                         MessageBox.Show(chkValue + " is not a valid " + sqlDataType + " value");
                                         goodToGo = false;
-                                        break;
+                                        txtBox_Value[i].Tag = i;
+                                        txtBox_Value_Validating(txtBox_Value[i]);
                                     }
                                     break;
                                 case "bit":
@@ -1073,6 +1075,7 @@ namespace IppBackups
                                     {
                                         MessageBox.Show(chkValue + " is not a valid " + sqlDataType + " value");
                                         goodToGo = false;
+                                        txtBox_Value[i].Tag = i;
                                         txtBox_Value_Validating(txtBox_Value[i]);
                                         //return goodToGo;
                                     }
@@ -1088,7 +1091,9 @@ namespace IppBackups
                                     {
                                         MessageBox.Show(chkValue + " is not a valid " + sqlDataType + " value");
                                         goodToGo = false;
-                                        return goodToGo;
+                                        txtBox_Value[i].Tag = i;
+                                        txtBox_Value_Validating(txtBox_Value[i]);
+                                        //return goodToGo;
                                     }
                                     break;                       
                                 case "smallint":
@@ -1101,6 +1106,7 @@ namespace IppBackups
                                     {
                                         MessageBox.Show(chkValue + " is not a valid " + sqlDataType + " value");
                                         goodToGo = false;
+                                        txtBox_Value[i].Tag = i;
                                         //txtBox_Value_Validating(txtBox_Value[i], (CancelEventArgs) e);
                                         txtBox_Value_Validating(txtBox_Value[i]);
                                         //return goodToGo;
@@ -1118,15 +1124,19 @@ namespace IppBackups
                                     {
                                         MessageBox.Show(chkValue + " is not a valid " + sqlDataType + " value");
                                         goodToGo = false;
-                                        return goodToGo;
+                                        txtBox_Value[i].Tag = i;
+                                        txtBox_Value_Validating(txtBox_Value[i]);
+                                        //return goodToGo;
                                     }
                                     break;
                                 case "tinyint":
                                 case "float":
                                 case "real":
+                                    MessageBox.Show("Validating Decimal datatype for " + fieldDatatypes[cBox_Field[i].SelectedIndex]);
                                     break;
                                 MessageBox.Show(txtBox_Value[i].Text + "is not a valid " + sqlDataType);
                                 goodToGo = false;
+                                txtBox_Value_Validating(txtBox_Value[i]);
                                 break;
                             }
                         }
@@ -1148,7 +1158,9 @@ namespace IppBackups
                             {
                                 MessageBox.Show(txtBox_Value[i].Text + "is not a valid " + fieldDatatypes[cBox_Field[i].SelectedIndex]);
                                 goodToGo = false;
-                                break;
+                                txtBox_Value[i].Tag = i;
+                                txtBox_Value_Validating(txtBox_Value[i]);
+                                //break;
                             }
                         }
                         else if (CharacterDataTypes.Contains( fieldDatatypes[cBox_Field[i].SelectedIndex].ToString().Substring(0, fieldDatatypes[cBox_Field[i].SelectedIndex].ToString().IndexOf("("))))
@@ -2133,25 +2145,21 @@ namespace IppBackups
         //private void txtBox_Value_Validating(object sender, CancelEventArgs e)
         private void txtBox_Value_Validating(object sender)
         {
-            Regex re = new Regex(@"^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$");
+            //int row_index_to_validate = int.Parse((sender as TextBox).Tag.ToString()) + 1;
 
-            //if (re.IsMatch(tBox_IPaddress.Text) || tBox_IPaddress.Text == "")
             for (int i = 0; i < tlp_ScriptBuilder.RowCount - 3; i++)
             {
-                if (!re.IsMatch(txtBox_Value[i].Text))
+                if (txtBox_Value[i].Tag != null)
                 {
-                    errorProvider1.SetError(txtBox_Value[i], "Valid Datatype is required");
-                    //e.Cancel = true;
-                    return;
+                    //if (sender.ToString() == txtBox_Value[i].Text.ToString())
+                    if (txtBox_Value[i].Tag.ToString() == i.ToString())
+                    {
+                        errorProvider1.SetError(txtBox_Value[i], "Valid Datatype is required");
+                        //e.Cancel = true;
+                        return;
+                    }
                 }
             }
-
-            /*if(tBox_IPaddress.Text == "")
-            {
-                errorProvider1.SetError(tBox_IPaddress, "Valid IP is required");
-                e.Cancel = true;
-                return;
-            }*/
         }
 
     }
