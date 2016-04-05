@@ -1047,7 +1047,7 @@ namespace IppBackups
                         if (NumericDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex]))
                         {
                             //"bigint", "bit", "decimal", "int", "money", "numberic", "smallint", "smallmoney", "tinyint", "float", "real"
-                            MessageBox.Show("Validating numberic datatype for " + fieldDatatypes[cBox_Field[i].SelectedIndex]);
+                            //MessageBox.Show("Validating numberic datatype for " + fieldDatatypes[cBox_Field[i].SelectedIndex]);
 
                             switch (sqlDataType)
                             {
@@ -1059,7 +1059,7 @@ namespace IppBackups
                                     }
                                     else
                                     {
-                                        MessageBox.Show(chkValue + " is not a valid " + sqlDataType + " value");
+                                        //MessageBox.Show(chkValue + " is not a valid " + sqlDataType + " value");
                                         goodToGo = false;
                                         txtBox_Value[i].Tag = i;
                                         txtBox_Value_Validating(txtBox_Value[i]);
@@ -1067,17 +1067,18 @@ namespace IppBackups
                                     break;
                                 case "bit":
                                     bool boolText;
-                                    if (Boolean.TryParse(chkValue, out boolText) == true)
+                                    //var isBool = Boolean.TryParse(chkValue, out boolText);
+                                    //if (Boolean.TryParse(chkValue, out boolText) == true)
+                                    var isBool = int.Parse(chkValue) == 1;
+                                    if (isBool)
                                     {
                                         goodToGo = true;
                                     }
                                     else
                                     {
-                                        MessageBox.Show(chkValue + " is not a valid " + sqlDataType + " value");
                                         goodToGo = false;
                                         txtBox_Value[i].Tag = i;
                                         txtBox_Value_Validating(txtBox_Value[i]);
-                                        //return goodToGo;
                                     }
                                     break;
                                 case "decimal":
@@ -1089,11 +1090,9 @@ namespace IppBackups
                                     }
                                     else
                                     {
-                                        MessageBox.Show(chkValue + " is not a valid " + sqlDataType + " value");
                                         goodToGo = false;
                                         txtBox_Value[i].Tag = i;
                                         txtBox_Value_Validating(txtBox_Value[i]);
-                                        //return goodToGo;
                                     }
                                     break;                       
                                 case "smallint":
@@ -1104,12 +1103,10 @@ namespace IppBackups
                                     }
                                     else
                                     {
-                                        MessageBox.Show(chkValue + " is not a valid " + sqlDataType + " value");
                                         goodToGo = false;
                                         txtBox_Value[i].Tag = i;
                                         //txtBox_Value_Validating(txtBox_Value[i], (CancelEventArgs) e);
                                         txtBox_Value_Validating(txtBox_Value[i]);
-                                        //return goodToGo;
                                     }
                                     break;
                                 case "numberic":
@@ -1122,11 +1119,9 @@ namespace IppBackups
                                     }
                                     else
                                     {
-                                        MessageBox.Show(chkValue + " is not a valid " + sqlDataType + " value");
                                         goodToGo = false;
                                         txtBox_Value[i].Tag = i;
                                         txtBox_Value_Validating(txtBox_Value[i]);
-                                        //return goodToGo;
                                     }
                                     break;
                                 case "tinyint":
@@ -1142,11 +1137,30 @@ namespace IppBackups
                         }
                         else if (DateAndTimeDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex]))
                         {
-                            MessageBox.Show("Validating datetime datatype for " + fieldDatatypes[cBox_Field[i].SelectedIndex]);
+                            //MessageBox.Show("Validating datetime datatype for " + fieldDatatypes[cBox_Field[i].SelectedIndex]);
+                            DateTime testDate = DateTime.MinValue;
+                            System.Data.SqlTypes.SqlDateTime sdt;
+
+                            if (DateTime.TryParse(chkValue, out testDate))
+                            {
+                                try
+                                {
+                                    //take advantage of the native conversion
+                                    sdt = new System.Data.SqlTypes.SqlDateTime(testDate);
+                                    goodToGo = true;
+                                }
+                                catch(System.Data.SqlTypes.SqlTypeException ex)
+                                {
+                                    goodToGo = false;
+                                    txtBox_Value[i].Tag = i;
+                                    txtBox_Value_Validating(txtBox_Value[i]);
+                                }
+
+                            }
                         }
                         else if (CharacterDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex]))
                         {
-                            MessageBox.Show("Validating alphanumeric datatype for " + fieldDatatypes[cBox_Field[i].SelectedIndex]);
+                            //MessageBox.Show("Validating alphanumeric datatype for " + fieldDatatypes[cBox_Field[i].SelectedIndex]);
                             //resultString = Regex.Replace(txtBox_Value[i].Text, @"^[{(]?[0-9A-F]{8}[-]?(0-9A-F]{4}[-]?{3}[0-9A-F]{12}[)}]?$", "'$0'", RegexOptions.IgnoreCase);
                             Guid newGuid;
 
@@ -1156,16 +1170,26 @@ namespace IppBackups
                             }
                             else
                             {
-                                MessageBox.Show(txtBox_Value[i].Text + "is not a valid " + fieldDatatypes[cBox_Field[i].SelectedIndex]);
                                 goodToGo = false;
                                 txtBox_Value[i].Tag = i;
                                 txtBox_Value_Validating(txtBox_Value[i]);
-                                //break;
                             }
                         }
                         else if (CharacterDataTypes.Contains( fieldDatatypes[cBox_Field[i].SelectedIndex].ToString().Substring(0, fieldDatatypes[cBox_Field[i].SelectedIndex].ToString().IndexOf("("))))
                         {
                             MessageBox.Show("Validating alphanumeric datatype for " + fieldDatatypes[cBox_Field[i].SelectedIndex]);
+                            string maxLength = sqlDataType.Substring(sqlDataType.IndexOf("("), sqlDataType.Length - (sqlDataType.IndexOf("(") + 1));
+
+                            if (chkValue.Length < Int32.Parse(maxLength))
+                            {
+                                goodToGo = true;
+                            }
+                            else
+                            {
+                                goodToGo = false;
+                                txtBox_Value[i].Tag = i;
+                                txtBox_Value_Validating(txtBox_Value[i]);
+                            }
                         }
                         else if (BinaryStringsDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex]))
                         {
@@ -2154,9 +2178,10 @@ namespace IppBackups
                     //if (sender.ToString() == txtBox_Value[i].Text.ToString())
                     if (txtBox_Value[i].Tag.ToString() == i.ToString())
                     {
-                        errorProvider1.SetError(txtBox_Value[i], "Valid Datatype is required");
+                        //errorProvider1.SetError(txtBox_Value[i], "Valid Datatype is required");
+                        errorProvider1.SetError(txtBox_Value[i], txtBox_Value[i].Text + "is not a valid " + fieldDatatypes[cBox_Field[i].SelectedIndex]);
                         //e.Cancel = true;
-                        return;
+                        //return;
                     }
                 }
             }
