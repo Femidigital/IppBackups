@@ -1033,6 +1033,8 @@ namespace IppBackups
         {
             bool goodToGo = false;
             string resultString;
+            var args = new System.ComponentModel.CancelEventArgs();
+
             if (tlp_ScriptBuilder.RowCount > min_rowCount)
             {
                 //for(int i = min_rowCount + 1; i <tlp_ScriptBuilder.RowCount - 1; i++)
@@ -1065,8 +1067,8 @@ namespace IppBackups
                                         //MessageBox.Show(chkValue + " is not a valid " + sqlDataType + " value");
                                         goodToGo = false;
                                         txtBox_Value[i].Tag = i;
-                                        txtBox_Value[i].Validating(txtBox_Value[i], CancelEventArgs(e));
-                                        txtBox_Value_Validating(txtBox_Value[i]);
+                                        txtBox_Value_Validating(txtBox_Value[i], args);
+                                        //txtBox_Value_Validating(txtBox_Value[i]);
                                     }
                                     break;
                                 case "bit":
@@ -1082,7 +1084,7 @@ namespace IppBackups
                                     {
                                         goodToGo = false;
                                         txtBox_Value[i].Tag = i;
-                                        txtBox_Value_Validating(txtBox_Value[i]);
+                                        txtBox_Value_Validating(txtBox_Value[i], args);
                                     }
                                     break;
                                 case "decimal":
@@ -1096,7 +1098,7 @@ namespace IppBackups
                                     {
                                         goodToGo = false;
                                         txtBox_Value[i].Tag = i;
-                                        txtBox_Value_Validating(txtBox_Value[i]);
+                                        txtBox_Value_Validating(txtBox_Value[i], args);
                                     }
                                     break;                       
                                 case "smallint":
@@ -1110,7 +1112,7 @@ namespace IppBackups
                                         goodToGo = false;
                                         txtBox_Value[i].Tag = i;
                                         //txtBox_Value_Validating(txtBox_Value[i], (CancelEventArgs) e);
-                                        txtBox_Value_Validating(txtBox_Value[i]);
+                                        txtBox_Value_Validating(txtBox_Value[i], args);
                                     }
                                     break;
                                 case "numberic":
@@ -1125,7 +1127,7 @@ namespace IppBackups
                                     {
                                         goodToGo = false;
                                         txtBox_Value[i].Tag = i;
-                                        txtBox_Value_Validating(txtBox_Value[i]);
+                                        txtBox_Value_Validating(txtBox_Value[i], args);
                                     }
                                     break;
                                 case "tinyint":
@@ -1135,7 +1137,7 @@ namespace IppBackups
                                     break;
                                 MessageBox.Show(txtBox_Value[i].Text + "is not a valid " + sqlDataType);
                                 goodToGo = false;
-                                txtBox_Value_Validating(txtBox_Value[i]);
+                                txtBox_Value_Validating(txtBox_Value[i], args);
                                 break;
                             }
                         }
@@ -1162,7 +1164,7 @@ namespace IppBackups
                             else
                             {
                                 txtBox_Value[i].Tag = i;
-                                txtBox_Value_Validating(txtBox_Value[i]);
+                                txtBox_Value_Validating(txtBox_Value[i], args);
                             }
                         }
                         else if (CharacterDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex]))
@@ -1177,7 +1179,7 @@ namespace IppBackups
                             {
                                 goodToGo = false;
                                 txtBox_Value[i].Tag = i;
-                                txtBox_Value_Validating(txtBox_Value[i]);
+                                txtBox_Value_Validating(txtBox_Value[i], args);
                             }
                         }
                         else if (CharacterDataTypes.Contains( fieldDatatypes[cBox_Field[i].SelectedIndex].ToString().Substring(0, fieldDatatypes[cBox_Field[i].SelectedIndex].ToString().IndexOf("("))))
@@ -1192,7 +1194,7 @@ namespace IppBackups
                             {
                                 goodToGo = false;
                                 txtBox_Value[i].Tag = i;
-                                txtBox_Value_Validating(txtBox_Value[i]);
+                                txtBox_Value_Validating(txtBox_Value[i], args);
                             }
                         }
                         else if (BinaryStringsDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex]))
@@ -2184,8 +2186,8 @@ namespace IppBackups
                     {
                         //errorProvider1.SetError(txtBox_Value[i], "Valid Datatype is required");
                         errorProvider1.SetError(txtBox_Value[i], txtBox_Value[i].Text + "is not a valid " + fieldDatatypes[cBox_Field[i].SelectedIndex]);
-                        e.Cancel = true;
-                        return;
+                        //e.Cancel = true;
+                        //return;
                     }
                 }
             }
