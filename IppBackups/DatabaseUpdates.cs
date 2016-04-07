@@ -602,10 +602,12 @@ namespace IppBackups
                             tlp_ScriptBuilder.RowStyles.Insert(tlp_ScriptBuilder.RowCount - 2, new RowStyle(SizeType.AutoSize));
 
                             delRowBtnPic[i] = new PictureBox();
-                            delRowBtnPic[i].Size = new Size(19, 19);
+                            delRowBtnPic[i].Size = new Size(19, 19);                            
                             delRowBtnPic[i].ImageLocation = "..\\..\\Resources\\Images\\delete.png";
                             delRowBtnPic[i].Click += new EventHandler(delRowBtn_Click);
                             tlp_ScriptBuilder.Controls.Add(delRowBtnPic[i], 0, y - 1);
+                            TableLayoutPanelCellPosition pos2 = tlp_ScriptBuilder.GetCellPosition(delRowBtnPic[i]);
+                            delRowBtnPic[i].Width = tlp_ScriptBuilder.GetColumnWidths()[pos2.Column] - 5;
 
                             /*rowLabel[i].Size = new Size(20,20);
                             rowLabel[i].Image = delImage;
@@ -623,7 +625,8 @@ namespace IppBackups
                             TableLayoutPanelCellPosition pos = tlp_ScriptBuilder.GetCellPosition(txtBox_Value[i]);
                             //txtBox_Value[i].Tag = i;
                             txtBox_Value[i].Width = tlp_ScriptBuilder.GetColumnWidths()[pos.Column] - 40;
-                            //txtBox_Value[i].Validating += new System.ComponentModel.CancelEventHandler(this.txtBox_Value_Validating);
+                            txtBox_Value[i].Validating += new System.ComponentModel.CancelEventHandler(this.txtBox_Value_Validating);
+                            txtBox_Value[i].Validated += new System.EventHandler(this.txtBox_Value_Validated);
 
                             //tlp_ScriptBuilder.Controls.Add(lastRowMark, 0, y);
                             //acceptBtnPic.Click += new EventHandler(acceptBtnPic_Click);
@@ -1062,6 +1065,7 @@ namespace IppBackups
                                         //MessageBox.Show(chkValue + " is not a valid " + sqlDataType + " value");
                                         goodToGo = false;
                                         txtBox_Value[i].Tag = i;
+                                        txtBox_Value[i].Validating(txtBox_Value[i], CancelEventArgs(e));
                                         txtBox_Value_Validating(txtBox_Value[i]);
                                     }
                                     break;
@@ -1152,16 +1156,17 @@ namespace IppBackups
                                 catch(System.Data.SqlTypes.SqlTypeException ex)
                                 {
                                     goodToGo = false;
-                                    txtBox_Value[i].Tag = i;
-                                    txtBox_Value_Validating(txtBox_Value[i]);
                                 }
 
+                            }
+                            else
+                            {
+                                txtBox_Value[i].Tag = i;
+                                txtBox_Value_Validating(txtBox_Value[i]);
                             }
                         }
                         else if (CharacterDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex]))
                         {
-                            //MessageBox.Show("Validating alphanumeric datatype for " + fieldDatatypes[cBox_Field[i].SelectedIndex]);
-                            //resultString = Regex.Replace(txtBox_Value[i].Text, @"^[{(]?[0-9A-F]{8}[-]?(0-9A-F]{4}[-]?{3}[0-9A-F]{12}[)}]?$", "'$0'", RegexOptions.IgnoreCase);
                             Guid newGuid;
 
                             if (Guid.TryParse(txtBox_Value[i].Text, out newGuid) == true)
@@ -1177,8 +1182,7 @@ namespace IppBackups
                         }
                         else if (CharacterDataTypes.Contains( fieldDatatypes[cBox_Field[i].SelectedIndex].ToString().Substring(0, fieldDatatypes[cBox_Field[i].SelectedIndex].ToString().IndexOf("("))))
                         {
-                            MessageBox.Show("Validating alphanumeric datatype for " + fieldDatatypes[cBox_Field[i].SelectedIndex]);
-                            string maxLength = sqlDataType.Substring(sqlDataType.IndexOf("("), sqlDataType.Length - (sqlDataType.IndexOf("(") + 1));
+                            string maxLength = sqlDataType.Substring(sqlDataType.IndexOf("(") + 1, sqlDataType.Length - (sqlDataType.IndexOf("(") + 2));
 
                             if (chkValue.Length < Int32.Parse(maxLength))
                             {
@@ -2167,7 +2171,7 @@ namespace IppBackups
         }
 
         //private void txtBox_Value_Validating(object sender, CancelEventArgs e)
-        private void txtBox_Value_Validating(object sender)
+        private void txtBox_Value_Validating(object sender, CancelEventArgs e)
         {
             //int row_index_to_validate = int.Parse((sender as TextBox).Tag.ToString()) + 1;
 
@@ -2180,11 +2184,16 @@ namespace IppBackups
                     {
                         //errorProvider1.SetError(txtBox_Value[i], "Valid Datatype is required");
                         errorProvider1.SetError(txtBox_Value[i], txtBox_Value[i].Text + "is not a valid " + fieldDatatypes[cBox_Field[i].SelectedIndex]);
-                        //e.Cancel = true;
-                        //return;
+                        e.Cancel = true;
+                        return;
                     }
                 }
             }
+        }
+
+        private void txtBox_Value_Validated(object sender, EventArgs e)
+        {
+
         }
 
     }
