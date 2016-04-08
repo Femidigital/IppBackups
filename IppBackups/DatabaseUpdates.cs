@@ -625,8 +625,8 @@ namespace IppBackups
                             TableLayoutPanelCellPosition pos = tlp_ScriptBuilder.GetCellPosition(txtBox_Value[i]);
                             //txtBox_Value[i].Tag = i;
                             txtBox_Value[i].Width = tlp_ScriptBuilder.GetColumnWidths()[pos.Column] - 40;
-                            txtBox_Value[i].Validating += new System.ComponentModel.CancelEventHandler(this.txtBox_Value_Validating);
-                            txtBox_Value[i].Validated += new System.EventHandler(this.txtBox_Value_Validated);
+                            //txtBox_Value[i].Validating += new System.ComponentModel.CancelEventHandler(this.txtBox_Value_Validating);
+                            //txtBox_Value[i].Validated += new System.EventHandler(this.txtBox_Value_Validated);
 
                             //tlp_ScriptBuilder.Controls.Add(lastRowMark, 0, y);
                             //acceptBtnPic.Click += new EventHandler(acceptBtnPic_Click);
@@ -742,269 +742,277 @@ namespace IppBackups
 
         private void acceptBtnPic_Click(object sender, EventArgs e)
         {
-            if (validateInputValues())
+            for (int j = 0; j <= tlp_ScriptBuilder.RowCount - 3; j++)
             {
-                bool envFound = false;
-                bool tblFound = false;
-                bool queryFound = false;
-                bool whereClause = false;
-                XmlNode updateNode;
-                XmlNode tblXmlNode;
-                XmlNode envsXmlNode;
-                XmlNode envXmlNode;
-                XmlNode repNode;
-                XmlNode tokensNode;
-                string queryName = "";
-
-                string strMsg = String.Format("Are you sure you want to commit these pending changes?");
-
-                string selectedTbl = cBox_Tables.SelectedItem.ToString();
-                queryName = selectedTbl.Substring(7, selectedTbl.Length - 8);
-
-
-                if (tlp_ScriptBuilder.RowCount - min_rowCount > 1)
+                if (cBox_Field[j].SelectedIndex != -1)
                 {
-                    if (MessageBox.Show(strMsg, "Close Window", MessageBoxButtons.YesNo) != DialogResult.No)
+                    errorProvider1.SetError(txtBox_Value[j], "");
+                }
+            }
+
+                if (validateInputValues())
+                {
+                    bool envFound = false;
+                    bool tblFound = false;
+                    bool queryFound = false;
+                    bool whereClause = false;
+                    XmlNode updateNode;
+                    XmlNode tblXmlNode;
+                    XmlNode envsXmlNode;
+                    XmlNode envXmlNode;
+                    XmlNode repNode;
+                    XmlNode tokensNode;
+                    string queryName = "";
+
+                    string strMsg = String.Format("Are you sure you want to commit these pending changes?");
+
+                    string selectedTbl = cBox_Tables.SelectedItem.ToString();
+                    queryName = selectedTbl.Substring(7, selectedTbl.Length - 8);
+
+
+                    if (tlp_ScriptBuilder.RowCount - min_rowCount > 1)
                     {
-                        if (tViewScripts.SelectedNode != null && tViewScripts.SelectedNode.Tag == "ReplaceToken")
+                        if (MessageBox.Show(strMsg, "Close Window", MessageBoxButtons.YesNo) != DialogResult.No)
                         {
-                            queryFound = true;
-                            string selectedNode = tViewScripts.SelectedNode.Text;
-                            //MessageBox.Show("Updating " + selectedNode);
-                        }
-                        else
-                        {
-                            foreach (TreeNode tn in tViewScripts.Nodes)
+                            if (tViewScripts.SelectedNode != null && tViewScripts.SelectedNode.Tag == "ReplaceToken")
                             {
-                                foreach (TreeNode cn in tn.Nodes)
+                                queryFound = true;
+                                string selectedNode = tViewScripts.SelectedNode.Text;
+                                //MessageBox.Show("Updating " + selectedNode);
+                            }
+                            else
+                            {
+                                foreach (TreeNode tn in tViewScripts.Nodes)
                                 {
-                                    //if (tViewScripts.Nodes.ContainsKey(cur_environment))
-                                    if (cn.Tag == "Table" && cn.Text == queryName)
+                                    foreach (TreeNode cn in tn.Nodes)
                                     {
-                                        tblFound = true;
-                                        //MessageBox.Show(cBox_Tables.SelectedText + " table already exists");
-                                        foreach (TreeNode en in cn.Nodes)
+                                        //if (tViewScripts.Nodes.ContainsKey(cur_environment))
+                                        if (cn.Tag == "Table" && cn.Text == queryName)
                                         {
-                                            if (en.Tag == "Environment" && en.Text == cur_environment)
+                                            tblFound = true;
+                                            //MessageBox.Show(cBox_Tables.SelectedText + " table already exists");
+                                            foreach (TreeNode en in cn.Nodes)
                                             {
-                                                envFound = true;
-                                                //MessageBox.Show(cur_environment + "already exits");
-
-                                                foreach (TreeNode qn in en.Nodes)
+                                                if (en.Tag == "Environment" && en.Text == cur_environment)
                                                 {
-                                                    if (qn.Tag == "ReplaceToken" && qn.Text == queryName)
+                                                    envFound = true;
+                                                    //MessageBox.Show(cur_environment + "already exits");
+
+                                                    foreach (TreeNode qn in en.Nodes)
                                                     {
-                                                        queryFound = true;
-                                                        //MessageBox.Show(queryName + " query node already exists, you want to overwrite it?");
+                                                        if (qn.Tag == "ReplaceToken" && qn.Text == queryName)
+                                                        {
+                                                            queryFound = true;
+                                                            //MessageBox.Show(queryName + " query node already exists, you want to overwrite it?");
+                                                        }
+                                                        else
+                                                        {
+                                                            queryFound = false;
+                                                            //MessageBox.Show("Creating a new query node");
+                                                        }
                                                     }
-                                                    else
+                                                }
+                                                else
+                                                {
+                                                    envFound = false;
+                                                    MessageBox.Show("Creating new environment node as " + cur_environment);
+
+                                                    TreeNode qNode = new TreeNode(queryName);
+                                                    qNode.Tag = "ReplaceToken";
+
+                                                    TreeNode envNode = new TreeNode(cur_environment);
+                                                    envNode.Tag = "Environment";
+
+                                                    envNode.Nodes.Add(qNode);
+                                                    //en.Nodes.Add(envNode);
+
+                                                    TreeNode parentNode = tViewScripts.SelectedNode ?? tViewScripts.Nodes[0];
+                                                    if (parentNode != null)
                                                     {
-                                                        queryFound = false;
-                                                        //MessageBox.Show("Creating a new query node");
+                                                        //parentNode.Nodes.Add(envNode);
+                                                        cn.Nodes.Add(envNode);
+                                                        //parentNode.SelectedNode = tblNode;
+                                                        tViewScripts.SelectedNode = envNode;
+                                                        envNode.ExpandAll();
                                                     }
                                                 }
                                             }
-                                            else
+                                        }
+                                        else
+                                        {
+                                            tblFound = false;
+                                            //MessageBox.Show("Creating new table node as " + queryName);
+                                            TreeNode tblNode = new TreeNode(queryName);
+                                            tblNode.Tag = "Table";
+
+                                            TreeNode qNode = new TreeNode(queryName);
+                                            qNode.Tag = "ReplaceToken";
+
+                                            TreeNode envNode = new TreeNode(cur_environment);
+                                            envNode.Tag = "Environment";
+
+                                            envNode.Nodes.Add(qNode);
+                                            tblNode.Nodes.Add(envNode);
+
+                                            TreeNode parentNode = tViewScripts.SelectedNode ?? tViewScripts.Nodes[0];
+                                            if (parentNode != null)
                                             {
-                                                envFound = false;
-                                                MessageBox.Show("Creating new environment node as " + cur_environment);
-
-                                                TreeNode qNode = new TreeNode(queryName);
-                                                qNode.Tag = "ReplaceToken";
-
-                                                TreeNode envNode = new TreeNode(cur_environment);
-                                                envNode.Tag = "Environment";
-
-                                                envNode.Nodes.Add(qNode);
-                                                //en.Nodes.Add(envNode);
-
-                                                TreeNode parentNode = tViewScripts.SelectedNode ?? tViewScripts.Nodes[0];
-                                                if (parentNode != null)
-                                                {
-                                                    //parentNode.Nodes.Add(envNode);
-                                                    cn.Nodes.Add(envNode);
-                                                    //parentNode.SelectedNode = tblNode;
-                                                    tViewScripts.SelectedNode = envNode;
-                                                    envNode.ExpandAll();
-                                                }
+                                                parentNode.Nodes.Add(tblNode);
+                                                //parentNode.SelectedNode = tblNode;
+                                                tViewScripts.SelectedNode = tblNode;
+                                                tblNode.ExpandAll();
                                             }
+                                        }
+                                    }
+                                }
+                            }
+                            // Update the xml file with newly created node.                    
+                            updateNode = doc.SelectSingleNode("Databases/Database[@name='" + cur_database + "']");
+                            if (!queryFound)
+                            {
+                                int NoToken = tlp_ScriptBuilder.RowCount - 3;
+                                XmlNode[] token = new XmlNode[NoToken];
+
+                                //Create a new Tokens Node
+                                XmlNode tokens = doc.CreateNode(XmlNodeType.Element, "Tokens", null);
+
+                                //MessageBox.Show("Creating new query XML node");
+                                repNode = doc.CreateNode(XmlNodeType.Element, "ReplaceToken", null);
+                                XmlAttribute repName = doc.CreateAttribute("name");
+                                repName.Value = tblName;
+                                XmlAttribute repType = doc.CreateAttribute("type");
+                                repType.Value = "";
+                                XmlAttribute repDML = doc.CreateAttribute("dml");
+
+                                var checkedButton = grpBox_DML.Controls.OfType<RadioButton>()
+                                    .FirstOrDefault(r => r.Checked);
+                                repDML.Value = checkedButton.Text;
+
+                                repNode.Attributes.Append(repName);
+                                repNode.Attributes.Append(repType);
+                                repNode.Attributes.Append(repDML);
+
+                                /* add tokens */
+                                //Create a new FilterToken Node
+                                XmlNode filterToken = doc.CreateNode(XmlNodeType.Element, "FilterToken", null);
+
+                                XmlAttribute filTokenName = doc.CreateAttribute("name");
+                                filTokenName.Value = tblName;
+
+                                XmlAttribute filTokenType = doc.CreateAttribute("type");
+                                filTokenType.Value = "FilterToken";
+
+                                filterToken.Attributes.Append(filTokenName);
+                                filterToken.Attributes.Append(filTokenType);
+
+                                for (int i = 0; i < tlp_ScriptBuilder.RowCount - 3; i++)
+                                {
+                                    token[i] = doc.CreateNode(XmlNodeType.Element, "Token", null);
+
+                                    XmlAttribute set = doc.CreateAttribute("set");
+
+                                    if (cBox_Logic[i].SelectedItem != null)
+                                    {
+                                        set.Value = (string)cBox_Logic[i].SelectedItem;
+                                        if (set.Value == "WHERE")
+                                        {
+                                            whereClause = true;
                                         }
                                     }
                                     else
                                     {
-                                        tblFound = false;
-                                        //MessageBox.Show("Creating new table node as " + queryName);
-                                        TreeNode tblNode = new TreeNode(queryName);
-                                        tblNode.Tag = "Table";
-
-                                        TreeNode qNode = new TreeNode(queryName);
-                                        qNode.Tag = "ReplaceToken";
-
-                                        TreeNode envNode = new TreeNode(cur_environment);
-                                        envNode.Tag = "Environment";
-
-                                        envNode.Nodes.Add(qNode);
-                                        tblNode.Nodes.Add(envNode);
-
-                                        TreeNode parentNode = tViewScripts.SelectedNode ?? tViewScripts.Nodes[0];
-                                        if (parentNode != null)
-                                        {
-                                            parentNode.Nodes.Add(tblNode);
-                                            //parentNode.SelectedNode = tblNode;
-                                            tViewScripts.SelectedNode = tblNode;
-                                            tblNode.ExpandAll();
-                                        }
+                                        set.Value = "";
                                     }
-                                }
-                            }
-                        }
-                        // Update the xml file with newly created node.                    
-                        updateNode = doc.SelectSingleNode("Databases/Database[@name='" + cur_database + "']");
-                        if (!queryFound)
-                        {
-                            int NoToken = tlp_ScriptBuilder.RowCount - 3;
-                            XmlNode[] token = new XmlNode[NoToken];
 
-                            //Create a new Tokens Node
-                            XmlNode tokens = doc.CreateNode(XmlNodeType.Element, "Tokens", null);
+                                    XmlAttribute columnName = doc.CreateAttribute("columnName");
+                                    columnName.Value = (string)cBox_Field[i].SelectedItem;
 
-                            //MessageBox.Show("Creating new query XML node");
-                            repNode = doc.CreateNode(XmlNodeType.Element, "ReplaceToken", null);
-                            XmlAttribute repName = doc.CreateAttribute("name");
-                            repName.Value = tblName;
-                            XmlAttribute repType = doc.CreateAttribute("type");
-                            repType.Value = "";
-                            XmlAttribute repDML = doc.CreateAttribute("dml");
+                                    XmlAttribute operand = doc.CreateAttribute("operand");
+                                    operand.Value = (string)cBox_Operand[i].SelectedItem;
 
-                            var checkedButton = grpBox_DML.Controls.OfType<RadioButton>()
-                                .FirstOrDefault(r => r.Checked);
-                            repDML.Value = checkedButton.Text;
+                                    XmlAttribute value = doc.CreateAttribute("value");
+                                    value.Value = txtBox_Value[i].Text;
 
-                            repNode.Attributes.Append(repName);
-                            repNode.Attributes.Append(repType);
-                            repNode.Attributes.Append(repDML);
+                                    token[i].Attributes.Append(set);
+                                    token[i].Attributes.Append(columnName);
+                                    token[i].Attributes.Append(operand);
+                                    token[i].Attributes.Append(value);
 
-                            /* add tokens */
-                            //Create a new FilterToken Node
-                            XmlNode filterToken = doc.CreateNode(XmlNodeType.Element, "FilterToken", null);
-
-                            XmlAttribute filTokenName = doc.CreateAttribute("name");
-                            filTokenName.Value = tblName;
-
-                            XmlAttribute filTokenType = doc.CreateAttribute("type");
-                            filTokenType.Value = "FilterToken";
-
-                            filterToken.Attributes.Append(filTokenName);
-                            filterToken.Attributes.Append(filTokenType);
-
-                            for (int i = 0; i < tlp_ScriptBuilder.RowCount - 3; i++)
-                            {
-                                token[i] = doc.CreateNode(XmlNodeType.Element, "Token", null);
-
-                                XmlAttribute set = doc.CreateAttribute("set");
-
-                                if (cBox_Logic[i].SelectedItem != null)
-                                {
-                                    set.Value = (string)cBox_Logic[i].SelectedItem;
-                                    if (set.Value == "WHERE")
+                                    if (!whereClause)
                                     {
-                                        whereClause = true;
+                                        repNode.AppendChild(token[i]);
+                                    }
+                                    else
+                                    {
+                                        filterToken.AppendChild(token[i]);
+                                    }
+
+                                    //}
+                                }
+                                /* end add tokens */
+
+
+                                if (!envFound)
+                                {
+                                    envsXmlNode = doc.CreateNode(XmlNodeType.Element, "Environments", null);
+                                    envXmlNode = doc.CreateNode(XmlNodeType.Element, "Environment", null);
+                                    XmlAttribute envNameAtt = doc.CreateAttribute("name");
+                                    envNameAtt.Value = cur_environment;
+                                    envXmlNode.Attributes.Append(envNameAtt);
+
+                                    tokensNode = doc.CreateNode(XmlNodeType.Element, "Tokens", null);
+
+                                    tokensNode.AppendChild(repNode);
+                                    tokensNode.AppendChild(filterToken);
+                                    envXmlNode.AppendChild(tokensNode);
+
+
+                                    if (!tblFound)
+                                    {
+                                        tblXmlNode = doc.CreateNode(XmlNodeType.Element, "Table", null);
+                                        XmlAttribute tblNameAtt = doc.CreateAttribute("name");
+                                        tblNameAtt.Value = queryName;
+                                        tblXmlNode.Attributes.Append(tblNameAtt);
+
+                                        envsXmlNode.AppendChild(envXmlNode);
+                                        tblXmlNode.AppendChild(envsXmlNode);
+
+                                        doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables").InsertAfter(tblXmlNode, doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables").LastChild);
+
+
+                                    }
+                                    else
+                                    {
+                                        MessageBox.Show("Updating existing table XML node");
+                                        updateNode = doc.SelectSingleNode("Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table[@name='" + queryName + "']/Environments/Environment");
+                                        doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table/Environments").InsertAfter(envXmlNode, doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table/Environments").LastChild);
                                     }
                                 }
                                 else
                                 {
-                                    set.Value = "";
-                                }
-
-                                XmlAttribute columnName = doc.CreateAttribute("columnName");
-                                columnName.Value = (string)cBox_Field[i].SelectedItem;
-
-                                XmlAttribute operand = doc.CreateAttribute("operand");
-                                operand.Value = (string)cBox_Operand[i].SelectedItem;
-
-                                XmlAttribute value = doc.CreateAttribute("value");
-                                value.Value = txtBox_Value[i].Text;
-
-                                token[i].Attributes.Append(set);
-                                token[i].Attributes.Append(columnName);
-                                token[i].Attributes.Append(operand);
-                                token[i].Attributes.Append(value);
-
-                                if (!whereClause)
-                                {
-                                    repNode.AppendChild(token[i]);
-                                }
-                                else
-                                {
-                                    filterToken.AppendChild(token[i]);
-                                }
-
-                                //}
-                            }
-                            /* end add tokens */
-
-
-                            if (!envFound)
-                            {
-                                envsXmlNode = doc.CreateNode(XmlNodeType.Element, "Environments", null);
-                                envXmlNode = doc.CreateNode(XmlNodeType.Element, "Environment", null);
-                                XmlAttribute envNameAtt = doc.CreateAttribute("name");
-                                envNameAtt.Value = cur_environment;
-                                envXmlNode.Attributes.Append(envNameAtt);
-
-                                tokensNode = doc.CreateNode(XmlNodeType.Element, "Tokens", null);
-
-                                tokensNode.AppendChild(repNode);
-                                tokensNode.AppendChild(filterToken);
-                                envXmlNode.AppendChild(tokensNode);
-
-
-                                if (!tblFound)
-                                {
-                                    tblXmlNode = doc.CreateNode(XmlNodeType.Element, "Table", null);
-                                    XmlAttribute tblNameAtt = doc.CreateAttribute("name");
-                                    tblNameAtt.Value = queryName;
-                                    tblXmlNode.Attributes.Append(tblNameAtt);
-
-                                    envsXmlNode.AppendChild(envXmlNode);
-                                    tblXmlNode.AppendChild(envsXmlNode);
-
-                                    doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables").InsertAfter(tblXmlNode, doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables").LastChild);
-
-
-                                }
-                                else
-                                {
-                                    MessageBox.Show("Updating existing table XML node");
-                                    updateNode = doc.SelectSingleNode("Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table[@name='" + queryName + "']/Environments/Environment");
-                                    doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table/Environments").InsertAfter(envXmlNode, doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table/Environments").LastChild);
+                                    MessageBox.Show("Updating existing environment XML node");
+                                    doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table/Environments/Environment[@name='" + cur_environment + "']/Tokens").InsertAfter(repNode, doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table/Environments/Environment[@name='" + cur_environment + "']/Tokens").LastChild);
                                 }
                             }
                             else
                             {
-                                MessageBox.Show("Updating existing environment XML node");
-                                doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table/Environments/Environment[@name='" + cur_environment + "']/Tokens").InsertAfter(repNode, doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table/Environments/Environment[@name='" + cur_environment + "']/Tokens").LastChild);
+                                MessageBox.Show("Updating existing query XML node");
+                                scriptFromTreeView = false;
+                                btn_Commit.PerformClick();
+
                             }
+
+                            doc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
+
+                            // Update script file
+                            SaveScriptFile();
                         }
-                        else
-                        {
-                            MessageBox.Show("Updating existing query XML node");
-                            scriptFromTreeView = false;
-                            btn_Commit.PerformClick();
-
-                        }
-
-                        doc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
-
-                        // Update script file
-                        SaveScriptFile();
+                        //else
+                        //{
+                        //    Close();
+                        //}
                     }
-                    //else
-                    //{
-                    //    Close();
-                    //}
                 }
-            }
         }
 
         private bool CheckSQL_Syntax()
@@ -1034,6 +1042,7 @@ namespace IppBackups
             bool goodToGo = false;
             string resultString;
             var args = new System.ComponentModel.CancelEventArgs();
+            //errorProvider1.Clear();
 
             if (tlp_ScriptBuilder.RowCount > min_rowCount)
             {
@@ -1061,6 +1070,8 @@ namespace IppBackups
                                     if (Int64.TryParse(chkValue, out longText) == true)
                                     {
                                         goodToGo = true;
+                                        txtBox_Value[i].Tag = "";
+                                        errorProvider1.SetError(txtBox_Value[i], "");
                                     }
                                     else
                                     {
@@ -1079,6 +1090,8 @@ namespace IppBackups
                                     if (isBool)
                                     {
                                         goodToGo = true;
+                                        txtBox_Value[i].Tag = "";
+                                        errorProvider1.SetError(txtBox_Value[i], "");
                                     }
                                     else
                                     {
@@ -1093,6 +1106,8 @@ namespace IppBackups
                                     if (Int32.TryParse(chkValue, out intText) == true)
                                     {
                                         goodToGo = true;
+                                        txtBox_Value[i].Tag = "";
+                                        errorProvider1.SetError(txtBox_Value[i], "");
                                     }
                                     else
                                     {
@@ -1106,6 +1121,8 @@ namespace IppBackups
                                     if (Int16.TryParse(chkValue, out smallText) == true)
                                     {
                                         goodToGo = true;
+                                        txtBox_Value[i].Tag = "";
+                                        errorProvider1.SetError(txtBox_Value[i], "");
                                     }
                                     else
                                     {
@@ -1122,6 +1139,8 @@ namespace IppBackups
                                     if (Decimal.TryParse(chkValue, out decimalText) == true)
                                     {
                                         goodToGo = true;
+                                        txtBox_Value[i].Tag = "";
+                                        errorProvider1.SetError(txtBox_Value[i], "");
                                     }
                                     else
                                     {
@@ -1154,6 +1173,8 @@ namespace IppBackups
                                     //take advantage of the native conversion
                                     sdt = new System.Data.SqlTypes.SqlDateTime(testDate);
                                     goodToGo = true;
+                                    txtBox_Value[i].Tag = "";
+                                    errorProvider1.SetError(txtBox_Value[i], "");
                                 }
                                 catch(System.Data.SqlTypes.SqlTypeException ex)
                                 {
@@ -1174,6 +1195,8 @@ namespace IppBackups
                             if (Guid.TryParse(txtBox_Value[i].Text, out newGuid) == true)
                             {
                                 goodToGo = true;
+                                txtBox_Value[i].Tag = "";
+                                errorProvider1.SetError(txtBox_Value[i], "");
                             }
                             else
                             {
@@ -1189,6 +1212,8 @@ namespace IppBackups
                             if (chkValue.Length < Int32.Parse(maxLength))
                             {
                                 goodToGo = true;
+                                txtBox_Value[i].Tag = "";
+                                errorProvider1.SetError(txtBox_Value[i], "");
                             }
                             else
                             {
