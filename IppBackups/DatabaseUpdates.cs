@@ -73,6 +73,13 @@ namespace IppBackups
         string[] BinaryStringsDataTypes = new string[] { "binary", "image", "varbinary" };
         string[] OtherDataTypes = new string[] { "cursor", "hierarchyid", "sql_variant", "table", "timestamp", "xml", "SpatialTypes" };
 
+        public static string[] blackList = {"--",";--",";","/*","*/","@@","@",
+                                           "char","nchar","varchar","nvarchar",
+                                           "alter","begin","cast","create","cursor","declare","delete","drop","end","exec","execute",
+                                           "fetch","insert","kill","open",
+                                           "select", "sys","sysobjects","syscolumns",
+                                           "table","update"};
+
         enum Environment
         {
             TEST = 0,
@@ -108,9 +115,10 @@ namespace IppBackups
             tlp_ScriptBuilder.GrowStyle = System.Windows.Forms.TableLayoutPanelGrowStyle.AddRows;
 
             //tlp_ScriptBuilder.Controls.Add(new Label() { Text = "", Anchor = AnchorStyles.Left, AutoSize = true }, 0, 0);
-            addRowBtnPic.Size = new Size(50, 50);
+            addRowBtnPic.Size = new Size(16, 16);
             addRowBtnPic.ImageLocation = "..\\..\\Resources\\Images\\add2.png";
             addRowBtnPic.Click += new EventHandler(addRowBtnPic_Click);
+            addRowBtn.Anchor = AnchorStyles.Left;
             tlp_ScriptBuilder.Controls.Add(addRowBtnPic, 0, 0);
             tlp_ScriptBuilder.Controls.Add(new Label() { Text = "Logical:", Anchor = AnchorStyles.Left, AutoSize = true }, 1, 0);
             tlp_ScriptBuilder.Controls.Add(new Label() { Text = "Feild: ", Anchor = AnchorStyles.None, AutoSize = true }, 2, 0);
@@ -120,7 +128,7 @@ namespace IppBackups
             //lastRowMark.Size = new Size(20, 20);
             //lastRowMark.Image = acceptImage;
             //tlp_ScriptBuilder.Controls.Add(lastRowMark, 0, tlp_ScriptBuilder.RowCount - 1);
-            acceptBtnPic.Size = new Size(19, 19);
+            acceptBtnPic.Size = new Size(16, 16);
             acceptBtnPic.ImageLocation = "..\\..\\Resources\\Images\\accept.png";
             tlp_ScriptBuilder.Controls.Add(acceptBtnPic, 0, tlp_ScriptBuilder.RowCount - 1);
             acceptBtnPic.Click += new EventHandler(acceptBtnPic_Click);
@@ -151,7 +159,8 @@ namespace IppBackups
             for (int i = 0; i < max_row; i++)
             {
                 delRowBtnPic[i] = new PictureBox();
-                delRowBtnPic[i].Size = new Size(19, 19);
+                delRowBtnPic[i].Size = new Size(16, 16);
+                delRowBtnPic[i].Anchor = AnchorStyles.Left;
                 delRowBtnPic[i].ImageLocation = "";
 
 
@@ -177,7 +186,7 @@ namespace IppBackups
                 cBox_Field[i].Items.AddRange(field.ToArray());
 
                 txtBox_Value[i] = new TextBox();
-                txtBox_Value[i].Anchor = AnchorStyles.None;
+                txtBox_Value[i].Anchor = AnchorStyles.Left;
             }
         }
 
@@ -495,36 +504,6 @@ namespace IppBackups
             UpdateScriptWindow();
 
             rTxtBox_Script.AppendText("Build script then click Generate after", Color.Black);
-
-            //rTxtBox_Script.AppendText("\nDECLARE ", Color.Blue);
-            //rTxtBox_Script.AppendText("@Current" + cBox_Field[0].SelectedItem, Color.Black);
-            //rTxtBox_Script.AppendText("DataType",Color.Black);
-            //rTxtBox_Script.AppendText("\nSET ", Color.Blue);
-            //rTxtBox_Script.AppendText("@Current" + cBox_Field[0].SelectedItem + " = (", Color.Black);
-            //rTxtBox_Script.AppendText(" SELECT ", Color.Black);
-            //rTxtBox_Script.AppendText("TOP ", Color.Orange);
-            //rTxtBox_Script.AppendText("" + cBox_Field[0].SelectedItem, Color.Black);
-            //rTxtBox_Script.AppendText(" FROM ", Color.Blue);
-            //rTxtBox_Script.AppendText("" + cBox_Tables.SelectedItem, Color.Blue);
-            //rTxtBox_Script.AppendText(" (NOLOCK)", Color.Black);
-            //rTxtBox_Script.AppendText("\n");
-            //rTxtBox_Script.AppendText("SELECT", Color.Blue);
-            //rTxtBox_Script.AppendText("@" + cBox_Field[0].SelectedItem + " =", Color.Black);
-            //rTxtBox_Script.AppendText(" SUBSTRING ", Color.Pink);
-            //rTxtBox_Script.AppendText("(@Current" + cBox_Field[0].SelectedItem + " ,", Color.Black);
-            //rTxtBox_Script.AppendText(" 0", Color.Orange);
-            //rTxtBox_Script.AppendText(" , PATINDEX(", Color.Pink);
-
-            //rTxtBox_Script.AppendText("'" + txtBox_Value[0].Text + "'", Color.Red);
-            //rTxtBox_Script.AppendText(" , @Current" + cBox_Field[0] + "))\n");
-
-            //rTxtBox_Script.AppendText("\nUPDATE ", Color.Pink);
-            //rTxtBox_Script.AppendText(" " + tbl + "\n", Color.Black);
-            //rTxtBox_Script.AppendText("SET ", Color.Blue);
-            //rTxtBox_Script.AppendText("" + cBox_Field[0].SelectedItem + " = ", Color.Black);
-            //rTxtBox_Script.AppendText(" REPLACE", Color.Pink);
-            //rTxtBox_Script.AppendText("([" + cBox_Field[0].SelectedItem + "], @Current" + cBox_Field[0].SelectedItem + ",", Color.Black);
-            //rTxtBox_Script.AppendText("'" + txtBox_Value[1].Text + "'", Color.Red);
         }
 
         private void rBtn_Insert_CheckedChanged(object sender, EventArgs e)
@@ -602,12 +581,13 @@ namespace IppBackups
                             tlp_ScriptBuilder.RowStyles.Insert(tlp_ScriptBuilder.RowCount - 2, new RowStyle(SizeType.AutoSize));
 
                             delRowBtnPic[i] = new PictureBox();
-                            delRowBtnPic[i].Size = new Size(19, 19);                            
+                            delRowBtnPic[i].Size = new Size(16, 16);                            
                             delRowBtnPic[i].ImageLocation = "..\\..\\Resources\\Images\\delete.png";
                             delRowBtnPic[i].Click += new EventHandler(delRowBtn_Click);
+                            delRowBtnPic[i].Anchor = AnchorStyles.Left;
                             tlp_ScriptBuilder.Controls.Add(delRowBtnPic[i], 0, y - 1);
                             TableLayoutPanelCellPosition pos2 = tlp_ScriptBuilder.GetCellPosition(delRowBtnPic[i]);
-                            delRowBtnPic[i].Width = tlp_ScriptBuilder.GetColumnWidths()[pos2.Column] - 5;
+                            delRowBtnPic[i].Width = tlp_ScriptBuilder.GetColumnWidths()[pos2.Column] - 2;
 
                             /*rowLabel[i].Size = new Size(20,20);
                             rowLabel[i].Image = delImage;
@@ -621,16 +601,17 @@ namespace IppBackups
                             tlp_ScriptBuilder.Controls.Add(cBox_Field[i], 2, y - 1);
                             tlp_ScriptBuilder.Controls.Add(cBox_Operand[i], 3, y - 1);
 
+                            txtBox_Value[i].Anchor = AnchorStyles.Left;
                             tlp_ScriptBuilder.Controls.Add(txtBox_Value[i], 4, y - 1);
                             TableLayoutPanelCellPosition pos = tlp_ScriptBuilder.GetCellPosition(txtBox_Value[i]);
                             //txtBox_Value[i].Tag = i;
-                            txtBox_Value[i].Width = tlp_ScriptBuilder.GetColumnWidths()[pos.Column] - 40;
+                            txtBox_Value[i].Width = tlp_ScriptBuilder.GetColumnWidths()[pos.Column] - 20;
                             //txtBox_Value[i].Validating += new System.ComponentModel.CancelEventHandler(this.txtBox_Value_Validating);
                             //txtBox_Value[i].Validated += new System.EventHandler(this.txtBox_Value_Validated);
 
                             //tlp_ScriptBuilder.Controls.Add(lastRowMark, 0, y);
                             //acceptBtnPic.Click += new EventHandler(acceptBtnPic_Click);
-                            acceptBtnPic.Size = new Size(19, 19);
+                            acceptBtnPic.Size = new Size(16, 16);
                             tlp_ScriptBuilder.Controls.Add(acceptBtnPic, 0, y);
 
                         }
@@ -750,7 +731,7 @@ namespace IppBackups
                 }
             }
 
-                if (validateInputValues())
+            if ( validateInputValues() && CheckInputForInjection() )
                 {
                     bool envFound = false;
                     bool tblFound = false;
@@ -1039,6 +1020,7 @@ namespace IppBackups
 
         private bool validateInputValues()
         {
+            int errCount = 0;
             bool goodToGo = false;
             string resultString;
             var args = new System.ComponentModel.CancelEventArgs();
@@ -1077,6 +1059,7 @@ namespace IppBackups
                                     {
                                         //MessageBox.Show(chkValue + " is not a valid " + sqlDataType + " value");
                                         goodToGo = false;
+                                        errCount++;
                                         txtBox_Value[i].Tag = i;
                                         txtBox_Value_Validating(txtBox_Value[i], args);
                                         //txtBox_Value_Validating(txtBox_Value[i]);
@@ -1096,6 +1079,7 @@ namespace IppBackups
                                     else
                                     {
                                         goodToGo = false;
+                                        errCount++;
                                         txtBox_Value[i].Tag = i;
                                         txtBox_Value_Validating(txtBox_Value[i], args);
                                     }
@@ -1112,6 +1096,7 @@ namespace IppBackups
                                     else
                                     {
                                         goodToGo = false;
+                                        errCount++;
                                         txtBox_Value[i].Tag = i;
                                         txtBox_Value_Validating(txtBox_Value[i], args);
                                     }
@@ -1127,6 +1112,7 @@ namespace IppBackups
                                     else
                                     {
                                         goodToGo = false;
+                                        errCount++;
                                         txtBox_Value[i].Tag = i;
                                         //txtBox_Value_Validating(txtBox_Value[i], (CancelEventArgs) e);
                                         txtBox_Value_Validating(txtBox_Value[i], args);
@@ -1145,6 +1131,7 @@ namespace IppBackups
                                     else
                                     {
                                         goodToGo = false;
+                                        errCount++;
                                         txtBox_Value[i].Tag = i;
                                         txtBox_Value_Validating(txtBox_Value[i], args);
                                     }
@@ -1156,6 +1143,7 @@ namespace IppBackups
                                     break;
                                 MessageBox.Show(txtBox_Value[i].Text + "is not a valid " + sqlDataType);
                                 goodToGo = false;
+                                errCount++;
                                 txtBox_Value_Validating(txtBox_Value[i], args);
                                 break;
                             }
@@ -1184,7 +1172,9 @@ namespace IppBackups
                             }
                             else
                             {
+                                goodToGo = false;
                                 txtBox_Value[i].Tag = i;
+                                errCount++;
                                 txtBox_Value_Validating(txtBox_Value[i], args);
                             }
                         }
@@ -1201,6 +1191,7 @@ namespace IppBackups
                             else
                             {
                                 goodToGo = false;
+                                errCount++;
                                 txtBox_Value[i].Tag = i;
                                 txtBox_Value_Validating(txtBox_Value[i], args);
                             }
@@ -1218,6 +1209,7 @@ namespace IppBackups
                             else
                             {
                                 goodToGo = false;
+                                errCount++;
                                 txtBox_Value[i].Tag = i;
                                 txtBox_Value_Validating(txtBox_Value[i], args);
                             }
@@ -1234,7 +1226,32 @@ namespace IppBackups
                 }
             }
 
-            return goodToGo;
+            return (errCount < 1);
+        }
+
+        private bool CheckInputForInjection()
+        {
+            int sqlInjection = 0;
+            for (int i = 0; i < tlp_ScriptBuilder.RowCount - min_rowCount; i++ )
+            {
+                if (cBox_Field[i].SelectedIndex != null)
+                {
+                    string curString = txtBox_Value[i].Text;
+                    foreach (string s in txtBox_Value[i].Text.Split(' '))
+                    {
+                        for(int j =0; j < blackList.Length; j++)
+                        {
+                            if ((s.IndexOf(blackList[j], StringComparison.OrdinalIgnoreCase) >= 0))
+                            {
+                                // Handle the discovery of suspicious SQL characters here.
+                                errorProvider1.SetError(txtBox_Value[i], "Contains black listed phrase");
+                                sqlInjection++;
+                            }
+                        }
+                    }
+                }
+            }
+                return (sqlInjection < 1);
         }
 
         private void ScriptContent(int lastRowMarker)
@@ -2202,7 +2219,7 @@ namespace IppBackups
         {
             //int row_index_to_validate = int.Parse((sender as TextBox).Tag.ToString()) + 1;
 
-            for (int i = 0; i < tlp_ScriptBuilder.RowCount - 3; i++)
+            for (int i = 0; i < tlp_ScriptBuilder.RowCount - 2; i++)
             {
                 if (txtBox_Value[i].Tag != null)
                 {
