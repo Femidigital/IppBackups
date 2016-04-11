@@ -706,7 +706,6 @@ namespace IppBackups
             // Remove empty elements from the control arrays.
             //cBox_Logic = cBox_Logic.Where(x => !cBox_Logic.IsNullOrEmpty(x)).ToArray();
 
-
             // Update the script file.
             SaveScriptFile();
         }
