@@ -50,6 +50,7 @@ namespace IppBackups
 
         string sXmlFile = "";
         string scriptLocation = "..\\..\\SQL_Scripts\\";
+        //string scriptLocation = "..\\..\\Scripts\\";
         bool afterWhile = false;
         bool scriptFromTreeView = false;
         XmlNode startNode;
@@ -238,8 +239,9 @@ namespace IppBackups
                 //tblName = cBox_Tables.SelectedItem.ToString();
                 //tblName = tblName.Substring(7, tblName.Length - 8);
 
-                doc.Load(".\\Scripts\\DatabaseUpdateValues.xml");
+                //doc.Load(".\\Scripts\\DatabaseUpdateValues.xml");
                 //doc.Load("..\\..\\Scripts\\DatabaseUpdateValues.xml");
+                doc.Load(scriptLocation + sXmlFile);
 
                 //XmlNode node = doc.SelectSingleNode("//Databases/Database[@name='" + cur_database +"']/Tables/Table[@name='" + cBox_Tables.SelectedItem + "']/Environments/Environment[@name='" + cur_environment +"']");
                 XmlNode node = doc.SelectSingleNode("//Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table[@name='" + tblName + "']/Environments/Environment[@name='" + cur_environment + "']");
@@ -411,8 +413,9 @@ namespace IppBackups
                     }
                 }
 
-                doc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
-                //doc.Save("..\\..\\Scripts\\DatabaseUpdateValues.xml");    
+                //doc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
+                //doc.Save("..\\..\\Scripts\\DatabaseUpdateValues.xml");   
+                doc.Save(scriptLocation + sXmlFile);
             }
 
         }
@@ -1607,7 +1610,7 @@ namespace IppBackups
             //label1.Text = _cur_Db + "\n";
             TreeNode childNode;
 
-            sXmlFile = ".\\Scripts\\DatabaseUpdateValues.xml";
+            sXmlFile =  scriptLocation + "DatabaseUpdateValues.xml";
 
             //XmlDocument doc = new XmlDocument();
             doc.Load(sXmlFile);
@@ -2209,7 +2212,7 @@ namespace IppBackups
                 MessageBox.Show("Creating new script file: " + scriptFile);
             }
 
-            System.IO.StreamWriter sqlFile = new StreamWriter(scriptFile);
+            System.IO.StreamWriter sqlFile = new StreamWriter(scriptFileLocation);
             sqlFile.WriteLine(rTxtBox_Script.Text);
             sqlFile.Flush();
             sqlFile.Close();
