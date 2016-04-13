@@ -49,6 +49,7 @@ namespace IppBackups
         Label lastRowMark = new Label() { Text = "" };
 
         string sXmlFile = "";
+        string scriptLocation = "..\\..\\SQL_Scripts\\";
         bool afterWhile = false;
         bool scriptFromTreeView = false;
         XmlNode startNode;
@@ -2193,14 +2194,15 @@ namespace IppBackups
 
         private void SaveScriptFile()
         {
-            string scriptDirectory = "\\Script\\";
+            //string scriptDirectory = "\\Script\\";
+            string scriptDirectory = scriptLocation;
             string scriptFile = _cur_Db + "_" + tblName + "_" + cur_environment + ".sql";
             string scriptFileLocation = scriptDirectory + scriptFile;
 
-            if (File.Exists(scriptFile))
+            if (File.Exists(scriptFileLocation))
             {
                 MessageBox.Show("Deleting existing file and re-creating " + scriptFile);
-                File.Delete(scriptFile);
+                File.Delete(scriptFileLocation);
             }
             else
             {
