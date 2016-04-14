@@ -986,7 +986,8 @@ namespace IppBackups
 
                             }
 
-                            doc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
+                            doc.Save(sXmlFile);
+                            //doc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
 
                             // Update script file
                             SaveScriptFile();
@@ -1942,7 +1943,8 @@ namespace IppBackups
                     doc.SelectSingleNode("/Databases/Database[@name='" + _cur_Db + "']/Tables/Table/Environments").InsertAfter(envNode, doc.SelectSingleNode("/Databases/Database[@name='" + _cur_Db + "']/Tables/Table/Environments").LastChild);
                 }
 
-                doc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
+                doc.Save(sXmlFile);
+                //doc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
                 startNode = doc.SelectSingleNode("Databases/Database[@name='" + _cur_Db + "']");
             }
             else if (tViewScripts.SelectedNode.Tag == "ReplaceToken")
@@ -1982,7 +1984,8 @@ namespace IppBackups
                 {
                     doc.SelectSingleNode("/Databases/Database[@name='" + _cur_Db + "']/Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Parent.Text + "']/Tokens").InsertAfter(repToken, doc.SelectSingleNode("/Databases/Database[@name='" + _cur_Db + "']/Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Parent.Text + "']/Tokens").LastChild);
                 }
-                doc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
+                doc.Save(sXmlFile);
+                //doc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
                 startNode = doc.SelectSingleNode("/Databases/Database[@name='" + _cur_Db + "']/Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Parent.Text + "']");
             }
             else if (tViewScripts.SelectedNode.Tag == "Table")
@@ -1992,7 +1995,8 @@ namespace IppBackups
                 targetNode.AppendChild(copyNode);
 
                 updateNode = targetNode;
-                doc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
+                doc.Save(sXmlFile);
+                //doc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
             }
             else
             {
@@ -2137,7 +2141,8 @@ namespace IppBackups
                     //newNode.Nodes.Add(cloneNode.LastNode);
                     tViewScripts.SelectedNode = cloneNode;
                 }
-                doc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
+                doc.Save(sXmlFile);
+                //doc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
             }
             else if (m.Text.ToLower() == "remove environment")
             {
@@ -2158,8 +2163,8 @@ namespace IppBackups
                     string toDelete = tViewScripts.SelectedNode.Text;
                     //e.Cancel = true;
 
-                    //XDocument xdoc = XDocument.Load(sXmlFile);
-                    XDocument xdoc = XDocument.Load(".\\Scripts\\DatabaseUpdateValues.xml");
+                    XDocument xdoc = XDocument.Load(sXmlFile);
+                    //XDocument xdoc = XDocument.Load(".\\Scripts\\DatabaseUpdateValues.xml");
 
                     IEnumerable<XElement> queryTokens =
                         from node in xdoc.Descendants("ReplaceToken")
@@ -2170,7 +2175,8 @@ namespace IppBackups
 
                     queryTokens.ToList().ForEach(x => x.Remove());
 
-                    xdoc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
+                    xdoc.Save(sXmlFile);
+                    //xdoc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
 
                     tViewScripts.Nodes.Remove(tViewScripts.SelectedNode);
                     MessageBox.Show("Removed " + toDelete);
@@ -2180,8 +2186,8 @@ namespace IppBackups
 
         private void RemoveItemFromXml(string nType, string itemToDelete)
         {
-            //XDocument xdoc = XDocument.Load(sXmlFile);
-            XDocument xdoc = XDocument.Load(".\\Scripts\\DatabaseUpdateValues.xml");
+            XDocument xdoc = XDocument.Load(sXmlFile);
+            //XDocument xdoc = XDocument.Load(".\\Scripts\\DatabaseUpdateValues.xml");
 
             var q = from node in xdoc.Descendants(nType)
                     let pAttr = node.Parent.Attribute("name")
@@ -2190,8 +2196,8 @@ namespace IppBackups
                     select node;
 
             q.ToList().ForEach(x => x.Remove());
-            // xdoc.Save(sXmlFile);
-            xdoc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
+            xdoc.Save(sXmlFile);
+            //xdoc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
             MessageBox.Show("Removed " + itemToDelete);
         }
 
