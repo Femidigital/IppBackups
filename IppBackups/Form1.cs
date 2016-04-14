@@ -97,7 +97,7 @@ namespace IppBackups
                 //sXmlFile = ConfigFileName;
             }
             {
-                //sXmlFile = sSettingPath + ConfigFileName;
+                sXmlFile = sSettingPath + ConfigFileName;
                 XmlDocument doc = new XmlDocument();
                 doc.Load(sXmlFile);
 

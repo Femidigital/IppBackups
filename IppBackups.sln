@@ -6,9 +6,6 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IppBackups", "IppBackups\IppBackups.csproj", "{53F5C9B7-94E7-44AF-A1F6-8EE7DB4A0CEE}"
 EndProject
 Project("{6141683F-8A12-4E36-9623-2EB02B2C2303}") = "SetupIppBackups", "SetupIppBackups\SetupIppBackups.isproj", "{DFF572BE-26F3-43A7-94C1-4A388BDBD38C}"
-	ProjectSection(ProjectDependencies) = postProject
-		{53F5C9B7-94E7-44AF-A1F6-8EE7DB4A0CEE} = {53F5C9B7-94E7-44AF-A1F6-8EE7DB4A0CEE}
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
