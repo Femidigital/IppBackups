@@ -29,4 +29,9 @@
       <Environment name="UAT" data="E:\SQLData" log="L:\SQLLogs">UAT</Environment>
     </Instance>
   </Server>
+  <Server name="BSI16DBS04PRV" ip="10.33.203.40">
+    <Instance instance="Default" port="1433" user="ppd-cloudadmin" password="!C0mm4nd!ng$" backups="S:\CBS">
+      <Environment name="PROD" data="E:\SQL\Data\Prod" log="L:\SQL\Logs\Prod">PROD</Environment>
+    </Instance>
+  </Server>
 </Servers>

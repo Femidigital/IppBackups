@@ -440,6 +440,7 @@ namespace IppBackups
                     string toDelete = tView_Servers.SelectedNode.Text;
                     //e.Cancel = true;
                     tView_Servers.Nodes.Remove(tView_Servers.SelectedNode);
+                    //RemoveItemFromXml("Environment", actionText);  //Try this line instead of the following DRY
 
                     XDocument xdoc = XDocument.Load(sXmlFile);
                     var q = from node in xdoc.Descendants("Environment")
@@ -468,7 +469,7 @@ namespace IppBackups
                     let pAttr = node.Parent.Attribute("name")
                     let attr = node.Attribute("name")
                     let inst = node.Attribute("instance")
-                    where (attr != null && attr.Value == itemToDelete) || (inst.Value == itemToDelete && pAttr.Value == tBox_ServerName.Text)
+                    where (attr != null && attr.Value == itemToDelete) || (inst != null && inst.Value == itemToDelete) || (pAttr != null && pAttr.Value == tBox_ServerName.Text)
                     select node;
 
             q.ToList().ForEach(x => x.Remove());
