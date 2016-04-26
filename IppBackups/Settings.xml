@@ -29,9 +29,12 @@
       <Environment name="UAT" data="E:\SQLData" log="L:\SQLLogs">UAT</Environment>
     </Instance>
   </Server>
-  <Server name="BSI16DBS04PRV" ip="10.33.203.40">
-    <Instance instance="Default" port="1433" user="ppd-cloudadmin" password="!C0mm4nd!ng$" backups="S:\CBS">
-      <Environment name="PROD" data="E:\SQL\Data\Prod" log="L:\SQL\Logs\Prod">PROD</Environment>
+  <Server name="DEV-SENT01" ip="10.103.109.123">
+    <Instance instance="Default" port="1433" user="dev-cloudadmin" password="Password1" backups="C:\SQLBackups">
+      <Environment name="TEST" data="D:\SQL\TEST\SQLData" log="D:\SQL\TEST\SQLLogs">TEST</Environment>
+    </Instance>
+    <Instance instance="SQLEXPRESS" port="1433" user="dev-cloudadmin" password="Password1" backups="S:\Backups">
+      <Environment name="DEV" data="D:\SQL\DEV\SQLData" log="D:\SQL\DEV\SQLLogs">DEV </Environment>
     </Instance>
   </Server>
 </Servers>

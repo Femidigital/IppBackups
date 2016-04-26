@@ -1006,7 +1006,7 @@ namespace IppBackups
                                 rTxtBox_Output.AppendText("User : " + r_sUsername + "\n",Color.Black);
                                 rTxtBox_Output.AppendText("Selected destination server  : " + restoreToSrv + "\n",Color.Black);
                                 // TODO: Workout how to identify which domain the server is under
-                                if (restoreToSrv == "UK-CHFMIGSQL" || restoreToSrv == "UK-CHDEVSQL01" || restoreToSrv == "UK-CHDEVSQL02" || restoreToSrv == "FDC_TAB" || restoreToSrv == "CHI-7S45842")
+                                if (restoreToSrv == "UK-CHFMIGSQL" || restoreToSrv == "UK-CHDEVSQL01" || restoreToSrv == "UK-CHDEVSQL02" || restoreToSrv == "FDC_TAB" || restoreToSrv == "CHI-7S45842" || restoreToSrv == "DEV-SENT01")
                                 {
                                     //lbl_Oupt.Text += "Restoring database to OSCAR domain.\n";
                                     rTxtBox_Output.AppendText("Restoring database to OSCAR domain.\n",Color.Black);

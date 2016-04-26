@@ -720,7 +720,14 @@ namespace IppBackups
             
             XDocument xdoc = XDocument.Load(sXmlFile);
 
-            var q = from node in xdoc.Descendants("Database")
+            var tokens = from token in xdoc.Elements("Database")
+                         let table = (string)token.Element("Table").Attribute("name")
+                         let env = (string)token.Element("Table").Element("Environment").Attribute("name")
+                         where (table != null && table == tblName) && (env != null && env == cur_environment)
+                         select token;
+
+            /* where (string)token.Element("Table").Element("Environment").Element("ReplaceToken") == ""
+             * var q = from node in xdoc.Descendants("Database")
                     let pAttr = node.Attribute("name")
                     let attr = node.Descendants("Table")
                     let catt = node.Descendants("Environment")
@@ -728,7 +735,7 @@ namespace IppBackups
                     where (pAttr != null && pAttr.Value == _cur_Db) && (attr != null && attr.Value == tblName) && (catt != null && catt.Value == cur_environment)
                     select node;
 
-            q.ToList().ForEach(x => x.Remove());
+            q.ToList().ForEach(x => x.Remove());*/
             //xdoc.Save(sXmlFile);
             
 
