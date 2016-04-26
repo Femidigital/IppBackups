@@ -241,7 +241,8 @@ namespace IppBackups
 
                 //doc.Load(".\\Scripts\\DatabaseUpdateValues.xml");
                 //doc.Load("..\\..\\Scripts\\DatabaseUpdateValues.xml");
-                doc.Load(scriptLocation + sXmlFile);
+                //doc.Load(scriptLocation + sXmlFile);
+                doc.Load(sXmlFile);
 
                 //XmlNode node = doc.SelectSingleNode("//Databases/Database[@name='" + cur_database +"']/Tables/Table[@name='" + cBox_Tables.SelectedItem + "']/Environments/Environment[@name='" + cur_environment +"']");
                 XmlNode node = doc.SelectSingleNode("//Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table[@name='" + tblName + "']/Environments/Environment[@name='" + cur_environment + "']");
@@ -415,7 +416,8 @@ namespace IppBackups
 
                 //doc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
                 //doc.Save("..\\..\\Scripts\\DatabaseUpdateValues.xml");   
-                doc.Save(scriptLocation + sXmlFile);
+                //doc.Save(scriptLocation + sXmlFile);
+                doc.Load(sXmlFile);
             }
 
         }
@@ -708,7 +710,27 @@ namespace IppBackups
 
 
             // Remove empty elements from the control arrays.
+            // Filter on Current Database name, Current Environment and Current selected table 
             //cBox_Logic = cBox_Logic.Where(x => !cBox_Logic.IsNullOrEmpty(x)).ToArray();
+
+            // Update the XML file for scriptBuilder
+
+            string tblName = cBox_Tables.SelectedItem.ToString();
+            tblName = tblName.Substring(7, tblName.Length - 8);
+            
+            XDocument xdoc = XDocument.Load(sXmlFile);
+
+            var q = from node in xdoc.Descendants("Database")
+                    let pAttr = node.Attribute("name")
+                    let attr = node.Descendants("Table")
+                    let catt = node.Descendants("Environment")
+                    //let tattr = node.Attribute("name")
+                    where (pAttr != null && pAttr.Value == _cur_Db) && (attr != null && attr.Value == tblName) && (catt != null && catt.Value == cur_environment)
+                    select node;
+
+            q.ToList().ForEach(x => x.Remove());
+            //xdoc.Save(sXmlFile);
+            
 
             // Update the script file.
             SaveScriptFile();
