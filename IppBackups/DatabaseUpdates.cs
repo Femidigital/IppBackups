@@ -723,11 +723,12 @@ namespace IppBackups
             var nTokens = doc.SelectSingleNode("Databases/Database[@name='" + cur_database + "']/Tables/Table[@name='" + tblName +"']/Environments/Environment[@name='" + cur_environment +"']/Tokens"); 
             
 
-            var tokens = from token in xdoc.Elements("Database")
-                         let table = (string)token.Element("Table").Attribute("name")
-                         let env = (string)token.Element("Table").Element("Environment").Attribute("name")
-                         //where (table != null && table == tblName) && (env != null && env == cur_environment)
-                         where ((string)token.Element("Database").Attribute("name") == cur_database) && ((string)token.Element("Table").Attribute("name") == tblName) && ((string)token.Element("Environment").Attribute("name") == cur_environment)
+            var tokens = from token in xdoc.Descendants("Database")
+                         let table = (string)token.Element("Tables").Element("Table").Attribute("name")
+                         let env = (string)token.Element("Tables").Element("Table").Element("Environments").Element("Environment").Attribute("name")
+                         let qToken = (string)token.Element("Tables").Element("Table").Element("Environments").Element("Environment").Element("Tokens").Element("ReplaceToken").Attribute("name")
+                         where (table != null && table == tblName) && (env != null && env == cur_environment) && (qToken != null && qToken == tblName)
+                         //where ((string)token.Element("Database").Attribute("name") == cur_database) && ((string)token.Element("Table").Attribute("name") == tblName) && ((string)token.Element("Environment").Attribute("name") == cur_environment)
                          select token;
             tokens.ToList().ForEach(x => x.Remove());
 
