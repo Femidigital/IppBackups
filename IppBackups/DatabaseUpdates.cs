@@ -637,8 +637,9 @@ namespace IppBackups
 
         private void delRowBtn_Click(object sender, EventArgs e)
         {
-
+            
             int row_index_to_remove = int.Parse((sender as PictureBox).Tag.ToString()) + 1;
+            string childNode = cBox_Field[row_index_to_remove - 1].SelectedText;
 
             if (row_index_to_remove >= tlp_ScriptBuilder.RowCount)
             {
@@ -718,19 +719,24 @@ namespace IppBackups
             string tblName = cBox_Tables.SelectedItem.ToString();
             tblName = tblName.Substring(7, tblName.Length - 8);
             
-            XDocument xdoc = XDocument.Load(sXmlFile);
+            XmlDocument xdoc = new XmlDocument();
+            xdoc.Load(sXmlFile);
+            //XDocument xdoc = XDocument.Load(@"C:\Users\Alfred\Dropbox\Transfer\LinqXMLTest\DatabaseUpdateValues.xml");
 
-            var nTokens = doc.SelectSingleNode("Databases/Database[@name='" + cur_database + "']/Tables/Table[@name='" + tblName +"']/Environments/Environment[@name='" + cur_environment +"']/Tokens"); 
+            XmlNode childNodeToDelete = xdoc.SelectSingleNode("Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table[@name='" + tblName + "']/Environments/Environment[@name='" + cur_environment + "']/Tokens/ReplaceToken[@name='" + tblName + "']/Token[@columnName='" + childNode + "']");
+            childNodeToDelete.ParentNode.RemoveChild(childNodeToDelete);
+            xdoc.Save(sXmlFile);
+
             
 
-            var tokens = from token in xdoc.Descendants("Database")
+            /*var tokens = from token in xdoc.Descendants("Database")
                          let table = (string)token.Element("Tables").Element("Table").Attribute("name")
                          let env = (string)token.Element("Tables").Element("Table").Element("Environments").Element("Environment").Attribute("name")
                          let qToken = (string)token.Element("Tables").Element("Table").Element("Environments").Element("Environment").Element("Tokens").Element("ReplaceToken").Attribute("name")
                          where (table != null && table == tblName) && (env != null && env == cur_environment) && (qToken != null && qToken == tblName)
                          //where ((string)token.Element("Database").Attribute("name") == cur_database) && ((string)token.Element("Table").Attribute("name") == tblName) && ((string)token.Element("Environment").Attribute("name") == cur_environment)
                          select token;
-            tokens.ToList().ForEach(x => x.Remove());
+            tokens.ToList().ForEach(x => x.Remove());*/
 
             /* where (string)token.Element("Table").Element("Environment").Element("ReplaceToken") == ""
              * var q = from node in xdoc.Descendants("Database")
