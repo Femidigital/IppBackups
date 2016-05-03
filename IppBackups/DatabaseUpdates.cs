@@ -724,6 +724,12 @@ namespace IppBackups
             //XDocument xdoc = XDocument.Load(@"C:\Users\Alfred\Dropbox\Transfer\LinqXMLTest\DatabaseUpdateValues.xml");
 
             XmlNode childNodeToDelete = xdoc.SelectSingleNode("Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table[@name='" + tblName + "']/Environments/Environment[@name='" + cur_environment + "']/Tokens/ReplaceToken[@name='" + tblName + "']/Token[@columnName='" + childNode + "']");
+
+            if (childNodeToDelete == null)
+            {
+                childNodeToDelete = xdoc.SelectSingleNode("Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table[@name='" + tblName + "']/Environments/Environment[@name='" + cur_environment + "']/Tokens/FilterToken[@name='" + tblName + "']/Token[@columnName='" + childNode + "']");
+            }
+
             childNodeToDelete.ParentNode.RemoveChild(childNodeToDelete);
             xdoc.Save(sXmlFile);
 
