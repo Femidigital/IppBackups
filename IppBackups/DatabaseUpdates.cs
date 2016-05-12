@@ -82,6 +82,8 @@ namespace IppBackups
                                            "select", "sys","sysobjects","syscolumns",
                                            "table","update"};
 
+        int lastRowScripted;
+
         enum Environment
         {
             TEST = 0,
@@ -723,7 +725,12 @@ namespace IppBackups
             xdoc.Load(sXmlFile);
             //XDocument xdoc = XDocument.Load(@"C:\Users\Alfred\Dropbox\Transfer\LinqXMLTest\DatabaseUpdateValues.xml");
 
-            XmlNode childNodeToDelete = xdoc.SelectSingleNode("Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table[@name='" + tblName + "']/Environments/Environment[@name='" + cur_environment + "']/Tokens/ReplaceToken[@name='" + tblName + "']/Token[@columnName='" + childNode + "']");
+            XmlNode childNodeToDelete;
+            childNodeToDelete = xdoc.SelectSingleNode("Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table[@name='" + tblName + "']/Environments/Environment[@name='" + cur_environment + "']/Tokens/ReplaceToken[@name='" + tblName + "']/Token[@columnName='" + childNode + "']");
+            if (childNodeToDelete == null)
+            {
+                childNodeToDelete = xdoc.SelectSingleNode("Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table[@name='" + tblName + "']/Environments/Environment[@name='" + cur_environment + "']/Tokens/FilterToken[@name='" + tblName + "']/Token[@columnName='" + childNode + "']");
+            }
             childNodeToDelete.ParentNode.RemoveChild(childNodeToDelete);
             xdoc.Save(sXmlFile);
 
@@ -1502,6 +1509,7 @@ namespace IppBackups
             }
 
             //rTxtBox_Script.Text = script;
+            lastRowScripted = i;
         }
 
         private void cBox_Tables_SelectedIndexChanged(object sender, EventArgs e)
