@@ -28,6 +28,11 @@ SET		Host = '172.17.87.42\Cloud',
 		Port = 1500
 WHERE	[ID] = 8
 
+UPDATE	[QA-CloudAdmin].[dbo].[DatabaseNode]
+SET		Host = '10.103.109.113',
+		Port = 9001
+WHERE	[ID] = 9
+
 UPDATE	[QA-CloudAdmin].[dbo].[Product]
 SET		Url = 'https://eurocodesplusqa.bsiuat.com'
 WHERE	[ID] = 3
