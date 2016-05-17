@@ -37,4 +37,22 @@
       <Environment name="DEV" data="D:\SQL\DEV\SQLData" log="D:\SQL\DEV\SQLLogs">DEV </Environment>
     </Instance>
   </Server>
+  <Server name="BSI16DBS03PRV"  ip="10.33.203.33" >
+    <Instance instance="Default" port="1433" user="prod-cloudadmin" password="!C0mm4nd1ng$" backups="S:\SQL Backups\CBS">
+      <Environment name="PPD" data="F:\MSSQL\Data" log="L:\MSSQL\Logs">PPD</Environment>
+      <Environment name="PROD" data="F:\MSSQL\Data" log="L:\MSSQL\Logs">PROD</Environment>
+    </Instance>
+  </Server>
+  <Server name="BSI10DBS03PRV" ip="10.41.203.33" >
+    <Instance instance="Default" port="1433" user="prod-cloudadmin" password="!C0mm4nd1ng$" backups="S:\SQL Backups\CBS">
+      <Environment name="PPD" data="F:\MSSQL\Data" log="L:\MSSQL\Logs">PPD</Environment>
+      <Environment name="PROD" data="F:\MSSQL\Data" log="L:\MSSQL\Logs">PROD</Environment>
+    </Instance>
+  </Server>
+  <Server name="BSI16DBS04PRV" ip="10.33.203.40" >
+    <Instance instance="Default" port="1433" user="prod-cloudadmin" password="!C0mm4nd1ng$" backups="S:\SQL Backups\CBS">
+      <Environment name="PPD" data="F:\MSSQL\Data" log="L:\MSSQL\Logs">PPD</Environment>
+      <Environment name="PROD" data="F:\MSSQL\Data" log="L:\MSSQL\Logs">PROD</Environment>
+    </Instance>
+  </Server>
 </Servers>

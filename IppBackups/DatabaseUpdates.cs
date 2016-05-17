@@ -578,7 +578,10 @@ namespace IppBackups
                         //UpdateScriptWindow();
                         if (tlp_ScriptBuilder.RowCount > min_rowCount)
                         {
+                            if (tlp_ScriptBuilder.RowCount > min_rowCount + 1)
+                            {
                             ScriptContent(tlp_ScriptBuilder.RowCount);
+                        }
                         }
 
                         int i = y - min_rowCount;
