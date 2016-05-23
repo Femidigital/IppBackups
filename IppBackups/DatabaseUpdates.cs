@@ -578,7 +578,8 @@ namespace IppBackups
                         //UpdateScriptWindow();
                         if (tlp_ScriptBuilder.RowCount > min_rowCount)
                         {
-                            if ((tlp_ScriptBuilder.RowCount - (min_rowCount + 1) == 0 ) && scriptFromTreeView == true)
+                            //if ((tlp_ScriptBuilder.RowCount - (min_rowCount + 1) == 0 ) && scriptFromTreeView == true)
+                            if ((tlp_ScriptBuilder.RowCount - 1 == lastRowScripted) && scriptFromTreeView == true)
                             {
                                 //tlp_ScriptBuilder.RowCount++;
                                 //return;   
@@ -1259,6 +1260,10 @@ namespace IppBackups
                         else if (CharacterDataTypes.Contains( fieldDatatypes[cBox_Field[i].SelectedIndex].ToString().Substring(0, fieldDatatypes[cBox_Field[i].SelectedIndex].ToString().IndexOf("("))))
                         {
                             string maxLength = sqlDataType.Substring(sqlDataType.IndexOf("(") + 1, sqlDataType.Length - (sqlDataType.IndexOf("(") + 2));
+                            // check if maxlenght is max, then use 4000.
+
+                            if (maxLength == "max")
+                                maxLength = "4000";
 
                             if (chkValue.Length < Int32.Parse(maxLength))
                             {
@@ -1517,7 +1522,7 @@ namespace IppBackups
             }
 
             //rTxtBox_Script.Text = script;
-            lastRowScripted = i;
+            lastRowScripted = lastRowMarker - 1;
         }
 
         private void cBox_Tables_SelectedIndexChanged(object sender, EventArgs e)
