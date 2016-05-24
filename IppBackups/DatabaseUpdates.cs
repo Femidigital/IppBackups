@@ -414,6 +414,42 @@ namespace IppBackups
                         token.Attributes["value"].Value = txtBox_Value[i].Text;
                         i++;
                     }
+
+                    // Check if there are any (new) more tokens in the script builder.
+                    if ( scriptLine - i > 1)
+                    {
+                        int NoToken = (scriptLine - 2) - i;
+                        XmlNode[] token = new XmlNode[NoToken];
+
+                        // Add all FilterTokens after the WHERE Clause.
+                        for (int j = i; j < scriptLine - 2; j++)
+                        {
+                            if (cBox_Logic[j].SelectedIndex != -1)
+                            {
+                                MessageBox.Show("Add row " + j.ToString());
+
+                                token[i] = doc.CreateNode(XmlNodeType.Element, "Token", null);
+
+                                XmlAttribute set = doc.CreateAttribute("set");
+
+                                XmlAttribute columnName = doc.CreateAttribute("columnName");
+                                columnName.Value = (string)cBox_Field[j].SelectedItem;
+
+                                XmlAttribute operand = doc.CreateAttribute("operand");
+                                operand.Value = (string)cBox_Operand[j].SelectedItem;
+
+                                XmlAttribute value = doc.CreateAttribute("value");
+                                value.Value = txtBox_Value[j].Text;
+
+                                token[i].Attributes.Append(set);
+                                token[i].Attributes.Append(columnName);
+                                token[i].Attributes.Append(operand);
+                                token[i].Attributes.Append(value);
+                            }
+                            //ftNodeToReplace
+                        }
+                    }
+
                 }
 
                 //doc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
