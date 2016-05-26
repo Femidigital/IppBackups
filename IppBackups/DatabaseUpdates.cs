@@ -419,7 +419,8 @@ namespace IppBackups
                     if ( scriptLine - i > 1)
                     {
                         int NoToken = (scriptLine - 2) - i;
-                        XmlNode[] token = new XmlNode[NoToken];
+                        //XmlNode[] token = new XmlNode[NoToken];
+                        XmlNode token;
 
                         // Add all FilterTokens after the WHERE Clause.
                         for (int j = i; j < scriptLine - 2; j++)
@@ -428,7 +429,7 @@ namespace IppBackups
                             {
                                 MessageBox.Show("Add row " + j.ToString());
 
-                                token[i] = doc.CreateNode(XmlNodeType.Element, "Token", null);
+                                token = doc.CreateNode(XmlNodeType.Element, "Token", null);
 
                                 XmlAttribute set = doc.CreateAttribute("set");
 
@@ -441,10 +442,12 @@ namespace IppBackups
                                 XmlAttribute value = doc.CreateAttribute("value");
                                 value.Value = txtBox_Value[j].Text;
 
-                                token[i].Attributes.Append(set);
-                                token[i].Attributes.Append(columnName);
-                                token[i].Attributes.Append(operand);
-                                token[i].Attributes.Append(value);
+                                token.Attributes.Append(set);
+                                token.Attributes.Append(columnName);
+                                token.Attributes.Append(operand);
+                                token.Attributes.Append(value);
+
+                                doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table[@name='" + tblName + "']/Environments/Environment[@name='" + cur_environment + "']/Tokens/FilterToken[@name='" + tblName + "']").InsertAfter(token, doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table[@name='" + tblName + "']/Environments/Environment[@name='" + cur_environment + "']/Tokens/FilterToke[@name='" + tblName + "']").LastChild);
                             }
                             //ftNodeToReplace
                         }
