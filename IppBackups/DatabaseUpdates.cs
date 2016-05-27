@@ -432,6 +432,7 @@ namespace IppBackups
                                 token = doc.CreateNode(XmlNodeType.Element, "Token", null);
 
                                 XmlAttribute set = doc.CreateAttribute("set");
+                                set.Value = (string)cBox_Logic[j].SelectedItem;
 
                                 XmlAttribute columnName = doc.CreateAttribute("columnName");
                                 columnName.Value = (string)cBox_Field[j].SelectedItem;
@@ -447,7 +448,10 @@ namespace IppBackups
                                 token.Attributes.Append(operand);
                                 token.Attributes.Append(value);
 
-                                doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table[@name='" + tblName + "']/Environments/Environment[@name='" + cur_environment + "']/Tokens/FilterToken[@name='" + tblName + "']").InsertAfter(token, doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table[@name='" + tblName + "']/Environments/Environment[@name='" + cur_environment + "']/Tokens/FilterToke[@name='" + tblName + "']").LastChild);
+                                //doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table[@name='" + tblName + "']/Environments/Environment[@name='" + cur_environment + "']/Tokens/FilterToken[@name='" + tblName + "']").InsertAfter(token, doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table[@name='" + tblName + "']/Environments/Environment[@name='" + cur_environment + "']/Tokens/FilterToke[@name='" + tblName + "']").LastChild);
+                                var selectedFileterNode = doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table[@name='" + tblName + "']/Environments/Environment[@name='" + cur_environment + "']/Tokens/FilterToken[@name='" + tblName + "']");
+                                selectedFileterNode.AppendChild(token);
+                                doc.Save(sXmlFile);
                             }
                             //ftNodeToReplace
                         }
@@ -458,7 +462,8 @@ namespace IppBackups
                 //doc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
                 //doc.Save("..\\..\\Scripts\\DatabaseUpdateValues.xml");   
                 //doc.Save(scriptLocation + sXmlFile);
-                doc.Load(sXmlFile);
+                //doc.Load(sXmlFile);
+                doc.Save(sXmlFile);
             }
 
         }
