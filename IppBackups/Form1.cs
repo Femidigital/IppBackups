@@ -736,47 +736,11 @@ namespace IppBackups
             }
             else if (rBtn_Restore.Checked)
             {
-                ////lbl_Oupt.Text += "Restored... '\n";
-                /* Check the Destination Backup directory for the Source Backup file */
-                foreach (string db in databaseList)
+                if (restorebackgroundWorker.IsBusy != true)
                 {
-                    string restorePath = "";
-                    string destPath = "";
-                    r_env = cBox_Environment.SelectedItem.ToString();
-
-                    for (int i = 0; i < _servers[cBox_Server.SelectedIndex].Instances.Count; i++ )
-                    {
-                        for (int j = 0; j < _servers[cBox_Server.SelectedIndex].Instances[i].Environments.Count; j++)
-                        {
-                            if (cBox_Environment.Text == _servers[cBox_Server.SelectedIndex].Instances[i].Environments[j].Name)
-                            {
-                                restorePath = _servers[cBox_Server.SelectedIndex].Instances[i].Backups;
-                                destPath = restorePath + "\\" + db + ".bak";
-                            }
-                        }
-                    }
-
-                    string destFilePath = "\\\\" + cBox_Server.Text + "\\" + destPath;
-                    destFilePath = destFilePath.Replace(':', '$');
-
-                    if (File.Exists(destFilePath))
-                    {
-                        //lbl_Oupt.Text += "Backup file exists for the source database at " + destFilePath + " ...\n";
-                        rTxtBox_Output.AppendText("Backup file exists for the source database at " + destFilePath + " ...\n",Color.Black);
-                        //File.Delete(destPath);
-                        backStatus.Add(db, true);
-                        //lbl_Oupt.Text += "Restoring " + cBox_Environment.Text + " environment with selected database(s)... \n";
-                        rTxtBox_Output.AppendText("Restoring " + cBox_Environment.Text + " environment with selected database(s)... \n",Color.Black);
-                        restorebackgroundWorker.RunWorkerAsync();
-                    }        
-                    else
-                    {
-                        //lbl_Oupt.Text += "Missing backup file to restore at " + destFilePath + "...\n";
-                        rTxtBox_Output.AppendText("Missing backup file to restore at " + destFilePath + "...\n",Color.Red);
-                    }
+                    restorebackgroundWorker.RunWorkerAsync();
                 }
-
-
+               
                 ////lbl_Oupt.Text += "Restoring " + cBox_DestEnvironment.Text + " environment with selected database(s)... \n";
                 //restorebackgroundWorker.RunWorkerAsync();
             }
@@ -810,6 +774,57 @@ namespace IppBackups
                 //lbl_Oupt.Text += "Select an action to perform...\n";
                 rTxtBox_Output.AppendText("Select an action to perform...\n",Color.Red);
             }
+        }
+
+        private void VerifyBackupExists()
+        {
+             /* Check the Destination Backup directory for the Source Backup file */
+               
+                foreach (string db in databaseList)
+                {
+                    string restorePath = "";
+                    string destPath = "";
+                    r_env = cBox_Environment.SelectedItem.ToString();
+
+                    for (int i = 0; i < _servers[cBox_Server.SelectedIndex].Instances.Count; i++ )
+                    {
+                        for (int j = 0; j < _servers[cBox_Server.SelectedIndex].Instances[i].Environments.Count; j++)
+                        {
+                            if (cBox_Environment.Text == _servers[cBox_Server.SelectedIndex].Instances[i].Environments[j].Name)
+                            {
+                                restorePath = _servers[cBox_Server.SelectedIndex].Instances[i].Backups;
+                                destPath = restorePath + "\\" + db + ".bak";
+                            }
+                        }
+                    }
+
+                    
+
+                    string destFilePath = "\\\\" + cBox_Server.Text + "\\" + destPath;
+                    destFilePath = destFilePath.Replace(':', '$');
+
+                    if (File.Exists(destFilePath))
+                    {
+                        //lbl_Oupt.Text += "Backup file exists for the source database at " + destFilePath + " ...\n";
+                        rTxtBox_Output.AppendText("Backup file exists for the source database at " + destFilePath + " ...\n",Color.Black);
+                        //File.Delete(destPath);
+                        if (!backStatus.ContainsKey(db))
+                        {
+                            backStatus.Add(db, true);
+                        }
+                        //lbl_Oupt.Text += "Restoring " + cBox_Environment.Text + " environment with selected database(s)... \n";
+                        rTxtBox_Output.AppendText("Restoring " + cBox_Environment.Text + " environment with selected database(s)... \n",Color.Black);
+                        if (restorebackgroundWorker.IsBusy != true)
+                        {
+                            restorebackgroundWorker.RunWorkerAsync();
+                        }
+                    }        
+                    else
+                    {
+                        //lbl_Oupt.Text += "Missing backup file to restore at " + destFilePath + "...\n";
+                        rTxtBox_Output.AppendText("Missing backup file to restore at " + destFilePath + "...\n",Color.Red);
+                    }
+                }
         }
 
         // This event handler is where the time-consuming work is done.
@@ -917,6 +932,8 @@ namespace IppBackups
 
         private void restorebackgroundWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
+            VerifyBackupExists();
+
             BackgroundWorker restoreWorker = sender as BackgroundWorker;
 
             if (restoreWorker.CancellationPending == true)
