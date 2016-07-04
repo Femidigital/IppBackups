@@ -503,7 +503,7 @@
                 </Token>
               </FilterToken>
               <ReplaceToken name="CompNav_Marklogic" type="ColumnToken" dml="Update">
-                <Token set="" columnName="Host" operand="=" value="10.103.109.24">
+                <Token set="" columnName="Host" operand="=" value="10.103.109.114">
                 </Token>
                 <Token set="AND" columnName="Port" operand="=" value="9001">
                 </Token>
@@ -537,7 +537,7 @@
                 </Token>
               </FilterToken>
               <ReplaceToken name="CompNav_Marklogic" type="ColumnToken" dml="Update">
-                <Token set="" columnName="Host" operand="=" value="10.103.109.21">
+                <Token set="" columnName="Host" operand="=" value="10.103.109.113">
                 </Token>
                 <Token set="AND" columnName="Port" operand="=" value="9001">
                 </Token>
@@ -571,7 +571,7 @@
                 </Token>
               </FilterToken>
               <ReplaceToken name="CompNav_Marklogic" type="ColumnToken" dml="Update">
-                <Token set="" columnName="Host" operand="=" value="10.103.109.21">
+                <Token set="" columnName="Host" operand="=" value="10.103.109.115">
                 </Token>
                 <Token set="AND" columnName="Port" operand="=" value="9001">
                 </Token>

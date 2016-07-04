@@ -52,6 +52,7 @@ namespace IppBackups
         string r_sUsername = "";
         string r_sPassword = "";
         string serverInstanceToRestoreTo = "";
+        string scriptLocation = "..\\..\\SQL_Scripts\\";
         Dictionary<string, bool> backStatus = new Dictionary<string, bool>();
 
         enum Environment
@@ -1051,8 +1052,28 @@ namespace IppBackups
                                 }
 
                                 //if (restore_db.Contains("CloudAdmin") || restore_db.Contains("PersonalData"))
+                                rTxtBox_Output.AppendText("\n\nFor Debugging... \n", Color.Red);
+                                rTxtBox_Output.AppendText("restore_db is " + restore_db + "\n", Color.Black);
+                                rTxtBox_Output.AppendText("restoreToEnv is " + restoreToEnv + "\n", Color.Black);
+                                DirectoryInfo d = new DirectoryInfo(scriptLocation);
+                                foreach(var file in d.GetFiles("*.sql"))
+                                {
+                                    string dbPart = file.Name.Substring(0, db.IndexOf("-") + 1);
+                                    rTxtBox_Output.AppendText("dbPart is " + dbPart + "\n", Color.Black);
+                                    rTxtBox_Output.AppendText("Filename is " + file.Name + "\n", Color.Black);
+                                    if (file.Name.Contains("_" + restoreToEnv) && file.Name.Contains(dbPart = "_") && restore_db.Contains(restoreToEnv + "-") && restore_db.Contains("-" + dbPart))
+                                    {
+                                        rTxtBox_Output.AppendText("Found a script to execute\n", Color.Black);
+                                    }
+                                    else
+                                    {
+                                        rTxtBox_Output.AppendText("Script will not run\n", Color.Red);
+                                    }
+                                }
+
                                 if (restore_db == (restoreToEnv + "-CloudAdmin") || restore_db == (restoreToEnv + "-PersonalData") || restore_db == (restoreToEnv + "-Ecommerce"))
                                 {
+                                    rTxtBox_Output.AppendText("\n\nUsing hardcoded Values for updates... \n", Color.Red);
                                     //update_DatabaseEntries(srvInstance, cBox_DestEnvironment.Text, restore_db);
                                     update_DatabaseEntries(srvName, restoreToEnv, restore_db);
                                 }
@@ -1213,14 +1234,10 @@ namespace IppBackups
             }
             catch (SqlServerManagementException e)
             {
-                // TODO: Change font color
-                //lbl_Oupt.Text += e.InnerException + "\n";
                 rTxtBox_Output.AppendText(e.InnerException + "\n",Color.Red);
             }
             catch (SqlException e)
             {
-                // TODO: Change font color
-                //lbl_Oupt.Text += e.InnerException + "\n";
                 rTxtBox_Output.AppendText(e.InnerException + "\n",Color.Red);
             }
             //lbl_Oupt.Text += "Update completed...\n";
@@ -1377,7 +1394,6 @@ namespace IppBackups
             }
 
             sqlFile.Write(sb);
-            //lbl_Oupt.Text += "View Scripts completed...\n";
             rTxtBox_Output.AppendText("View Scripts completed...\n",Color.Black);
             sqlFile.Close();
             UpdateView(rServer.ToString(), cBox_DestEnvironment.Text, db);
@@ -1385,44 +1401,17 @@ namespace IppBackups
 
         private void UpdateView(string serverInstance, string env, string db)
         {
-            //string sqlConnectionString = "Data Source=" + cBox_DestServer.Text + "; Initial Catalog=" + db + "; Integrated Security=SSPI;";
             string sqlConnectionString = "Data Source=" + serverInstanceToRestoreTo + "; Initial Catalog=" + db + "; Integrated Security=SSPI;";
             string scriptFile = "CreateView_" + db + ".sql";
             FileInfo file = new FileInfo(scriptFile);
             string script = file.OpenText().ReadToEnd();
             SqlConnection conn = new SqlConnection(sqlConnectionString);
-            //lbl_Oupt.Text += "Opening connection to : " + serverInstance + "\n";
+
             rTxtBox_Output.AppendText("Opening connection to : " + serverInstance + "\n", Color.Black);
             conn.Open();
             SqlCommand cmd = new SqlCommand(script, conn);
-            //lbl_Oupt.Text += "Loading Viewupdate file from: " + scriptFile + "\n";
+
             rTxtBox_Output.AppendText("Loading Viewupdate file from: " + scriptFile + "\n",Color.Black);
-            //for (int i = 0; i < 2; i++)
-            //{
-            //    try
-            //    {
-            //        int resultSet = 0;
-            //        resultSet = cmd.ExecuteNonQuery();
-            //        conn.Close();
-            //    }
-            //    catch (SqlServerManagementException ex)
-            //    {
-            //        // TODO: Change font color
-            //        //lbl_Oupt.Text += "SME " + ex.Message + "\n";
-            //    }
-            //    catch (SqlException ex)
-            //    {
-            //        // TODO: Change font color
-            //        ////lbl_Oupt.ForeColor = Color.Red;
-            //        ////lbl_Oupt.Text += ex.Message + "\n";
-            //        continue;
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        // TODO: Change font color
-            //        //lbl_Oupt.Text += "E " + ex.Message + "\n";
-            //    }
-            //}
 
             try
             {
@@ -1432,21 +1421,14 @@ namespace IppBackups
             }
             catch (SqlServerManagementException ex)
             {
-                // TODO: Change font color
-                //lbl_Oupt.Text += "SME " + ex.Message + "\n";
                 rTxtBox_Output.AppendText("SME " + ex.Message + "\n",Color.Red);
             }
             catch (SqlException ex)
             {
-                // TODO: Change font color
-                ////lbl_Oupt.ForeColor = Color.Red;
-                //lbl_Oupt.Text += ex.Message + "\n";
-                rTxtBox_Output.AppendText(ex.Message + "\n",Color.Red);
+               rTxtBox_Output.AppendText(ex.Message + "\n",Color.Red);
             }
             catch (Exception ex)
             {
-                // TODO: Change font color
-                //lbl_Oupt.Text += "E " + ex.Message + "\n";
                 rTxtBox_Output.AppendText("E " + ex.Message + "\n",Color.Red);
             }
         }
