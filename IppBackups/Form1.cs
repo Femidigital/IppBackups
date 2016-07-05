@@ -1061,14 +1061,14 @@ namespace IppBackups
                                     string dbPart = file.Name.Substring(0, db.IndexOf("-") + 1);
                                     rTxtBox_Output.AppendText("dbPart is " + dbPart + "\n", Color.Black);
                                     rTxtBox_Output.AppendText("Filename is " + file.Name + "\n", Color.Black);
-                                    if (file.Name.Contains("_" + restoreToEnv) && file.Name.Contains(dbPart = "_") && restore_db.Contains(restoreToEnv + "-") && restore_db.Contains("-" + dbPart))
+                                    if (file.Name.ToLower().Contains("_" + restoreToEnv.ToLower()) && file.Name.ToLower().Contains(dbPart.ToLower() + "_") && restore_db.ToLower().Contains(restoreToEnv.ToLower() + "-") && restore_db.ToLower().Contains("-" + dbPart.ToLower()))
                                     {
-                                        rTxtBox_Output.AppendText("Found a script to execute\n", Color.Black);
+                                        rTxtBox_Output.AppendText("Execute " +  file.Name + "...\n", Color.Black);
                                     }
-                                    else
-                                    {
-                                        rTxtBox_Output.AppendText("Script will not run\n", Color.Red);
-                                    }
+                                    //else
+                                    //{
+                                    //    rTxtBox_Output.AppendText("Script will not run\n", Color.Red);
+                                    //}
                                 }
 
                                 if (restore_db == (restoreToEnv + "-CloudAdmin") || restore_db == (restoreToEnv + "-PersonalData") || restore_db == (restoreToEnv + "-Ecommerce"))
