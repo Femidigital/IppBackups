@@ -27,6 +27,8 @@ namespace IppBackups
         string tblName = "";
         string cur_environment = "";
         string sel_environment = "";
+        string sel_table = "";
+        string sel_query = "";
         string script = "";
         string useStmt = "USE ";
         string tbl = "";
@@ -382,8 +384,9 @@ namespace IppBackups
                 else
                 {
                     // Override existing ReplaceToken Node.
-                    XmlNode rtNodeToReplace = doc.SelectSingleNode("//Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table[@name='" + tblName + "']/Environments/Environment[@name='" + cur_environment + "']/Tokens/ReplaceToken[@name='" + tblName + "']");
-                    XmlNode ftNodeToReplace = doc.SelectSingleNode("//Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table[@name='" + tblName + "']/Environments/Environment[@name='" + cur_environment + "']/Tokens/FilterToken[@name='" + tblName + "']");
+                    //XmlNode rtNodeToReplace = doc.SelectSingleNode("//Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table[@name='" + tblName + "']/Environments/Environment[@name='" + cur_environment + "']/Tokens/ReplaceToken[@name='" + tblName + "']");
+                    XmlNode rtNodeToReplace = doc.SelectSingleNode("//Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table[@name='" + tblName + "']/Environments/Environment[@name='" + cur_environment + "']/Tokens/ReplaceToken[@name='" + sel_query + "']");
+                    XmlNode ftNodeToReplace = doc.SelectSingleNode("//Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table[@name='" + tblName + "']/Environments/Environment[@name='" + cur_environment + "']/Tokens/FilterToken[@name='" + sel_query + "']");
 
                     int scriptLine = tlp_ScriptBuilder.RowCount;
                     int rtNodeCount = rtNodeToReplace.ChildNodes.Count;
@@ -878,7 +881,8 @@ namespace IppBackups
                                             //MessageBox.Show(cBox_Tables.SelectedText + " table already exists");
                                             foreach (TreeNode en in cn.Nodes)
                                             {
-                                                if (en.Tag == "Environment" && en.Text == cur_environment)
+                                                //if (en.Tag == "Environment" && en.Text == cur_environment)
+                                                if (en.Tag == "Environment" && en.Text == sel_environment)
                                                 {
                                                     envFound = true;
                                                     //MessageBox.Show(cur_environment + "already exits");
@@ -1846,8 +1850,10 @@ namespace IppBackups
                 if (Enum.IsDefined(typeof(Environment), e.Node.Parent.Text))
                 {
                     sel_environment = e.Node.Parent.Text;
+                    sel_table = e.Node.Parent.Parent.Text;
+                    sel_query = e.Node.Text;
 
-                    nNode = startNode.SelectNodes("Tables/Table/Environments/Environment[@name='" + e.Node.Parent.Text + "']/Tokens");
+                    nNode = startNode.SelectNodes("Tables/Table[@name='" + sel_table + "']/Environments/Environment[@name='" + sel_environment + "']/Tokens");
                     UpdateScriptWindow();
 
                     foreach (XmlNode tokens in nNode)
@@ -1856,7 +1862,7 @@ namespace IppBackups
                         int i;
                         foreach (XmlNode replaceNode in tokens.ChildNodes)
                         {
-                            cBox_Tables.SelectedIndex = cBox_Tables.FindString("[dbo].[" + e.Node.Parent.Parent.Text + "]");
+                            cBox_Tables.SelectedIndex = cBox_Tables.FindString("[dbo].[" + sel_table + "]");
 
                             if (replaceNode.Attributes["name"].Value == e.Node.Text)
                             {
@@ -2311,7 +2317,8 @@ namespace IppBackups
         {
             //string scriptDirectory = "\\Script\\";
             string scriptDirectory = scriptLocation;
-            string scriptFile = _cur_Db + "_" + tblName + "_" + cur_environment + ".sql";
+            //string scriptFile = _cur_Db + "_" + tblName + "_" + cur_environment + ".sql";
+            string scriptFile = _cur_Db + "_" + tblName + "_" + sel_query + "_" + sel_environment + ".sql";
             string scriptFileLocation = scriptDirectory + scriptFile;
 
             if (File.Exists(scriptFileLocation))
