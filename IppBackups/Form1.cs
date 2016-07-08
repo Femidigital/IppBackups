@@ -1063,7 +1063,9 @@ namespace IppBackups
                                     rTxtBox_Output.AppendText("Filename is " + file.Name + "\n", Color.Black);
                                     if (file.Name.ToLower().Contains("_" + restoreToEnv.ToLower()) && file.Name.ToLower().Contains(dbPart.ToLower() + "_") && restore_db.ToLower().Contains(restoreToEnv.ToLower() + "-") && restore_db.ToLower().Contains("-" + dbPart.ToLower()))
                                     {
-                                        rTxtBox_Output.AppendText("Execute " +  file.Name + "...\n", Color.Black);
+                                        //rTxtBox_Output.AppendText("Execute " +  file.Name + "...\n", Color.Black);
+                                        rTxtBox_Output.AppendText("\n\nUsing dynamic Values for updates... \n", Color.Red);
+                                        update_DatabaseEntries(srvName, restoreToEnv, restore_db, file.Name);
                                     }
                                     //else
                                     //{
@@ -1071,12 +1073,12 @@ namespace IppBackups
                                     //}
                                 }
 
-                                if (restore_db == (restoreToEnv + "-CloudAdmin") || restore_db == (restoreToEnv + "-PersonalData") || restore_db == (restoreToEnv + "-Ecommerce"))
+                               /* if (restore_db == (restoreToEnv + "-CloudAdmin") || restore_db == (restoreToEnv + "-PersonalData") || restore_db == (restoreToEnv + "-Ecommerce"))
                                 {
                                     rTxtBox_Output.AppendText("\n\nUsing hardcoded Values for updates... \n", Color.Red);
                                     //update_DatabaseEntries(srvInstance, cBox_DestEnvironment.Text, restore_db);
                                     update_DatabaseEntries(srvName, restoreToEnv, restore_db);
-                                }
+                                }*/
                                 //worker.ReportProgress();
                             }
                             catch (Exception ex)
@@ -1210,13 +1212,14 @@ namespace IppBackups
             // TODO: Change Destination Server's Selected item to Select_Index.*/
         }
 
-        private void update_DatabaseEntries(string serverInstance, string env, string db)
+        private void update_DatabaseEntries(string serverInstance, string env, string db, string cur_ScriptFile)
         {
             //lbl_Oupt.Text += "Updating Database entries for " + db + "...\n";
             rTxtBox_Output.AppendText("Updating Database entries for " + db + "...\n",Color.Black);
 
             string sqlConnectionString = "Data Source=" + serverInstance + "; Initial Catalog=" + db + "; Integrated Security=SSPI;";
-            string scriptFile = "UpdateDatabaseEntries" + db.Substring(db.IndexOf("-") + 1) + "-" + env + ".sql";
+            //string scriptFile = "UpdateDatabaseEntries" + db.Substring(db.IndexOf("-") + 1) + "-" + env + ".sql";
+            string scriptFile = cur_ScriptFile;
             FileInfo file = new FileInfo(scriptFile);
             string script = file.OpenText().ReadToEnd();
             SqlConnection conn = new SqlConnection(sqlConnectionString);

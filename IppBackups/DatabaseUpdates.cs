@@ -29,6 +29,7 @@ namespace IppBackups
         string sel_environment = "";
         string sel_table = "";
         string sel_query = "";
+        string sel_tag = "";
         string script = "";
         string useStmt = "USE ";
         string tbl = "";
@@ -452,7 +453,8 @@ namespace IppBackups
                                 token.Attributes.Append(value);
 
                                 //doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table[@name='" + tblName + "']/Environments/Environment[@name='" + cur_environment + "']/Tokens/FilterToken[@name='" + tblName + "']").InsertAfter(token, doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table[@name='" + tblName + "']/Environments/Environment[@name='" + cur_environment + "']/Tokens/FilterToke[@name='" + tblName + "']").LastChild);
-                                var selectedFileterNode = doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table[@name='" + tblName + "']/Environments/Environment[@name='" + cur_environment + "']/Tokens/FilterToken[@name='" + tblName + "']");
+                                //var selectedFileterNode = doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table[@name='" + tblName + "']/Environments/Environment[@name='" + cur_environment + "']/Tokens/FilterToken[@name='" + tblName + "']");
+                                var selectedFileterNode = doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table[@name='" + tblName + "']/Environments/Environment[@name='" + cur_environment + "']/Tokens/FilterToken[@name='" + sel_query + "']");
                                 selectedFileterNode.AppendChild(token);
                                 doc.Save(sXmlFile);
                             }
@@ -862,7 +864,8 @@ namespace IppBackups
                     {
                         if (MessageBox.Show(strMsg, "Close Window", MessageBoxButtons.YesNo) != DialogResult.No)
                         {
-                            if (tViewScripts.SelectedNode != null && tViewScripts.SelectedNode.Tag == "ReplaceToken")
+                            //if (tViewScripts.SelectedNode != null && tViewScripts.SelectedNode.Tag == "ReplaceToken")
+                            if (tViewScripts.SelectedNode != null && sel_tag == "ReplaceToken")
                             {
                                 queryFound = true;
                                 string selectedNode = tViewScripts.SelectedNode.Text;
@@ -1087,6 +1090,7 @@ namespace IppBackups
                             {
                                 MessageBox.Show("Updating existing query XML node");
                                 scriptFromTreeView = false;
+                                cur_environment = sel_environment;
                                 btn_Commit.PerformClick();
 
                             }
@@ -1852,6 +1856,7 @@ namespace IppBackups
                     sel_environment = e.Node.Parent.Text;
                     sel_table = e.Node.Parent.Parent.Text;
                     sel_query = e.Node.Text;
+                    sel_tag = "ReplaceToken";
 
                     nNode = startNode.SelectNodes("Tables/Table[@name='" + sel_table + "']/Environments/Environment[@name='" + sel_environment + "']/Tokens");
                     UpdateScriptWindow();
