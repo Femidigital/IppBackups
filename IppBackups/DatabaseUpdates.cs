@@ -2043,7 +2043,7 @@ namespace IppBackups
                 XmlNode tokens = doc.CreateNode(XmlNodeType.Element, "Tokens", null);
                 //envNode.AppendChild(tokens);
 
-                foreach (XmlNode dbNode in doc.SelectSingleNode("/Databases/Database[@name='" + _cur_Db + "']/Tables/Table/Environments"))
+                foreach (XmlNode dbNode in doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table/Environments"))
                 {
                     if (dbNode.Attributes["name"].Value == tViewScripts.SelectedNode.Text)
                     {
@@ -2057,12 +2057,12 @@ namespace IppBackups
                     {
                         envNode.AppendChild(copyNode);
                     }
-                    doc.SelectSingleNode("/Databases/Database[@name='" + _cur_Db + "']/Tables/Table/Environments").InsertAfter(envNode, doc.SelectSingleNode("/Databases/Database[@name='" + _cur_Db + "']/Tables/Table/Environments").LastChild);
+                    doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table/Environments").InsertAfter(envNode, doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table/Environments").LastChild);
                 }
 
                 doc.Save(sXmlFile);
                 //doc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
-                startNode = doc.SelectSingleNode("Databases/Database[@name='" + _cur_Db + "']");
+                startNode = doc.SelectSingleNode("Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']");
             }
             else if (tViewScripts.SelectedNode.Tag == "ReplaceToken")
             {
@@ -2082,7 +2082,7 @@ namespace IppBackups
                 repToken.Attributes.Append(typeAttri);
                 repToken.Attributes.Append(dmlAttri);
 
-                foreach (XmlNode tblNode in doc.SelectSingleNode("/Databases/Database[@name='" + _cur_Db + "']/Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Parent.Text + "']"))
+                foreach (XmlNode tblNode in doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Parent.Text + "']"))
                 {
                     if (tblNode.Name == "Tokens")
                     {
@@ -2094,20 +2094,20 @@ namespace IppBackups
                 {
                     XmlNode tokenNode = doc.CreateNode(XmlNodeType.Element, "Tokens", null);
                     tokenNode.AppendChild(repToken);
-                    doc.SelectSingleNode("/Databases/Database[@name='" + _cur_Db + "']/Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Parent.Text + "']").InsertAfter(tokenNode, doc.SelectSingleNode("/Databases/Database[@name='" + _cur_Db + "']/Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Parent.Text + "']").LastChild);
+                    doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Parent.Text + "']").InsertAfter(tokenNode, doc.SelectSingleNode("/Databases/Database[@name='" + _cur_Db + "']/Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Parent.Text + "']").LastChild);
 
                 }
                 else
                 {
-                    doc.SelectSingleNode("/Databases/Database[@name='" + _cur_Db + "']/Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Parent.Text + "']/Tokens").InsertAfter(repToken, doc.SelectSingleNode("/Databases/Database[@name='" + _cur_Db + "']/Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Parent.Text + "']/Tokens").LastChild);
+                    doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Parent.Text + "']/Tokens").InsertAfter(repToken, doc.SelectSingleNode("/Databases/Database[@name='" + _cur_Db + "']/Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Parent.Text + "']/Tokens").LastChild);
                 }
                 doc.Save(sXmlFile);
                 //doc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
-                startNode = doc.SelectSingleNode("/Databases/Database[@name='" + _cur_Db + "']/Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Parent.Text + "']");
+                startNode = doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Parent.Text + "']");
             }
             else if (tViewScripts.SelectedNode.Tag == "Table")
             {
-                XmlNode updateNode = doc.SelectSingleNode("Databases/Database[@name='" + _cur_Db + "']/Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Text + "']");
+                XmlNode updateNode = doc.SelectSingleNode("Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Text + "']");
                 targetNode = startNode.SelectSingleNode("Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Text + "']/");
                 targetNode.AppendChild(copyNode);
 

@@ -1215,15 +1215,17 @@ namespace IppBackups
         private void update_DatabaseEntries(string serverInstance, string env, string db, string cur_ScriptFile)
         {
             //lbl_Oupt.Text += "Updating Database entries for " + db + "...\n";
-            rTxtBox_Output.AppendText("Updating Database entries for " + db + "...\n",Color.Black);
+            rTxtBox_Output.AppendText("Updating Database entries for " + db + "using " + cur_ScriptFile  + "...\n",Color.Black);
 
             string sqlConnectionString = "Data Source=" + serverInstance + "; Initial Catalog=" + db + "; Integrated Security=SSPI;";
             //string scriptFile = "UpdateDatabaseEntries" + db.Substring(db.IndexOf("-") + 1) + "-" + env + ".sql";
-            string scriptFile = cur_ScriptFile;
+            string scriptFile = scriptLocation + cur_ScriptFile;
             FileInfo file = new FileInfo(scriptFile);
             string script = file.OpenText().ReadToEnd();
             SqlConnection conn = new SqlConnection(sqlConnectionString);
+            rTxtBox_Output.AppendText("About to open connection, serverInstance is " + serverInstance + " and db is " + db + " ...\n", Color.Black);
             conn.Open();
+            rTxtBox_Output.AppendText("After open connection ...\n", Color.Black);
             SqlCommand cmd = new SqlCommand(script, conn);
             //lbl_Oupt.Text += "Loading file from: " + scriptFile + "\n";
             rTxtBox_Output.AppendText("Loading file from: " + scriptFile + "\n",Color.Black);
