@@ -1291,7 +1291,7 @@ namespace IppBackups
                                 txtBox_Value_Validating(txtBox_Value[i], args);
                             }
                         }
-                        else if (CharacterDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex]))
+                        else if (CharacterDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex]) && fieldDatatypes[cBox_Field[i].SelectedIndex] == "uniqueidentifier")
                         {
                             Guid newGuid;
 
@@ -1744,7 +1744,26 @@ namespace IppBackups
             tNode = tViewScripts.Nodes[0];
 
             if (startNode != null)
+            {
                 AddNode(startNode, tNode);
+            }
+            else
+            {
+                if(MessageBox.Show("Set up new Database for future value update?","New Database", MessageBoxButtons.YesNo) != DialogResult.No)
+                {
+                    XmlNode new_dbNode = doc.CreateNode(XmlNodeType.Element, "Database", null);
+                    XmlNode tables = doc.CreateNode(XmlNodeType.Element, "Tables", null);
+
+                    XmlAttribute nameAttri = doc.CreateAttribute("name");
+                    nameAttri.Value = _cur_Db;
+
+                    new_dbNode.AppendChild(tables);
+                    new_dbNode.Attributes.Append(nameAttri);
+                    XmlNodeList existingDatabases = doc.SelectNodes("Databases/Database");
+                    doc.SelectSingleNode("/Databases").InsertAfter(new_dbNode, doc.SelectSingleNode("/Databases").LastChild);
+                    doc.Save(sXmlFile);
+                }
+            }
         }
 
         private void AddNode(XmlNode inXmlNode, TreeNode inTreeNode)
@@ -2107,11 +2126,20 @@ namespace IppBackups
             }
             else if (tViewScripts.SelectedNode.Tag == "Table")
             {
-                XmlNode updateNode = doc.SelectSingleNode("Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Text + "']");
-                targetNode = startNode.SelectSingleNode("Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Text + "']/");
-                targetNode.AppendChild(copyNode);
+                XmlNode dbNode = doc.SelectSingleNode("Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']");
+                if (dbNode != null)
+                {
+                    XmlNode updateNode = doc.SelectSingleNode("Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Text + "']");
+                    targetNode = startNode.SelectSingleNode("Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Text + "']/");
+                    targetNode.AppendChild(copyNode);
 
-                updateNode = targetNode;
+                    updateNode = targetNode;
+                }
+                else
+                {
+                    XmlNode cur_dbNode = doc.CreateNode(XmlNodeType.Element, "Database", null);
+                    doc.SelectSingleNode("/Databases/").InsertAfter(cur_dbNode, doc.SelectSingleNode("/Databases/").LastChild);
+                }
                 doc.Save(sXmlFile);
                 //doc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
             }
@@ -2139,7 +2167,25 @@ namespace IppBackups
             string actionText = "";
             MenuItem m = (MenuItem)sender;
 
-            if (m.Text.ToLower() == "new environment")
+            if (m.Text.ToLower() == "new table")
+            {
+                //bServer = true;
+                actionText = "New Table";
+
+                TreeNode newNode = new TreeNode("New Table");
+                newNode.Tag = "Table";
+
+                tViewScripts.SelectedNode.Nodes.Add(newNode);
+                tViewScripts.SelectedNode = newNode;
+                tViewScripts.LabelEdit = true;
+
+                if (!newNode.IsEditing)
+                {
+                    newNode.BeginEdit();
+                    // EnableServerDetails();
+                }
+            }
+            else if (m.Text.ToLower() == "new environment")
             {
                 //bServer = true;
                 actionText = "New Environment";

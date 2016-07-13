@@ -207,11 +207,6 @@ namespace IppBackups
             curSrvInstance = cBox_Server.SelectedItem.ToString();
             //sUsername = _servers[cBox_Server.SelectedIndex].Instances[0].User;
             //sPassword = _servers[cBox_Server.SelectedIndex].Instances[0].Password;
-            /* Dinesh's stab at it...*/
-            //sPassword = _servers[cBox_Server.SelectedIndex].Instances.Find(x=>x.Environments.FirstOrDefault(env => env.)))   ;
-            //var envValue = cBox_Environment.SelectedItem.ToString();
-            //var tempinstance = _servers
-            /* Dinesh's stab at it */
 
             for (int i = 0; i < _servers[cBox_Server.SelectedIndex].Instances.Count; i++)
             {
@@ -295,15 +290,11 @@ namespace IppBackups
 
                         if (db.Name.Contains(cBox_Environment.Text + "-") || chkBox_ShowAll.Checked)
                         {
-                            //columnCount = (selectedDb / rowSize);
-                            //cBox_Server.Items.Add(db.Name);
                             CheckBox box = new CheckBox();
                             box.CheckedChanged += box_CheckedChanged;
                             box.Tag = db.Name.ToString();
                             box.Text = db.Name.ToString();
                             box.AutoSize = true;
-                            //box.Location = new Point(10 + (columnCount * 150) , (selectedDb % rowSize) * 20);
-                            //box.Location = new Point(10 + (columnCount * 150), (grpBox_Databases.DisplayRectangle.Top + 10) + (selectedDb % rowSize) * 20);
                             box.Location = new Point(10 + (columnCount * 150), (grpBox_Databases.DisplayRectangle.Top + 10) + (selectedDb % rowSize) * 20);
                             grpBox_Databases.Controls.Add(box);
 
@@ -315,9 +306,6 @@ namespace IppBackups
                 }
                 catch (Exception ex)
                 {
-                    // TODO: Change font color
-                    //lbl_Oupt.Text += "Error Connecting to " + sName + " on " + curSrv + " as " + sUsername + ".'\n";
-                    //lbl_Oupt.Text += "\t" + ex.Message + ".'\n";
                     rTxtBox_Output.AppendText("Error Connecting to " + sName + " on " + curSrv + " as " + sUsername + ".'\n", Color.Red);
                     rTxtBox_Output.AppendText(ex.Message + ".'\n", Color.Red);
                 }
@@ -1052,25 +1040,17 @@ namespace IppBackups
                                 }
 
                                 //if (restore_db.Contains("CloudAdmin") || restore_db.Contains("PersonalData"))
-                                rTxtBox_Output.AppendText("\n\nFor Debugging... \n", Color.Red);
-                                rTxtBox_Output.AppendText("restore_db is " + restore_db + "\n", Color.Black);
-                                rTxtBox_Output.AppendText("restoreToEnv is " + restoreToEnv + "\n", Color.Black);
+
+                                int dashIndex = db.IndexOf("-") + 1;
                                 DirectoryInfo d = new DirectoryInfo(scriptLocation);
                                 foreach(var file in d.GetFiles("*.sql"))
                                 {
-                                    string dbPart = file.Name.Substring(0, db.IndexOf("-") + 1);
-                                    rTxtBox_Output.AppendText("dbPart is " + dbPart + "\n", Color.Black);
-                                    rTxtBox_Output.AppendText("Filename is " + file.Name + "\n", Color.Black);
+                                    string dbPart = db.Substring(dashIndex, db.Length - dashIndex);
+
                                     if (file.Name.ToLower().Contains("_" + restoreToEnv.ToLower()) && file.Name.ToLower().Contains(dbPart.ToLower() + "_") && restore_db.ToLower().Contains(restoreToEnv.ToLower() + "-") && restore_db.ToLower().Contains("-" + dbPart.ToLower()))
                                     {
-                                        //rTxtBox_Output.AppendText("Execute " +  file.Name + "...\n", Color.Black);
-                                        rTxtBox_Output.AppendText("\n\nUsing dynamic Values for updates... \n", Color.Red);
                                         update_DatabaseEntries(srvName, restoreToEnv, restore_db, file.Name);
                                     }
-                                    //else
-                                    //{
-                                    //    rTxtBox_Output.AppendText("Script will not run\n", Color.Red);
-                                    //}
                                 }
 
                                /* if (restore_db == (restoreToEnv + "-CloudAdmin") || restore_db == (restoreToEnv + "-PersonalData") || restore_db == (restoreToEnv + "-Ecommerce"))
@@ -1083,22 +1063,16 @@ namespace IppBackups
                             }
                             catch (Exception ex)
                             {
-                                // TODO: Change font color
-                                //lbl_Oupt.Text += ex.Message + "\n";
-                                rTxtBox_Output.AppendText(ex.Message + "\n",Color.Red);
+                                rTxtBox_Output.AppendText(ex.Message + "\n\n",Color.Red);
                             }
                             finally
                             {
-                                // TODO: Change font color to green
-                                //lbl_Oupt.Text += "Restore completed...\n";
-                                rTxtBox_Output.AppendText("Restore completed...\n",Color.Black);
+                                rTxtBox_Output.AppendText(db + "Restore completed...\n\n",Color.Black);
                             }
                         }
                         else
                         {
-                            // TODO: Change font color
-                            //lbl_Oupt.Text += "\nThere was a problem with the last " + db + " backup, restore can not be performed...\n";
-                            rTxtBox_Output.AppendText("\nThere was a problem with the last " + db + " backup, restore can not be performed...\n",Color.Red);
+                            rTxtBox_Output.AppendText("\nThere was a problem with the last " + db + " backup, restore can not be performed...\n\n",Color.Red);
                         }
                     }
                 }
@@ -1215,7 +1189,7 @@ namespace IppBackups
         private void update_DatabaseEntries(string serverInstance, string env, string db, string cur_ScriptFile)
         {
             //lbl_Oupt.Text += "Updating Database entries for " + db + "...\n";
-            rTxtBox_Output.AppendText("Updating Database entries for " + db + "using " + cur_ScriptFile  + "...\n",Color.Black);
+            rTxtBox_Output.AppendText("Updating Database entries for " + db + " using " + cur_ScriptFile  + "...\n",Color.Black);
 
             string sqlConnectionString = "Data Source=" + serverInstance + "; Initial Catalog=" + db + "; Integrated Security=SSPI;";
             //string scriptFile = "UpdateDatabaseEntries" + db.Substring(db.IndexOf("-") + 1) + "-" + env + ".sql";
@@ -1223,12 +1197,8 @@ namespace IppBackups
             FileInfo file = new FileInfo(scriptFile);
             string script = file.OpenText().ReadToEnd();
             SqlConnection conn = new SqlConnection(sqlConnectionString);
-            rTxtBox_Output.AppendText("About to open connection, serverInstance is " + serverInstance + " and db is " + db + " ...\n", Color.Black);
             conn.Open();
-            rTxtBox_Output.AppendText("After open connection ...\n", Color.Black);
             SqlCommand cmd = new SqlCommand(script, conn);
-            //lbl_Oupt.Text += "Loading file from: " + scriptFile + "\n";
-            rTxtBox_Output.AppendText("Loading file from: " + scriptFile + "\n",Color.Black);
             //ServerConnection connection = new ServerConnection(serverInstance);
             //Server sqlServer = new Server(connection);
             try
@@ -1245,8 +1215,6 @@ namespace IppBackups
             {
                 rTxtBox_Output.AppendText(e.InnerException + "\n",Color.Red);
             }
-            //lbl_Oupt.Text += "Update completed...\n";
-            rTxtBox_Output.AppendText("Update completed...\n",Color.Black);
         }
 
         private void GenerateViewScript(Server rServer, string db)
