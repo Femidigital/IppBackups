@@ -1309,6 +1309,24 @@ namespace IppBackups
                                 txtBox_Value_Validating(txtBox_Value[i], args);
                             }
                         }
+                        else if (CharacterDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex]) && fieldDatatypes[cBox_Field[i].SelectedIndex] == "ntext")
+                        {
+                            string maxLength = "4000";
+
+                            if (chkValue.Length < Int32.Parse(maxLength))
+                            {
+                                goodToGo = true;
+                                txtBox_Value[i].Tag = "";
+                                errorProvider1.SetError(txtBox_Value[i], "");
+                            }
+                            else
+                            {
+                                goodToGo = false;
+                                errCount++;
+                                txtBox_Value[i].Tag = i;
+                                txtBox_Value_Validating(txtBox_Value[i], args);
+                            }
+                        }
                         else if (CharacterDataTypes.Contains( fieldDatatypes[cBox_Field[i].SelectedIndex].ToString().Substring(0, fieldDatatypes[cBox_Field[i].SelectedIndex].ToString().IndexOf("("))))
                         {
                             string maxLength = sqlDataType.Substring(sqlDataType.IndexOf("(") + 1, sqlDataType.Length - (sqlDataType.IndexOf("(") + 2));
@@ -1566,7 +1584,40 @@ namespace IppBackups
             }
             else if (rBtn_Replace.Checked)
             {
+                if (cBox_Logic[i].SelectedItem == "WHERE")
+                {
+                    //script += "WHERE " + cBox_Field[i].SelectedItem + " " + cBox_Operand[i].SelectedItem + " " + txtBox_Value[i].Text;
 
+                    // Check if cBox_Field[i] has as selected value
+                    if (cBox_Field[i].SelectedIndex > -1)
+                    {
+                        rTxtBox_Script.AppendText("\nWHERE ", Color.Blue);
+                        rTxtBox_Script.AppendText("" + cBox_Field[i].SelectedItem + " ", Color.Green);
+                        rTxtBox_Script.AppendText(" " + cBox_Operand[i].SelectedItem + " ", Color.Green);
+                        if (NumericDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
+                        {
+                            rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
+                        }
+                        else if (CharacterDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
+                        {
+                            rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
+                        }
+                        else if (fieldDatatypes[cBox_Field[i].SelectedIndex].ToString().Contains("("))
+                        {
+                            int posFound = fieldDatatypes[cBox_Field[i].SelectedIndex].ToString().IndexOf("(");
+                            string strippedBackect = fieldDatatypes[cBox_Field[i].SelectedIndex].ToString().Substring(0, posFound);
+
+                            if (CharacterDataTypes.Contains(strippedBackect))
+                            {
+                                rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
+                            }
+                        }
+                        else if (DateAndTimeDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
+                        {
+                            rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
+                        }
+                    }
+                }
             }
             else if (rBtn_Insert.Checked)
             {
@@ -1856,6 +1907,15 @@ namespace IppBackups
                 rTxtBox_Script.AppendText(" REPLACE", Color.Pink);
                 rTxtBox_Script.AppendText("([" + cBox_Field[0].SelectedItem + "], @Current" + cBox_Field[0].SelectedItem + ",", Color.Black);
                 rTxtBox_Script.AppendText("'" + txtBox_Value[1].Text + "')", Color.Red);
+
+                for (int i = 3; i < tlp_ScriptBuilder.RowCount; i++)
+                {
+                    int cur_rowToProcess = i;
+                    if (i < tlp_ScriptBuilder.RowCount)
+                    {
+                        ScriptContent(cur_rowToProcess);
+                    }
+                }
             }
         }
 
