@@ -1589,11 +1589,58 @@ namespace IppBackups
                     //script += "WHERE " + cBox_Field[i].SelectedItem + " " + cBox_Operand[i].SelectedItem + " " + txtBox_Value[i].Text;
 
                     // Check if cBox_Field[i] has as selected value
-                    if (cBox_Field[i].SelectedIndex > -1)
+                    if (cBox_Field[i].SelectedIndex > -1)                    
                     {
                         rTxtBox_Script.AppendText("\nWHERE ", Color.Blue);
+                        //}
+                        //else
+                        //{
+                        //    rTxtBox_Script.AppendText(" AND ", Color.Blue);
+                        //}
                         rTxtBox_Script.AppendText("" + cBox_Field[i].SelectedItem + " ", Color.Green);
                         rTxtBox_Script.AppendText(" " + cBox_Operand[i].SelectedItem + " ", Color.Green);
+                        if (NumericDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
+                        {
+                            rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
+                        }
+                        else if (CharacterDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
+                        {
+                            rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
+                        }
+                        else if (fieldDatatypes[cBox_Field[i].SelectedIndex].ToString().Contains("("))
+                        {
+                            int posFound = fieldDatatypes[cBox_Field[i].SelectedIndex].ToString().IndexOf("(");
+                            string strippedBackect = fieldDatatypes[cBox_Field[i].SelectedIndex].ToString().Substring(0, posFound);
+
+                            if (CharacterDataTypes.Contains(strippedBackect))
+                            {
+                                rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
+                            }
+                        }
+                        else if (DateAndTimeDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
+                        {
+                            rTxtBox_Script.AppendText("'" + txtBox_Value[i].Text + "'", Color.Black);
+                        }
+                    }
+                }
+                else if (cBox_Logic[i].SelectedItem != null && cBox_Logic[i].SelectedItem != "WHERE" && cBox_Logic[i].SelectedItem != "WITH")
+                {
+                    //if (CheckSQL_Syntax() && afterWhile == false)
+                    //{
+                    //    rTxtBox_Script.AppendText(", ", Color.Green);
+                    //}
+                    //else
+                    //{
+                    //    rTxtBox_Script.AppendText("" + cBox_Logic[i].SelectedItem + " ", Color.Green);
+                    //}
+
+                    // Check if cBox_Field[i] has as selected value
+                    if (cBox_Field[i].SelectedIndex > -1)
+                    {
+                        rTxtBox_Script.AppendText(" AND ", Color.Green);
+                        rTxtBox_Script.AppendText("" + cBox_Field[i].SelectedItem + " ", Color.Green);
+                        rTxtBox_Script.AppendText(" " + cBox_Operand[i].SelectedItem + " ", Color.Green);
+                        // Check Field datatype, and determine value assignment type.
                         if (NumericDataTypes.Contains(fieldDatatypes[cBox_Field[i].SelectedIndex].ToString()))
                         {
                             rTxtBox_Script.AppendText("" + txtBox_Value[i].Text + " ", Color.Black);
@@ -1888,7 +1935,7 @@ namespace IppBackups
                 rTxtBox_Script.AppendText("" + cBox_Field[0].SelectedItem, Color.Black);
                 rTxtBox_Script.AppendText(" FROM ", Color.Blue);
                 rTxtBox_Script.AppendText("" + cBox_Tables.SelectedItem, Color.Blue);
-                rTxtBox_Script.AppendText(" (NOLOCK)", Color.Black);
+                rTxtBox_Script.AppendText(" (NOLOCK))", Color.Black);
                 rTxtBox_Script.AppendText("\n");
                 rTxtBox_Script.AppendText("SELECT", Color.Blue);
                 rTxtBox_Script.AppendText("@Current" + cBox_Field[0].SelectedItem + " =", Color.Black);
@@ -1908,10 +1955,10 @@ namespace IppBackups
                 rTxtBox_Script.AppendText("([" + cBox_Field[0].SelectedItem + "], @Current" + cBox_Field[0].SelectedItem + ",", Color.Black);
                 rTxtBox_Script.AppendText("'" + txtBox_Value[1].Text + "')", Color.Red);
 
-                for (int i = 3; i < tlp_ScriptBuilder.RowCount; i++)
+                for (int i = 3; i <= tlp_ScriptBuilder.RowCount; i++)
                 {
                     int cur_rowToProcess = i;
-                    if (i < tlp_ScriptBuilder.RowCount)
+                    if (i <= tlp_ScriptBuilder.RowCount)
                     {
                         ScriptContent(cur_rowToProcess);
                     }
@@ -1922,6 +1969,7 @@ namespace IppBackups
         void tViewScripts_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
             scriptFromTreeView = true;
+            afterWhile = false;
             tlp_ScriptBuilder.SuspendLayout();
             ClearScriptBuilder();
             //UpdateScriptWindow();            
