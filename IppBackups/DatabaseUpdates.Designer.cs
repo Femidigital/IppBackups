@@ -336,5 +336,6 @@
         private System.Windows.Forms.TreeView tViewScripts;
         private System.Windows.Forms.Button btn_Generate;
         private System.Windows.Forms.ErrorProvider errorProvider1;
+        private System.Windows.Forms.ListView listView1;
     }
 }

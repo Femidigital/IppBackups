@@ -322,6 +322,12 @@
   <ItemGroup>
     <Folder Include="SQL_Scripts\" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MsgBox\MsgBox.csproj">
+      <Project>{83b0c7f3-7225-4e6d-aa33-409442448d02}</Project>
+      <Name>MsgBox</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -15,6 +15,7 @@ using Microsoft.SqlServer.Management.Common;
 using Microsoft.SqlServer.Management.Sdk.Sfc;
 using System.IO;
 using System.Text.RegularExpressions;
+using MsgBox;
 
 namespace IppBackups
 {
@@ -35,6 +36,7 @@ namespace IppBackups
         string tbl = "";
         int max_row = 5;
         int min_rowCount = 2;
+        string replaceOption = "";
         List<string> logic = new List<string>();
         List<string> operand = new List<string>();
         List<string> field = new List<string>();
@@ -559,6 +561,26 @@ namespace IppBackups
         {
             ClearScriptBuilder();
             UpdateScriptWindow();
+
+            if (!scriptFromTreeView)
+            {
+                // Using Custom MessageBox
+                //Set buttons language Czech/English/German/Slovakian/Spanish (default English)
+                InputBox.SetLanguage(InputBox.Language.English);
+                //Save the DialogResult as res
+                DialogResult res = InputBox.ShowDialog("Select position from ComboBox below:", "Combo InputBox",   //Text message (mandatory), Title (optional)
+                    InputBox.Icon.Question,                                                                         //Set icon type Error/Exclamation/Question/Warning (default info)
+                    InputBox.Buttons.OkCancel,                                                                      //Set buttons set OK/OKcancel/YesNo/YesNoCancel (default ok)
+                    InputBox.Type.ComboBox,                                                                         //Set type ComboBox/TextBox/Nothing (default nothing)
+                    new string[] { "Starting", "Wildcard", "Ending" },                                                        //Set string field as ComboBox items (default null)
+                    true,                                                                                           //Set visible in taskbar (default false)
+                    new System.Drawing.Font("Calibri", 10F, System.Drawing.FontStyle.Bold));                        //Set font (default by system)
+                //Check InputBox result
+                if (res == System.Windows.Forms.DialogResult.OK || res == System.Windows.Forms.DialogResult.Yes)
+                    replaceOption = InputBox.ResultValue;
+                    //listView1.Items.Add(InputBox.ResultValue);
+            }
+
 
             rTxtBox_Script.AppendText("Build script then click Generate after", Color.Black);
         }
@@ -1928,24 +1950,35 @@ namespace IppBackups
                 {
                     rTxtBox_Script.AppendText("(" + fieldDatatypes[cBox_Field[0].SelectedIndex].Length + ")");
                 }*/
-                rTxtBox_Script.AppendText("\nSET ", Color.Blue);
-                rTxtBox_Script.AppendText("@Current" + cBox_Field[0].SelectedItem + " = (", Color.Black);
-                rTxtBox_Script.AppendText(" SELECT ", Color.Black);
-                rTxtBox_Script.AppendText("TOP ", Color.Orange);
-                rTxtBox_Script.AppendText("" + cBox_Field[0].SelectedItem, Color.Black);
-                rTxtBox_Script.AppendText(" FROM ", Color.Blue);
-                rTxtBox_Script.AppendText("" + cBox_Tables.SelectedItem, Color.Blue);
-                rTxtBox_Script.AppendText(" (NOLOCK))", Color.Black);
-                rTxtBox_Script.AppendText("\n");
-                rTxtBox_Script.AppendText("SELECT", Color.Blue);
-                rTxtBox_Script.AppendText("@Current" + cBox_Field[0].SelectedItem + " =", Color.Black);
-                rTxtBox_Script.AppendText(" SUBSTRING ", Color.Pink);
-                rTxtBox_Script.AppendText("(@Current" + cBox_Field[0].SelectedItem + " ,", Color.Black);
-                rTxtBox_Script.AppendText(" 0", Color.Orange);
-                rTxtBox_Script.AppendText(" , PATINDEX(", Color.Pink);
 
-                rTxtBox_Script.AppendText("'" + txtBox_Value[0].Text + "'", Color.Red);
-                rTxtBox_Script.AppendText(" , @Current" + cBox_Field[0].SelectedItem + "))\n");
+                switch(replaceOption)
+                { 
+                    case "Starting": 
+                        rTxtBox_Script.AppendText("\nSET ", Color.Blue);
+                        rTxtBox_Script.AppendText("@Current" + cBox_Field[0].SelectedItem + " = (", Color.Black);
+                        rTxtBox_Script.AppendText(" SELECT ", Color.Black);
+                        rTxtBox_Script.AppendText("TOP ", Color.Orange);
+                        rTxtBox_Script.AppendText("" + cBox_Field[0].SelectedItem, Color.Black);
+                        rTxtBox_Script.AppendText(" FROM ", Color.Blue);
+                        rTxtBox_Script.AppendText("" + cBox_Tables.SelectedItem, Color.Blue);
+                        rTxtBox_Script.AppendText(" (NOLOCK))", Color.Black);
+                        rTxtBox_Script.AppendText("\n");
+                        rTxtBox_Script.AppendText("SELECT", Color.Blue);
+                        rTxtBox_Script.AppendText("@Current" + cBox_Field[0].SelectedItem + " =", Color.Black);
+                        rTxtBox_Script.AppendText(" SUBSTRING ", Color.Pink);
+                        rTxtBox_Script.AppendText("(@Current" + cBox_Field[0].SelectedItem + " ,", Color.Black);
+                        rTxtBox_Script.AppendText(" 0", Color.Orange);
+                        rTxtBox_Script.AppendText(" , PATINDEX(", Color.Pink);
+
+                        rTxtBox_Script.AppendText("'" + txtBox_Value[0].Text + "'", Color.Red);
+                        rTxtBox_Script.AppendText(" , @Current" + cBox_Field[0].SelectedItem + "))\n");
+                    break;
+                    case "Wildcard":
+                        rTxtBox_Script.AppendText("\n");
+                    break;
+                    case "Ending":
+                    break;
+                }
 
                 rTxtBox_Script.AppendText("\nUPDATE ", Color.Pink);
                 rTxtBox_Script.AppendText(" " + tbl + "\n", Color.Black);
