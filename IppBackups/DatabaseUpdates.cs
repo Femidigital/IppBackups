@@ -1974,6 +1974,9 @@ namespace IppBackups
                         rTxtBox_Script.AppendText(" , @Current" + cBox_Field[0].SelectedItem + "))\n");
                     break;
                     case "Wildcard":
+                        rTxtBox_Script.AppendText("\nSET ", Color.Blue);
+                        rTxtBox_Script.AppendText("@Current" + cBox_Field[0].SelectedItem + " = ", Color.Black);
+                        rTxtBox_Script.AppendText("" + txtBox_Value[0].Text + "'" , Color.Black);
                         rTxtBox_Script.AppendText("\n");
                     break;
                     case "Ending":

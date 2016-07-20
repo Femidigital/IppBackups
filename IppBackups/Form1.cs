@@ -431,6 +431,9 @@ namespace IppBackups
             Server sqlServer = new Server(connection);
 
             Database db = sqlServer.Databases[databaseName];
+            rTxtBox_Output.AppendText("Setting Database to SingleUser mode... '\n", Color.Black);
+            db.DatabaseOptions.UserAccess = DatabaseUserAccess.Single;
+            db.Alter(TerminationClause.RollbackTransactionsImmediately);
             sqlRestore.Action = RestoreActionType.Database;
 
             String dataFileLocation = dataFilePath + "\\" + databaseName + "\\" + databaseName + ".mdf";
