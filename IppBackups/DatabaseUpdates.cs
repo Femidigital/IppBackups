@@ -1888,6 +1888,7 @@ namespace IppBackups
 
         private void AddNode(XmlNode inXmlNode, TreeNode inTreeNode)
         {
+            DirectoryInfo d = new DirectoryInfo(scriptLocation);
             //XmlNode xNode;
             TreeNode tNode;
             XmlNodeList nodeList;
@@ -1929,12 +1930,38 @@ namespace IppBackups
                             inTreeNode.Nodes.Add(new TreeNode(tab.Attributes["name"].Value));
                             tNode = inTreeNode.Nodes[i];
                             tNode.Tag = "ReplaceToken";
+                            //tViewScripts.DrawMode = TreeViewDrawMode.OwnerDrawText;
+                            //string scriptFile = _cur_Db + "_" + tblName + "_" + sel_query + "_" + sel_environment + ".sql";
+                            string scriptFile = scriptLocation + "\\" + _cur_Db + "_" + tNode.Parent.Parent.Text + "_" + tNode.Text + "_" + tNode.Parent.Text + ".sql";
+                            if (File.Exists(scriptFile))
+                            {
+                                tNode.ForeColor = System.Drawing.Color.Green;
+                            }
+                            else
+                            {
+                                tNode.ForeColor = System.Drawing.Color.Red;
+                            }
                             AddNode(tab, tNode);
                         }
                         //}
                     }
                 }
             }
+        }
+
+        private void tViewScripts_DrawNode(object sender, DrawTreeNodeEventArgs e)
+        {
+            Color nodeColor = Color.Black;
+            //if ((e.State & TreeNodeStates.Selected) != 0)
+            //    nodeColor = SystemColors.HighlightText;
+
+            TextRenderer.DrawText(e.Graphics,
+                                  e.Node.Text,
+                                  e.Node.NodeFont,
+                                  e.Bounds,
+                                  nodeColor,
+                                  Color.Empty,
+                                  TextFormatFlags.VerticalCenter);
         }
 
         private void btn_Generate_Click(object sender, EventArgs e)
