@@ -1192,7 +1192,42 @@ namespace IppBackups
         private void update_DatabaseEntries(string serverInstance, string env, string db, string cur_ScriptFile)
         {
             //lbl_Oupt.Text += "Updating Database entries for " + db + "...\n";
-            rTxtBox_Output.AppendText("Updating Database entries for " + db + " using " + cur_ScriptFile  + "...\n",Color.Black);
+            rTxtBox_Output.AppendText("Updating Database entries for " + db + " using " + cur_ScriptFile  + " on server " + serverInstance + "...\n",Color.Black);
+
+            /* Try manipulating the incoming server details to cater for both default and instanced SQL */
+            Server srv;
+            if (serverInstanceToRestoreTo != "Default")
+            {
+                // Connect to the specified instance of SQL Server.
+                srv = new Server(serverInstanceToRestoreTo);
+                //lbl_Oupt.Text += "Connected to " + serverInstanceToRestoreTo + " specied instance...'\n";
+                rTxtBox_Output.AppendText("curSrvInstanceToConnect is " + curSrvInstanceToConnect + "...\n", Color.Black);
+                rTxtBox_Output.AppendText("curSrvInstance is " + curSrvInstance + "...\n", Color.Black);
+                rTxtBox_Output.AppendText("serverInstance is " + serverInstance + "...\n", Color.Black);
+                rTxtBox_Output.AppendText("serverInstanceToRestoreTo is " + serverInstanceToRestoreTo + "...\n", Color.Black);
+                curSrvInstanceToConnect += "\\" + curSrvInstance;
+                curSrvInstance = curSrvInstanceToConnect;
+                serverInstance = serverInstanceToRestoreTo;
+                rTxtBox_Output.AppendText("Connected to " + serverInstanceToRestoreTo + " specied instance...'\n", Color.Black);
+            }
+            //else
+            //{
+            //    // Connect to the default instance of SQL Server.
+            //    srv = new Server();
+            //    //lbl_Oupt.Text += "Connected to default instance...'\n";
+                
+            //    rTxtBox_Output.AppendText("Connected to default instance...'\n", Color.Black);
+            //}  
+            
+            
+            /*if (curSrvInstance != "Default")
+            {
+                rTxtBox_Output.AppendText("Incoming server details is " + serverInstance + "...\n", Color.Black);
+                curSrvInstanceToConnect += "\\" + curSrvInstance;
+                curSrvInstance = curSrvInstanceToConnect;
+            }*/
+            /* End of manipulating of incoming server details*/
+
 
             string sqlConnectionString = "Data Source=" + serverInstance + "; Initial Catalog=" + db + "; Integrated Security=SSPI;";
             //string scriptFile = "UpdateDatabaseEntries" + db.Substring(db.IndexOf("-") + 1) + "-" + env + ".sql";
@@ -1200,6 +1235,7 @@ namespace IppBackups
             FileInfo file = new FileInfo(scriptFile);
             string script = file.OpenText().ReadToEnd();
             SqlConnection conn = new SqlConnection(sqlConnectionString);
+            rTxtBox_Output.AppendText("Connection = " + sqlConnectionString + "\n", Color.Black);
             conn.Open();
             SqlCommand cmd = new SqlCommand(script, conn);
             //ServerConnection connection = new ServerConnection(serverInstance);
@@ -1212,10 +1248,12 @@ namespace IppBackups
             }
             catch (SqlServerManagementException e)
             {
+                rTxtBox_Output.AppendText("Inside SqlServerManagementExcecption block...\n", Color.Red);
                 rTxtBox_Output.AppendText(e.InnerException + "\n",Color.Red);
             }
             catch (SqlException e)
             {
+                rTxtBox_Output.AppendText("Inside SqlException...\n", Color.Red);
                 rTxtBox_Output.AppendText(e.InnerException + "\n",Color.Red);
             }
         }
