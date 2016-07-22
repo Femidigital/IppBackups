@@ -427,7 +427,8 @@ namespace IppBackups
             if(serverInstance != "Default")
                 serverInstanceToRestoreTo = serverName + "\\" + serverInstance;
             //ServerConnection connection = new ServerConnection(serverInstance);
-            ServerConnection connection = new ServerConnection(serverInstanceToRestoreTo);
+            //ServerConnection connection = new ServerConnection(serverInstanceToRestoreTo);
+            ServerConnection connection = new ServerConnection(serverInstanceToRestoreTo);            
             Server sqlServer = new Server(connection);
 
             Database db = sqlServer.Databases[databaseName];
@@ -490,6 +491,7 @@ namespace IppBackups
 
             db.SetOnline();            
             sqlServer.Refresh();
+            connection.Disconnect();
 
         }
 
@@ -1195,7 +1197,7 @@ namespace IppBackups
             rTxtBox_Output.AppendText("Updating Database entries for " + db + " using " + cur_ScriptFile  + " on server " + serverInstance + "...\n",Color.Black);
 
             /* Try manipulating the incoming server details to cater for both default and instanced SQL */
-            Server srv;
+            /*Server srv;
             if (serverInstanceToRestoreTo != "Default")
             {
                 // Connect to the specified instance of SQL Server.
@@ -1209,7 +1211,7 @@ namespace IppBackups
                 curSrvInstance = curSrvInstanceToConnect;
                 serverInstance = serverInstanceToRestoreTo;
                 rTxtBox_Output.AppendText("Connected to " + serverInstanceToRestoreTo + " specied instance...'\n", Color.Black);
-            }
+            }*/
             //else
             //{
             //    // Connect to the default instance of SQL Server.
@@ -1235,7 +1237,6 @@ namespace IppBackups
             FileInfo file = new FileInfo(scriptFile);
             string script = file.OpenText().ReadToEnd();
             SqlConnection conn = new SqlConnection(sqlConnectionString);
-            rTxtBox_Output.AppendText("Connection = " + sqlConnectionString + "\n", Color.Black);
             conn.Open();
             SqlCommand cmd = new SqlCommand(script, conn);
             //ServerConnection connection = new ServerConnection(serverInstance);
@@ -1245,6 +1246,7 @@ namespace IppBackups
                 //sqlServer.ConnectionContext.ExecuteNonQuery(script);
                 cmd.ExecuteNonQuery();
                 conn.Close();
+                rTxtBox_Output.AppendText("Script executed successfully...\n", Color.Red);
             }
             catch (SqlServerManagementException e)
             {
@@ -1254,6 +1256,7 @@ namespace IppBackups
             catch (SqlException e)
             {
                 rTxtBox_Output.AppendText("Inside SqlException...\n", Color.Red);
+                rTxtBox_Output.AppendText(e.Message + "\n" + e.StackTrace + "\n", Color.Red);
                 rTxtBox_Output.AppendText(e.InnerException + "\n",Color.Red);
             }
         }

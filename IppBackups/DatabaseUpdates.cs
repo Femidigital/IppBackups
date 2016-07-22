@@ -1972,7 +1972,14 @@ namespace IppBackups
             {
                 rTxtBox_Script.AppendText("\nDECLARE ", Color.Blue);
                 rTxtBox_Script.AppendText("@Current" + cBox_Field[0].SelectedItem, Color.Black);
-                rTxtBox_Script.AppendText(" " + fieldDatatypes[cBox_Field[0].SelectedIndex].ToUpper() + "", Color.Blue);
+                if (fieldDatatypes[cBox_Field[0].SelectedIndex].ToUpper() == "NTEXT" || fieldDatatypes[cBox_Field[0].SelectedIndex].ToUpper() == "TEXT" || fieldDatatypes[cBox_Field[0].SelectedIndex].ToUpper() == "IMAGE")
+                {
+                    rTxtBox_Script.AppendText(" NVARCHAR(4000) ", Color.Blue);
+                }
+                else
+                {
+                    rTxtBox_Script.AppendText(" " + fieldDatatypes[cBox_Field[0].SelectedIndex].ToUpper() + "", Color.Blue);
+                }
                 /*if (fieldDatatypes[cBox_Field[0].SelectedIndex].ToUpper() == "NVARCHAR")
                 {
                     rTxtBox_Script.AppendText("(" + fieldDatatypes[cBox_Field[0].SelectedIndex].Length + ")");
@@ -1984,13 +1991,13 @@ namespace IppBackups
                         rTxtBox_Script.AppendText("\nSET ", Color.Blue);
                         rTxtBox_Script.AppendText("@Current" + cBox_Field[0].SelectedItem + " = (", Color.Black);
                         rTxtBox_Script.AppendText(" SELECT ", Color.Black);
-                        rTxtBox_Script.AppendText("TOP ", Color.Orange);
+                        rTxtBox_Script.AppendText("TOP 1 ", Color.Orange);
                         rTxtBox_Script.AppendText("" + cBox_Field[0].SelectedItem, Color.Black);
                         rTxtBox_Script.AppendText(" FROM ", Color.Blue);
                         rTxtBox_Script.AppendText("" + cBox_Tables.SelectedItem, Color.Blue);
                         rTxtBox_Script.AppendText(" (NOLOCK))", Color.Black);
                         rTxtBox_Script.AppendText("\n");
-                        rTxtBox_Script.AppendText("SELECT", Color.Blue);
+                        rTxtBox_Script.AppendText("SELECT ", Color.Blue);
                         rTxtBox_Script.AppendText("@Current" + cBox_Field[0].SelectedItem + " =", Color.Black);
                         rTxtBox_Script.AppendText(" SUBSTRING ", Color.Pink);
                         rTxtBox_Script.AppendText("(@Current" + cBox_Field[0].SelectedItem + " ,", Color.Black);
@@ -2015,7 +2022,15 @@ namespace IppBackups
                 rTxtBox_Script.AppendText("SET ", Color.Blue);
                 rTxtBox_Script.AppendText("" + cBox_Field[0].SelectedItem + " = ", Color.Black);
                 rTxtBox_Script.AppendText(" REPLACE", Color.Pink);
-                rTxtBox_Script.AppendText("([" + cBox_Field[0].SelectedItem + "], @Current" + cBox_Field[0].SelectedItem + ",", Color.Black);
+                if (fieldDatatypes[cBox_Field[0].SelectedIndex].ToUpper() == "NTEXT" || fieldDatatypes[cBox_Field[0].SelectedIndex].ToUpper() == "TEXT" || fieldDatatypes[cBox_Field[0].SelectedIndex].ToUpper() == "IMAGE")
+                {
+                    rTxtBox_Script.AppendText("([" + cBox_Field[0].SelectedItem + "] AS NVARCHAR(4000)), @Current" + cBox_Field[0].SelectedItem + ",", Color.Black);
+                }
+                else
+                {
+                    rTxtBox_Script.AppendText("([" + cBox_Field[0].SelectedItem + "], @Current" + cBox_Field[0].SelectedItem + ",", Color.Black);
+                }
+               
                 rTxtBox_Script.AppendText("'" + txtBox_Value[1].Text + "')", Color.Red);
 
                 for (int i = 3; i <= tlp_ScriptBuilder.RowCount; i++)
