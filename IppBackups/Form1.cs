@@ -1197,7 +1197,7 @@ namespace IppBackups
             rTxtBox_Output.AppendText("Updating Database entries for " + db + " using " + cur_ScriptFile  + " on server " + serverInstance + "...\n",Color.Black);
 
             /* Try manipulating the incoming server details to cater for both default and instanced SQL */
-            /*Server srv;
+            Server srv;
             if (serverInstanceToRestoreTo != "Default")
             {
                 // Connect to the specified instance of SQL Server.
@@ -1211,7 +1211,7 @@ namespace IppBackups
                 curSrvInstance = curSrvInstanceToConnect;
                 serverInstance = serverInstanceToRestoreTo;
                 rTxtBox_Output.AppendText("Connected to " + serverInstanceToRestoreTo + " specied instance...'\n", Color.Black);
-            }*/
+            }
             //else
             //{
             //    // Connect to the default instance of SQL Server.
@@ -1246,7 +1246,7 @@ namespace IppBackups
                 //sqlServer.ConnectionContext.ExecuteNonQuery(script);
                 cmd.ExecuteNonQuery();
                 conn.Close();
-                rTxtBox_Output.AppendText("Script executed successfully...\n", Color.Red);
+                rTxtBox_Output.AppendText("Script executed successfully...\n", Color.Green);
             }
             catch (SqlServerManagementException e)
             {
