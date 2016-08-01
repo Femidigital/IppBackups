@@ -1942,6 +1942,7 @@ namespace IppBackups
                                 tNode.ForeColor = System.Drawing.Color.Red;
                             }
                             AddNode(tab, tNode);
+                            i++;
                         }
                         //}
                     }
@@ -2024,7 +2025,7 @@ namespace IppBackups
                 rTxtBox_Script.AppendText(" REPLACE", Color.Pink);
                 if (fieldDatatypes[cBox_Field[0].SelectedIndex].ToUpper() == "NTEXT" || fieldDatatypes[cBox_Field[0].SelectedIndex].ToUpper() == "TEXT" || fieldDatatypes[cBox_Field[0].SelectedIndex].ToUpper() == "IMAGE")
                 {
-                    rTxtBox_Script.AppendText("([" + cBox_Field[0].SelectedItem + "] AS NVARCHAR(4000)), @Current" + cBox_Field[0].SelectedItem + ",", Color.Black);
+                    rTxtBox_Script.AppendText("(CAST([" + cBox_Field[0].SelectedItem + "] AS NVARCHAR(4000)), @Current" + cBox_Field[0].SelectedItem + ",", Color.Black);
                 }
                 else
                 {
