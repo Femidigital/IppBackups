@@ -1927,6 +1927,8 @@ namespace IppBackups
                         }
                         else if (tab.Name == "ReplaceToken")
                         {
+                            Font f = new Font("Arial", 10, FontStyle.Bold);
+                            Font m = new Font("Arial", 8, FontStyle.Italic);
                             inTreeNode.Nodes.Add(new TreeNode(tab.Attributes["name"].Value));
                             tNode = inTreeNode.Nodes[i];
                             tNode.Tag = "ReplaceToken";
@@ -1936,10 +1938,14 @@ namespace IppBackups
                             if (File.Exists(scriptFile))
                             {
                                 tNode.ForeColor = System.Drawing.Color.Green;
+                                tNode.NodeFont = f;
+                                tNode.ToolTipText = "Found script";
                             }
                             else
                             {
                                 tNode.ForeColor = System.Drawing.Color.Red;
+                                tNode.NodeFont = m;
+                                tNode.ToolTipText = "Missing script";
                             }
                             AddNode(tab, tNode);
                             i++;
