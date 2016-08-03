@@ -30,26 +30,29 @@
     </Instance>
   </Server>
   <Server name="DEV-SENT01" ip="10.103.109.123">
-    <Instance instance="Default" port="1433" user="dev-cloudadmin" password="Password1" backups="C:\SQLBackups">
+    <Instance instance="Default" port="1500" user="dev-cloudadmin" password="Password1" backups="D:\backup">
       <Environment name="TEST" data="D:\SQL\TEST\SQLData" log="D:\SQL\TEST\SQLLogs">TEST</Environment>
     </Instance>
-    <Instance instance="SQLEXPRESS" port="1433" user="dev-cloudadmin" password="Password1" backups="S:\Backups">
-      <Environment name="DEV" data="D:\SQL\DEV\SQLData" log="D:\SQL\DEV\SQLLogs">DEV </Environment>
+    <Instance instance="SQLEXPRESS" port="1433" user="dev-cloudadmin" password="Password1" backups="D:\Backup">
+      <Environment name="DEV" data="D:\SQL\DEV\SQLData" log="D:\SQL\DEV\SQLLogs">DEV</Environment>
+    </Instance>
+    <Instance instance="SENDEV" port="1433" user="dev-cloudadmin" password="Password1" backups="D:\backup">
+      <Environment name="CI" data="D:\SQL\CI\SQLData" log="D:\SQL\CI\SQLLogs">CI</Environment>
     </Instance>
   </Server>
-  <Server name="BSI16DBS03PRV"  ip="10.33.203.33" >
+  <Server name="BSI16DBS03PRV" ip="10.33.203.33">
     <Instance instance="Default" port="1433" user="prod-cloudadmin" password="!C0mm4nd1ng$" backups="S:\SQL Backups\CBS">
       <Environment name="PPD" data="F:\MSSQL\Data" log="L:\MSSQL\Logs">PPD</Environment>
       <Environment name="PROD" data="F:\MSSQL\Data" log="L:\MSSQL\Logs">PROD</Environment>
     </Instance>
   </Server>
-  <Server name="BSI10DBS03PRV" ip="10.41.203.33" >
+  <Server name="BSI10DBS03PRV" ip="10.41.203.33">
     <Instance instance="Default" port="1433" user="prod-cloudadmin" password="!C0mm4nd1ng$" backups="S:\SQL Backups\CBS">
       <Environment name="PPD" data="F:\MSSQL\Data" log="L:\MSSQL\Logs">PPD</Environment>
       <Environment name="PROD" data="F:\MSSQL\Data" log="L:\MSSQL\Logs">PROD</Environment>
     </Instance>
   </Server>
-  <Server name="BSI16DBS04PRV" ip="10.33.203.40" >
+  <Server name="BSI16DBS04PRV" ip="10.33.203.40">
     <Instance instance="Default" port="1433" user="prod-cloudadmin" password="!C0mm4nd1ng$" backups="S:\SQL Backups\CBS">
       <Environment name="PPD" data="F:\MSSQL\Data" log="L:\MSSQL\Logs">PPD</Environment>
       <Environment name="PROD" data="F:\MSSQL\Data" log="L:\MSSQL\Logs">PROD</Environment>

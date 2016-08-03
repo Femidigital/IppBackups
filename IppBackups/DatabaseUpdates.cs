@@ -1927,7 +1927,7 @@ namespace IppBackups
                         }
                         else if (tab.Name == "ReplaceToken")
                         {
-                            Font f = new Font("Arial", 10, FontStyle.Bold);
+                            Font f = new Font("Arial", 8, FontStyle.Bold);
                             Font m = new Font("Arial", 8, FontStyle.Italic);
                             inTreeNode.Nodes.Add(new TreeNode(tab.Attributes["name"].Value));
                             tNode = inTreeNode.Nodes[i];
