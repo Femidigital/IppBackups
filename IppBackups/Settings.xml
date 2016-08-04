@@ -58,4 +58,13 @@
       <Environment name="PROD" data="F:\MSSQL\Data" log="L:\MSSQL\Logs">PROD</Environment>
     </Instance>
   </Server>
+  <Server name="UK-DEVEPI7" ip="10.103.109.38">
+    <Instance instance="Default" port="" user="" password="" backups="">
+      <Environment name="" data="" log="">
+      </Environment>
+    </Instance>
+    <Instance instance="SQLEXPRESS" port="1433" user="dev-cloudadmin" password="Password1" backups="E:\Databasebackup\CBSB">
+      <Environment name="DEV" data="E:\SQL\SQLDATA" log="E:\SQL\SQLLOGS">DEV</Environment>
+    </Instance>
+  </Server>
 </Servers>

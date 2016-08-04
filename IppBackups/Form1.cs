@@ -46,6 +46,7 @@ namespace IppBackups
         string sUsername = "";
         string sPassword = "";
         string r_curSrv = "";
+        string r_port = "";
         string r_env = "";
         string r_curSrvInstance = "";
         string r_serverName = "";
@@ -365,7 +366,7 @@ namespace IppBackups
 
         }
 
-        public void RestoreDatabaseToOscar(String databaseName, String filePath, String serverName, String serverInstance, String userName, String password, String dataFilePath, String logFilePath, String localCopyBackup)
+        public void RestoreDatabaseToOscar(String databaseName, String filePath, String serverName, String serverInstance, String port, String userName, String password, String dataFilePath, String logFilePath, String localCopyBackup)
         {
 
             string dbDataSubFolderPath = dataFilePath + "\\" + databaseName;
@@ -421,14 +422,16 @@ namespace IppBackups
             sqlRestore.Database = databaseName;
             ////lbl_Oupt.Text += "Before connecting to : " + serverName + " by : " + userName + " \n";
 
+            rTxtBox_Output.AppendText("Server Name : " + serverName +  " ; Instance : " + serverInstance + " ... '\n", Color.Black);
 
-            serverInstanceToRestoreTo = serverName;
+            //serverInstanceToRestoreTo = serverName;
+            serverInstanceToRestoreTo = serverName + "," + port;
             
             if(serverInstance != "Default")
-                serverInstanceToRestoreTo = serverName + "\\" + serverInstance;
+                serverInstanceToRestoreTo = serverName + "\\" + serverInstance + "," + port;
             //ServerConnection connection = new ServerConnection(serverInstance);
             //ServerConnection connection = new ServerConnection(serverInstanceToRestoreTo);
-            ServerConnection connection = new ServerConnection(serverInstanceToRestoreTo);            
+            ServerConnection connection = new ServerConnection(serverInstanceToRestoreTo, userName, password);            
             Server sqlServer = new Server(connection);
 
             Database db = sqlServer.Databases[databaseName];
@@ -438,6 +441,10 @@ namespace IppBackups
                 rTxtBox_Output.AppendText("Setting Database to SingleUser mode... '\n", Color.Black);
                 db.DatabaseOptions.UserAccess = DatabaseUserAccess.Single;
                 db.Alter(TerminationClause.RollbackTransactionsImmediately);
+            }
+            else
+            {
+                rTxtBox_Output.AppendText("Restoring as a new database... '\n", Color.Black);
             }
             sqlRestore.Action = RestoreActionType.Database;
 
@@ -948,6 +955,8 @@ namespace IppBackups
                 string localcopy = "";
                 string restoreToSrv = "";
                 string restoreToEnv = "";
+                bool restoringToOscar = false;
+                List<string> oscarServers = new List<string>() { "UK-CHFMIGSQL", "UK-CHDEVSQL01", "UK-CHDEVSQL02", "FDC_TAB", "CHI-7S45842", "DEV-SENT01", "UK-DEVEPI7", "BSI16DBS04PRV", "BSI16DBS03PRV", "BSI10DBS03PRV" };
 
                 ServerX si2 = new ServerX();
                 if (rBtn_Refresh.Checked)
@@ -974,6 +983,7 @@ namespace IppBackups
                         {
                             string sServer = inst.xInstance;
 
+                            r_port = inst.Port;
                             srvInstance = inst.xInstance;
                             r_sUsername = inst.User;
                             r_sPassword = inst.Password;
@@ -1023,11 +1033,13 @@ namespace IppBackups
                                 rTxtBox_Output.AppendText("User : " + r_sUsername + "\n",Color.Black);
                                 rTxtBox_Output.AppendText("Selected destination server  : " + restoreToSrv + "\n",Color.Black);
                                 // TODO: Workout how to identify which domain the server is under
-                                if (restoreToSrv == "UK-CHFMIGSQL" || restoreToSrv == "UK-CHDEVSQL01" || restoreToSrv == "UK-CHDEVSQL02" || restoreToSrv == "FDC_TAB" || restoreToSrv == "CHI-7S45842" || restoreToSrv == "DEV-SENT01" || restoreToSrv == "BSI16DBS04PRV" || restoreToSrv == "BSI16DBS03PRV" || restoreToSrv == "BSI10DBS03PRV")
+                                restoringToOscar = oscarServers.Any(restoreToSrv.Contains);
+                                //if (restoreToSrv == "UK-CHFMIGSQL" || restoreToSrv == "UK-CHDEVSQL01" || restoreToSrv == "UK-CHDEVSQL02" || restoreToSrv == "FDC_TAB" || restoreToSrv == "CHI-7S45842" || restoreToSrv == "DEV-SENT01" || restoreToSrv == "UK-DEVEPI7" || restoreToSrv == "BSI16DBS04PRV" || restoreToSrv == "BSI16DBS03PRV" || restoreToSrv == "BSI10DBS03PRV")
+                                if (restoringToOscar)
                                 {
                                     //lbl_Oupt.Text += "Restoring database to OSCAR domain.\n";
                                     rTxtBox_Output.AppendText("Restoring database to OSCAR domain.\n",Color.Black);
-                                    RestoreDatabaseToOscar(restore_db, filePath, srvName, srvInstance, r_sUsername, r_sPassword, restore_dataFilePath, restore_logFilePath, localcopy);
+                                    RestoreDatabaseToOscar(restore_db, filePath, srvName, srvInstance, r_port, r_sUsername, r_sPassword, restore_dataFilePath, restore_logFilePath, localcopy);
                                 }
                                 else
                                 {
