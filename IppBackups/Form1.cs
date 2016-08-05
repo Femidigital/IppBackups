@@ -424,8 +424,8 @@ namespace IppBackups
 
             rTxtBox_Output.AppendText("Server Name : " + serverName +  " ; Instance : " + serverInstance + " ... '\n", Color.Black);
 
-            //serverInstanceToRestoreTo = serverName;
-            serverInstanceToRestoreTo = serverName + "," + port;
+            serverInstanceToRestoreTo = serverName;
+            //serverInstanceToRestoreTo = serverName + "," + port;
             
             if(serverInstance != "Default")
                 serverInstanceToRestoreTo = serverName + "\\" + serverInstance + "," + port;
@@ -1070,7 +1070,8 @@ namespace IppBackups
 
                                     if (file.Name.ToLower().Contains("_" + restoreToEnv.ToLower()) && file.Name.ToLower().Contains(dbPart.ToLower() + "_") && restore_db.ToLower().Contains(restoreToEnv.ToLower() + "-") && restore_db.ToLower().Contains("-" + dbPart.ToLower()))
                                     {
-                                        update_DatabaseEntries(srvName, restoreToEnv, restore_db, file.Name);
+                                        //update_DatabaseEntries(srvName, restoreToEnv, restore_db, file.Name);
+                                        update_DatabaseEntries(srvName, srvInstance, restoreToEnv, restore_db, file.Name);
                                     }
                                 }
 
@@ -1207,14 +1208,14 @@ namespace IppBackups
             // TODO: Change Destination Server's Selected item to Select_Index.*/
         }
 
-        private void update_DatabaseEntries(string serverInstance, string env, string db, string cur_ScriptFile)
+        private void update_DatabaseEntries(string serverName, string serverInstance, string env, string db, string cur_ScriptFile)
         {
             //lbl_Oupt.Text += "Updating Database entries for " + db + "...\n";
-            rTxtBox_Output.AppendText("Updating Database entries for " + db + " using " + cur_ScriptFile  + " on server " + serverInstance + "...\n",Color.Black);
+            rTxtBox_Output.AppendText("Updating Database entries for " + db + " using " + cur_ScriptFile  + " on server " + serverName + " instance " + serverInstance + "...\n",Color.Black);
 
             /* Try manipulating the incoming server details to cater for both default and instanced SQL */
             Server srv;
-            if (serverInstanceToRestoreTo != "Default")
+            if (serverInstance != "Default")
             {
                 // Connect to the specified instance of SQL Server.
                 srv = new Server(serverInstanceToRestoreTo);
@@ -1223,10 +1224,11 @@ namespace IppBackups
                 rTxtBox_Output.AppendText("curSrvInstance is " + curSrvInstance + "...\n", Color.Black);
                 rTxtBox_Output.AppendText("serverInstance is " + serverInstance + "...\n", Color.Black);
                 rTxtBox_Output.AppendText("serverInstanceToRestoreTo is " + serverInstanceToRestoreTo + "...\n", Color.Black);
-                curSrvInstanceToConnect += "\\" + curSrvInstance;
+                //curSrvInstanceToConnect = curSrvInstanceToConnect + "\\" + curSrvInstance;
+                curSrvInstanceToConnect = serverName + "\\" + curSrvInstance;
                 curSrvInstance = curSrvInstanceToConnect;
                 serverInstance = serverInstanceToRestoreTo;
-                rTxtBox_Output.AppendText("Connected to " + serverInstanceToRestoreTo + " specied instance...'\n", Color.Black);
+                rTxtBox_Output.AppendText("Connected to " + serverInstanceToRestoreTo + " specified instance...'\n", Color.Black);
             }
             //else
             //{
@@ -1315,7 +1317,16 @@ namespace IppBackups
                     viewScripts = myView.Script(scriptOptionsForCreate);
                     foreach (string create_script in viewScripts)
                     {
-                        var updatedScript = Regex.Replace(create_script, cBox_Environment.Text + "-", cBox_DestEnvironment.Text + "-", RegexOptions.IgnoreCase);
+                        var updatedScript = new object();
+                        if (rBtn_Refresh.Checked)
+                        {
+                            updatedScript = Regex.Replace(create_script, cBox_Environment.Text + "-", cBox_DestEnvironment.Text + "-", RegexOptions.IgnoreCase);
+                        }
+                        else if (rBtn_Restore.Checked)
+                        {
+                            //updatedScript = Regex.Replace(create_script, Environment.CI | Environment.DEV | Environment.MIG | Environment.PPD | Environment.PROD | Environment.QA | Environment.TEST  + "-", cBox_Environment.Text + "-", RegexOptions.IgnoreCase);
+                            updatedScript = Regex.Replace(create_script,  "PROD-", cBox_Environment.Text + "-", RegexOptions.IgnoreCase);
+                        }
 
                         sqlFile.WriteLine(updatedScript);
                     }
@@ -1330,6 +1341,7 @@ namespace IppBackups
 
         private void GenerateViewScriptWithDependencies(Server rServer, string db)
         {
+            string destEnv = "";
             System.IO.StreamWriter sqlFile = new StreamWriter("CreateView_" + db + ".sql");
 
             Server srv;
@@ -1338,7 +1350,7 @@ namespace IppBackups
                 // Connect to the specified instance of SQL Server.
                 srv = new Server(serverInstanceToRestoreTo);
                 //lbl_Oupt.Text += "Connected to " + serverInstanceToRestoreTo + " specied instance...'\n";
-                rTxtBox_Output.AppendText("Connected to " + serverInstanceToRestoreTo + " specied instance...'\n",Color.Black);
+                rTxtBox_Output.AppendText("Connected to " + serverInstanceToRestoreTo + " specified instance...'\n",Color.Black);
             }
             else
             {
@@ -1350,6 +1362,7 @@ namespace IppBackups
 
             // Reference the database.
             Database restoreDb = srv.Databases[db];
+            rTxtBox_Output.AppendText("After referencing the restore database...'\n", Color.Black);
 
             // Define a Scripter object and set the required scripting options.
             Scripter scrp = new Scripter(srv);
@@ -1408,7 +1421,18 @@ namespace IppBackups
 
                         foreach (string script in viewScripts)
                         {
-                            var updatedScript = Regex.Replace(script, cBox_Environment.Text + "-", cBox_DestEnvironment.Text + "-", RegexOptions.IgnoreCase);
+                            var updatedScript = "";
+
+                           if (rBtn_Refresh.Checked)
+                           {
+                                updatedScript = Regex.Replace(script, cBox_Environment.Text + "-", cBox_DestEnvironment.Text + "-", RegexOptions.IgnoreCase);
+                            }
+                            else if (rBtn_Restore.Checked)
+                            {
+                                //updatedScript = Regex.Replace(create_script, Environment.CI | Environment.DEV | Environment.MIG | Environment.PPD | Environment.PROD | Environment.QA | Environment.TEST  + "-", cBox_Environment.Text + "-", RegexOptions.IgnoreCase);
+                                updatedScript = Regex.Replace(script, "PROD-", cBox_Environment.Text + "-", RegexOptions.IgnoreCase);
+                            }
+
 
                             sqlFile.WriteLine(updatedScript);
                         }
@@ -1417,7 +1441,16 @@ namespace IppBackups
                         viewScripts = myView.Script(scriptOptionsForCreate);
                         foreach (string create_script in viewScripts)
                         {
-                            var updatedScript = Regex.Replace(create_script, cBox_Environment.Text + "-", cBox_DestEnvironment.Text + "-", RegexOptions.IgnoreCase);
+                            var updatedScript = "";
+                            if (rBtn_Refresh.Checked)
+                            {
+                                updatedScript = Regex.Replace(create_script, cBox_Environment.Text + "-", cBox_DestEnvironment.Text + "-", RegexOptions.IgnoreCase);
+                            }
+                            else if (rBtn_Restore.Checked)
+                            {
+                                //updatedScript = Regex.Replace(create_script, Environment.CI | Environment.DEV | Environment.MIG | Environment.PPD | Environment.PROD | Environment.QA | Environment.TEST  + "-", cBox_Environment.Text + "-", RegexOptions.IgnoreCase);
+                                updatedScript = Regex.Replace(create_script, "PROD-", cBox_Environment.Text + "-", RegexOptions.IgnoreCase);
+                            }
 
                             sqlFile.WriteLine(updatedScript);
                         }
@@ -1429,7 +1462,17 @@ namespace IppBackups
             sqlFile.Write(sb);
             rTxtBox_Output.AppendText("View Scripts completed...\n",Color.Black);
             sqlFile.Close();
-            UpdateView(rServer.ToString(), cBox_DestEnvironment.Text, db);
+
+            if (rBtn_Refresh.Checked)
+            {
+                destEnv = cBox_DestEnvironment.Text;
+            }
+            else if(rBtn_Restore.Checked)
+            {
+                destEnv = cBox_Environment.Text;
+            }
+
+            UpdateView(rServer.ToString(), destEnv, db);
         }
 
         private void UpdateView(string serverInstance, string env, string db)
@@ -1540,6 +1583,12 @@ namespace IppBackups
 
         private void btn_Exit_Click(object sender, EventArgs e)
         {
+            string logs = "";
+            rTxtBox_Output.SelectAll();
+            rTxtBox_Output.Copy();
+            logs = Clipboard.GetText();
+            System.IO.StreamWriter logFile = new System.IO.StreamWriter("logs.txt");
+            logFile.WriteLine(logs);
             Application.Exit();
         }
 
