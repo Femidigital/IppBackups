@@ -16,12 +16,14 @@ using Microsoft.SqlServer.Management.Sdk.Sfc;
 using System.IO;
 using System.Text.RegularExpressions;
 using MsgBox;
+using System.Windows.Forms;
 
 namespace IppBackups
 {
     public partial class DatabaseUpdates : Form
     {
         XmlDocument doc;
+        string basePath = Application.StartupPath;
         string cur_database = "";
         string _cur_Db = "";
         string dbName = "";
@@ -52,19 +54,25 @@ namespace IppBackups
         Label[] rowLabel = new Label[5];
         TextBox[] txtBox_Value = new TextBox[5];
         Label lastRowMark = new Label() { Text = "" };
-
+        
         string sXmlFile = "";
-        string scriptLocation = "..\\..\\SQL_Scripts\\";
+        //string resourcesPath = "";
+        //string scriptLocation = "..\\..\\SQL_Scripts\\";
+        string resourcesPath = Directory.Exists(Application.StartupPath + "..\\bin") ? "..\\..\\Resources\\" : "..\\Resources\\";
+        // scriptLocation = Directory.Exists(basePath + "..\\bin") ? basePath + "..\\..\\SQL_Scripts\\" : basePath + "..\\Scripts";
+        string scriptLocation = Directory.Exists(Application.StartupPath + "..\\bin") ? Application.StartupPath + "..\\..\\SQL_Scripts\\" : Application.StartupPath + "..\\Scripts\\";
         //string scriptLocation = "..\\..\\Scripts\\";
         bool afterWhile = false;
         bool scriptFromTreeView = false;
         XmlNode startNode;
+        string source_table = "";
         TreeNode cloneNode;
         XmlNode copyNode;
         XmlNode targetNode;
-        Image delImage = Image.FromFile("..\\..\\Resources\\Images\\delete.png");
-        Image acceptImage = Image.FromFile("..\\..\\Resources\\Images\\accept.png");
-        Image addImage = Image.FromFile("..\\..\\Resources\\Images\\add2.png");
+        //Image delImage = Image.FromFile("..\\..\\Resources\\Images\\delete.png");
+        //Image acceptImage = Image.FromFile("..\\..\\Resources\\Images\\accept.png");
+        //Image addImage = Image.FromFile("..\\..\\Resources\\Images\\add2.png");
+        
         PictureBox[] newRowBtn = new PictureBox[5];
         PictureBox[] delRowBtnPic = new PictureBox[5];
         PictureBox addRowBtnPic = new PictureBox();
@@ -101,6 +109,16 @@ namespace IppBackups
             PROD = 7
         };
 
+        private string GetSettingsPath()
+        {
+            string basePath = Application.StartupPath;
+            MessageBox.Show(basePath );
+            string path = Directory.Exists(basePath + "..\\..\\bin" ) ? basePath + "..\\..\\Rssources"  : "..\\Resources" ;
+            MessageBox.Show(path);
+            return path;
+
+        }
+
 
         public DatabaseUpdates(string curInstance, string database, string env)
         {
@@ -114,6 +132,13 @@ namespace IppBackups
 
             lbl_DatabaseName.Text = database;
             cur_environment = env;
+
+            string resoucePath = GetSettingsPath();
+
+            //Image delImage = Image.FromFile(Path.Combine(Application.StartupPath, resourcesPath) + "delete.png");
+            Image delImage = Image.FromFile(Path.Combine(resoucePath, "delete.png"));
+            Image acceptImage = Image.FromFile(Path.Combine(Application.StartupPath, resourcesPath) + "accept.png");
+            Image addImage = Image.FromFile(Path.Combine(Application.StartupPath, resourcesPath) + "add2.png");
 
             tViewScripts.NodeMouseClick +=
                 new TreeNodeMouseClickEventHandler(tViewScripts_NodeMouseClick);
@@ -2401,16 +2426,21 @@ namespace IppBackups
                 //bServer = true;
                 actionText = "New Query";
                 string queryName = "";
-
-                if (cBox_Tables.SelectedItem == null)
+                string activeNode = tViewScripts.SelectedNode.Tag.ToString();
+                queryName = "New Query";
+                /*if (cBox_Tables.SelectedItem == null)
                 {
                     queryName = "New Query";
                 }
-                else
+                else if (cBox_Tables.SelectedItem != null && tViewScripts.SelectedNode.Tag == "Environment")
+                {
+                    queryName = "New Query";
+                }
+                else if (cBox_Tables.SelectedItem != null && tViewScripts.SelectedNode.Tag != "Environment")
                 {
                     string selectedTbl = cBox_Tables.SelectedItem.ToString();
                     queryName = selectedTbl.Substring(7, selectedTbl.Length - 8);
-                }
+                }*/
                 //TreeNode newNode = new TreeNode("New Query");
                 TreeNode newNode = new TreeNode(queryName);
                 newNode.Tag = "ReplaceToken";
@@ -2429,6 +2459,7 @@ namespace IppBackups
             else if (m.Text.ToLower() == "copy query")
             {
                 XmlNode clickedNode = startNode.SelectSingleNode("Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Parent.Text + "']/Tokens");
+                source_table = tViewScripts.SelectedNode.Parent.Parent.Text;
 
                 copyNode = clickedNode.CloneNode(true);
 

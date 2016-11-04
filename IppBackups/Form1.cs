@@ -90,16 +90,37 @@ namespace IppBackups
             LoadValuesFromSettings();
         }
 
+        private string GetSettingsPath()
+        {
+            string basePath = Application.StartupPath;
+            MessageBox.Show(basePath + "\\" + ConfigFileName);
+            string path = File.Exists(basePath + "\\" + ConfigFileName) ? basePath + "\\" + ConfigFileName : "..\\..\\" + ConfigFileName;
+            MessageBox.Show(path);
+            return path;
+ 
+        }
+
         public void LoadValuesFromSettings()
         {
-            if (sSettingPath == "")
-            {
-                //MessageBox.Show("Empty Configuration");
-                sXmlFile = "..\\..\\" + ConfigFileName;
-                //sXmlFile = ConfigFileName;
-            }
-            {
-                sXmlFile = sSettingPath + ConfigFileName;
+            //MessageBox.Show("Checking File");
+            String path = Application.ExecutablePath;
+            //if (sSettingPath == "")
+            //{
+            //    //String path = Application.ExecutablePath;
+            //    if (File.Exists(path + "\\" + ConfigFileName))
+            //    {
+            //        sXmlFile = path + "\\" + ConfigFileName;
+            //    //MessageBox.Show("Empty Configuration");
+            //    }
+            //    else
+            //    { 
+            //    sXmlFile = "..\\..\\" + ConfigFileName;
+            //    //sXmlFile = ConfigFileName;
+            //    }
+            //}
+            //{
+                
+                sXmlFile = GetSettingsPath(); //sSettingPath + ConfigFileName;
                 XmlDocument doc = new XmlDocument();
                 doc.Load(sXmlFile);
 
@@ -152,7 +173,7 @@ namespace IppBackups
                 //{
                 //    cBox_Environment.Items.Add(xEnvironment.InnerText);
                 //}
-            }
+            //}
         }
 
         private void ConnectToBackupServer()
@@ -426,9 +447,10 @@ namespace IppBackups
 
             serverInstanceToRestoreTo = serverName;
             //serverInstanceToRestoreTo = serverName + "," + port;
-            
-            if(serverInstance != "Default")
-                serverInstanceToRestoreTo = serverName + "\\" + serverInstance + "," + port;
+
+            if (serverInstance != "Default")
+                serverInstanceToRestoreTo = serverName + "\\" + serverInstance;
+                //serverInstanceToRestoreTo = serverName + "\\" + serverInstance + "," + port;
             //ServerConnection connection = new ServerConnection(serverInstance);
             //ServerConnection connection = new ServerConnection(serverInstanceToRestoreTo);
             ServerConnection connection = new ServerConnection(serverInstanceToRestoreTo, userName, password);            

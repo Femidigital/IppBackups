@@ -11,6 +11,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Configuration;
 using System.Text.RegularExpressions;
+using System.IO;
 
 namespace IppBackups
 {
@@ -34,7 +35,9 @@ namespace IppBackups
 
             InitializeTreeViewEvents();
 
-            sXmlFile = "..\\..\\" + ConfigFileName;
+            String path = Application.ExecutablePath;
+
+            sXmlFile = GetSettingsPath();  //sXmlFile = "..\\..\\" + ConfigFileName;
             //sXmlFile = ConfigFileName;
 
             tView_Servers.ImageList = tvServers_imageList;
@@ -70,6 +73,16 @@ namespace IppBackups
             {
                 MessageBox.Show(ex.Message);
             }
+        }
+
+        private string GetSettingsPath()
+        {
+            string basePath = Application.StartupPath;
+            MessageBox.Show(basePath + "\\" + ConfigFileName);
+            string path = File.Exists(basePath + "\\" + ConfigFileName) ? basePath + "\\" + ConfigFileName : "..\\..\\" + ConfigFileName;
+            MessageBox.Show(path);
+            return path;
+
         }
 
         private void AddNode(XmlNode inXmlNode, TreeNode inTreeNode)
