@@ -112,9 +112,10 @@ namespace IppBackups
         private string GetSettingsPath()
         {
             string basePath = Application.StartupPath;
-            MessageBox.Show(basePath );
-            string path = Directory.Exists(basePath + "..\\..\\bin" ) ? basePath + "..\\..\\Rssources"  : "..\\Resources" ;
-            MessageBox.Show(path);
+            //MessageBox.Show(basePath );
+            //string path = Directory.Exists(basePath + "..\\..\\bin" ) ? basePath + "..\\..\\Rssources"  : "..\\Resources" ;
+            string path = basePath;
+            //MessageBox.Show(path);
             return path;
 
         }
@@ -125,6 +126,8 @@ namespace IppBackups
             InitializeComponent();
             //this.DoubleBuffered = true;
             doc = new XmlDocument();
+            scriptLocation = GetSettingsPath();
+            scriptLocation += "\\Scripts\\";
 
             LoadValuesFromSettings(database);
 
@@ -133,12 +136,13 @@ namespace IppBackups
             lbl_DatabaseName.Text = database;
             cur_environment = env;
 
-            string resoucePath = GetSettingsPath();
+            resourcesPath = GetSettingsPath();
+            resourcesPath += "\\Resources\\Images\\";
 
             //Image delImage = Image.FromFile(Path.Combine(Application.StartupPath, resourcesPath) + "delete.png");
-            Image delImage = Image.FromFile(Path.Combine(resoucePath, "delete.png"));
-            Image acceptImage = Image.FromFile(Path.Combine(Application.StartupPath, resourcesPath) + "accept.png");
-            Image addImage = Image.FromFile(Path.Combine(Application.StartupPath, resourcesPath) + "add2.png");
+            Image delImage = Image.FromFile(Path.Combine(resourcesPath, "delete.png"));
+            Image acceptImage = Image.FromFile(Path.Combine(resourcesPath, "accept.png"));
+            Image addImage = Image.FromFile(Path.Combine(resourcesPath, "add2.png"));
 
             tViewScripts.NodeMouseClick +=
                 new TreeNodeMouseClickEventHandler(tViewScripts_NodeMouseClick);
@@ -150,7 +154,8 @@ namespace IppBackups
 
             //tlp_ScriptBuilder.Controls.Add(new Label() { Text = "", Anchor = AnchorStyles.Left, AutoSize = true }, 0, 0);
             addRowBtnPic.Size = new Size(16, 16);
-            addRowBtnPic.ImageLocation = "..\\..\\Resources\\Images\\add2.png";
+            //addRowBtnPic.ImageLocation = "..\\..\\Resources\\Images\\add2.png";
+            addRowBtnPic.ImageLocation = resourcesPath + "add2.png";
             addRowBtnPic.Click += new EventHandler(addRowBtnPic_Click);
             addRowBtn.Anchor = AnchorStyles.Left;
             tlp_ScriptBuilder.Controls.Add(addRowBtnPic, 0, 0);
@@ -163,7 +168,8 @@ namespace IppBackups
             //lastRowMark.Image = acceptImage;
             //tlp_ScriptBuilder.Controls.Add(lastRowMark, 0, tlp_ScriptBuilder.RowCount - 1);
             acceptBtnPic.Size = new Size(16, 16);
-            acceptBtnPic.ImageLocation = "..\\..\\Resources\\Images\\accept.png";
+            //acceptBtnPic.ImageLocation = "..\\..\\Resources\\Images\\accept.png";
+            acceptBtnPic.ImageLocation = resourcesPath + "accept.png";
             tlp_ScriptBuilder.Controls.Add(acceptBtnPic, 0, tlp_ScriptBuilder.RowCount - 1);
             acceptBtnPic.Click += new EventHandler(acceptBtnPic_Click);
 
@@ -2154,7 +2160,7 @@ namespace IppBackups
                                     //rowLabel[i].Text = i.ToString();
                                     delRowBtnPic[i].Size = new Size(19, 19);
                                     delRowBtnPic[i].Tag = i;
-                                    delRowBtnPic[i].ImageLocation = "..\\..\\Resources\\Images\\delete.png";
+                                    delRowBtnPic[i].ImageLocation = resourcesPath + "delete.png";
                                     delRowBtnPic[i].Click += new EventHandler(delRowBtn_Click);
                                     tlp_ScriptBuilder.Controls.Add(delRowBtnPic[i], 0, y - 1);
                                     if (i > min_rowCount - 2 || rBtn_Delete.Checked)

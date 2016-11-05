@@ -78,9 +78,9 @@ namespace IppBackups
         private string GetSettingsPath()
         {
             string basePath = Application.StartupPath;
-            MessageBox.Show(basePath + "\\" + ConfigFileName);
+            //MessageBox.Show(basePath + "\\" + ConfigFileName);
             string path = File.Exists(basePath + "\\" + ConfigFileName) ? basePath + "\\" + ConfigFileName : "..\\..\\" + ConfigFileName;
-            MessageBox.Show(path);
+            //MessageBox.Show(path);
             return path;
 
         }
