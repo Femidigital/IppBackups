@@ -16,7 +16,8 @@ using Microsoft.SqlServer.Management.Sdk.Sfc;
 using System.IO;
 using System.Text.RegularExpressions;
 using MsgBox;
-using System.Windows.Forms;
+using System.Security.Cryptography;
+using System.Security.Cryptography.Xml;
 
 namespace IppBackups
 {
@@ -599,7 +600,7 @@ namespace IppBackups
                 //Set buttons language Czech/English/German/Slovakian/Spanish (default English)
                 InputBox.SetLanguage(InputBox.Language.English);
                 //Save the DialogResult as res
-                DialogResult res = InputBox.ShowDialog("Select position from ComboBox below:", "Combo InputBox",   //Text message (mandatory), Title (optional)
+                DialogResult res = InputBox.ShowDialog("Select position of the string to replace:", "Replace Position",   //Text message (mandatory), Title (optional)
                     InputBox.Icon.Question,                                                                         //Set icon type Error/Exclamation/Question/Warning (default info)
                     InputBox.Buttons.OkCancel,                                                                      //Set buttons set OK/OKcancel/YesNo/YesNoCancel (default ok)
                     InputBox.Type.ComboBox,                                                                         //Set type ComboBox/TextBox/Nothing (default nothing)
@@ -1821,14 +1822,302 @@ namespace IppBackups
             tlp_ScriptBuilder.CellBorderStyle = TableLayoutPanelCellBorderStyle.Single;
         }
 
+        static TripleDES CreateDES(string key)
+        {
+            MD5 md5 = new MD5CryptoServiceProvider();
+            TripleDES des = new TripleDESCryptoServiceProvider();
+            des.Key = md5.ComputeHash(Encoding.Unicode.GetBytes(key));
+            des.IV = new byte[des.BlockSize / 8];
+            return des;
+        }
+
         private void btn_Export_Click(object sender, EventArgs e)
         {
+            /*
+            Stream myStream = null;
+            //System.IO.FileStream fs = new FileStream(();
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
 
+            openFileDialog1.InitialDirectory = "c:\\";
+            //openFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+            openFileDialog1.Filter = "txt files (*.cbs)|*.cbs|All files (*.*)|*.*";
+            openFileDialog1.FilterIndex = 2;
+            openFileDialog1.RestoreDirectory = true;
+            openFileDialog1.FileName = "DatabaseUpdateValues.cbs";
+
+            System.IO.FileStream fs = new FileStream(openFileDialog1.FileName,System.IO.FileMode.Create);
+
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    byte[] info = new UTF8Encoding(true).GetBytes(sXmlFile);
+                    fs.Write(info, 0, info.Length);
+                    if ((fs != null)  && (openFileDialog1.OpenFile() != null))
+                    {
+                        using (fs)
+                        {
+                            // Open file for reading
+                            System.IO.FileStream _filename = new FileStream(openFileDialog1.FileName, System.IO.FileMode.Create, System.IO.FileAccess.Write);
+                            _filename.Write(info, 0, info.Length);
+                            fs.Close();
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error: Could not read file from disk. Original error: " + ex.Message);
+                }
+            }
+             */
+
+            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+
+            saveFileDialog1.InitialDirectory = "C:\\";
+            saveFileDialog1.Filter = "Export values (*.cbs)|*.cbs|All files (*.*)|*.*";
+            saveFileDialog1.Title = "Export the Database Update Values";
+            saveFileDialog1.FileName = "DatabaseUpdateValues.cbs";
+            saveFileDialog1.ShowDialog();
+            
+
+            if (saveFileDialog1.FileName != "")
+            {
+               XmlDocument xmlDoc = doc;
+               // // Saves the Image via a FileStream created by the OpenFile method.
+               // //System.IO.FileStream fs = (System.IO.FileStream)saveFileDialog1.OpenFile();
+               // //System.IO.FileStream fs = new System.IO.FileStream(saveFileDialog1.FileName, FileMode.Create);
+
+               // //byte[] info = new UTF8Encoding(true).GetBytes(sXmlFile);
+               // //byte[] info = new UTF8Encoding(true).GetBytes(doc.OuterXml);
+               //// byte[] info = Encoding.Default.GetBytes(doc.OuterXml);
+               // //byte[] info = Encoding.Default.GetBytes(xmlDoc.OuterXml);
+               // //Encoding.ASCII.GetBytes("FileStream Test");
+               // //fs.Write(info, 0, info.Length);
+
+               // // Create a new TripleDES key. 
+               TripleDESCryptoServiceProvider tDESkey = new TripleDESCryptoServiceProvider();
+
+               // // Create a new instance of the TrippleDESDocumentEncryption object.
+               // //TrippleDESDocumentEncryption xmlTDES = new TrippleDESDocumentEncryption(xmlDoc, tDESkey);
+               // TrippleDESDocumentEncryption xmlTDES = new TrippleDESDocumentEncryption(xmlDoc, tDESkey);
+
+               // xmlTDES.Encrypt("Databases");
+               // byte[] info = Encoding.Default.GetBytes(xmlTDES.Doc.OuterXml);
+
+               // System.IO.FileStream _filename = new FileStream(saveFileDialog1.FileName, System.IO.FileMode.Create, System.IO.FileAccess.Write);
+               // _filename.Write(info, 0, info.Length);
+
+
+               // //fs.Close();
+               // _filename.Close();
+               // tDESkey.Clear();
+
+               /*byte[] buffer = Encryption(xmlDoc.OuterXml, tDESkey.ToString());
+               //string b = Convert.ToBase64String(buffer);
+
+               System.IO.FileStream _filename = new FileStream(saveFileDialog1.FileName, System.IO.FileMode.Create, System.IO.FileAccess.Write);
+               _filename.Write(buffer, 0, buffer.Length);
+
+
+               _filename.Close();*/
+
+               
+               string filedata = xmlDoc.OuterXml;
+               filedata = EncryptData(filedata);
+               byte[] buffer = Encoding.UTF8.GetBytes(filedata);
+
+               System.IO.FileStream _filename = new FileStream(saveFileDialog1.FileName, System.IO.FileMode.Create, System.IO.FileAccess.Write);
+               _filename.Write(buffer, 0, buffer.Length);
+
+
+               _filename.Close();
+            }
+
+        }
+
+        public string EncryptData(string toEncrypt)
+        {
+            byte[] keyArray = UTF8Encoding.UTF8.GetBytes("12345678901234567890123456789012");
+
+            //256-AES key
+            byte[] toEncryptArray = UTF8Encoding.UTF8.GetBytes(toEncrypt);
+            RijndaelManaged rDel = new RijndaelManaged();
+
+            rDel.Key = keyArray;
+            rDel.Mode = CipherMode.ECB;
+
+            rDel.Padding = PaddingMode.PKCS7;
+
+            ICryptoTransform cTransform = rDel.CreateEncryptor();
+            byte[] resultArray = cTransform.TransformFinalBlock(toEncryptArray, 0, toEncryptArray.Length);
+
+            return Convert.ToBase64String(resultArray, 0, resultArray.Length);
+        }
+
+        public string DecryptData(string toDecrypt)
+        {
+            byte[] keyArray = UTF8Encoding.UTF8.GetBytes("12345678901234567890123456789012");
+
+            //AES-256 key
+            byte[] toEncryptArray = Convert.FromBase64String(toDecrypt);
+            RijndaelManaged rDel = new RijndaelManaged();
+            rDel.Key = keyArray;
+            rDel.Mode = CipherMode.ECB;
+
+            rDel.Padding = PaddingMode.PKCS7;
+
+            //better lang support
+            ICryptoTransform cTransform = rDel.CreateDecryptor();
+
+            byte[] resultArray = cTransform.TransformFinalBlock(toEncryptArray, 0, toEncryptArray.Length);
+
+            return UTF8Encoding.UTF8.GetString(resultArray);
+        }
+
+        public static byte[] Encryption(string PlainText, string key)
+        {
+            TripleDES des = CreateDES(key);
+            ICryptoTransform ct = des.CreateEncryptor();
+            byte[] input = Encoding.Default.GetBytes(PlainText);
+            //byte[] input = Encoding.UTF32.GetBytes(PlainText);     
+            //string s64 = Convert.ToBase64String(Encoding.Default.GetBytes(PlainText));
+            //byte[] input = Convert.FromBase64String(s64);
+            //byte[] input = Encoding.ASCII.GetBytes(PlainText);                
+            //Convert.ToBase64String(input);
+            //return input;
+            return ct.TransformFinalBlock(input, 0, input.Length);
         }
 
         private void btn_Import_Click(object sender, EventArgs e)
         {
+            string strMsg = "Import will over write existing update values, do you wish to continue?";
+            if (MessageBox.Show(strMsg, "Import Warning", MessageBoxButtons.YesNo) != DialogResult.No)
+            {
+                //string duv_ImportPath = "";
+                // Displays a SaveFileDialog so the user can save the DatabaseUpdateValues
+                // to the specified location.
+                SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+                //saveFileDialog1.Filter = "JPeg Image|*.jpg|Bitmap Image|*.bmp|Gif Image|*.gif";
+                saveFileDialog1.Filter = "Export values (*.cbs)|*.cbs|All files (*.*)|*.*";
+                saveFileDialog1.Title = "Import the Database Update Values";
+                saveFileDialog1.ShowDialog();
 
+                // If the file name is not an empty string open it for saving.
+                if (saveFileDialog1.FileName != "")
+                {
+                    XmlDocument xDoc = new XmlDocument();
+                    // xDoc.Load(Path.GetFullPath(saveFileDialog1.FileName));
+                    // // Saves the Image via a FileStream created by the OpenFile method.
+                    // //System.IO.FileStream fs =
+                    //   // (System.IO.FileStream)saveFileDialog1.OpenFile();
+                    //// System.IO.FileStream fs = new System.IO.FileStream("D:\\Imports\\DatabaseUpdateValues.cbs", FileMode.Append);
+                    //System.IO.FileStream fs = new System.IO.FileStream("D:\\Imports\\DatabaseUpdateValues.cbs", FileMode.Append);
+                    System.IO.FileStream fs = new System.IO.FileStream(scriptLocation + "DatabaseUpdateValues.xml", FileMode.Create);
+
+                    // // Saves the Image in the appropriate ImageFormat based upon the
+                    // // File type selected in the dialog box.
+                    // // NOTE that the FilterIndex property is one-based.
+                    // /*
+                    // switch (saveFileDialog1.FilterIndex)
+                    // {
+                    //     case 1:
+                    //         this.button2.Image.Save(fs,
+                    //            System.Drawing.Imaging.ImageFormat.Jpeg);
+                    //         break;
+
+                    //     case 2:
+                    //         this.button2.Image.Save(fs,
+                    //            System.Drawing.Imaging.ImageFormat.Bmp);
+                    //         break;
+
+                    //     case 3:
+                    //         this.button2.Image.Save(fs,
+                    //            System.Drawing.Imaging.ImageFormat.Gif);
+                    //         break;
+                    // }
+
+                    //  */
+
+                    // string text = System.IO.File.ReadAllText(saveFileDialog1.FileName);
+
+                    // // Create a new TripleDES key. 
+                    TripleDESCryptoServiceProvider tDESkey = new TripleDESCryptoServiceProvider();
+
+                    // // Create a new instance of the TrippleDESDocumentEncryption object.
+                    // //TrippleDESDocumentEncryption xmlTDES = new TrippleDESDocumentEncryption(xmlDoc, tDESkey);
+                    // TrippleDESDocumentEncryption xmlTDES = new TrippleDESDocumentEncryption(xDoc, tDESkey);
+
+                    // xmlTDES.Decrypt();
+
+                    // string decryptedString = DecryptXml(text, tDESkey.ToString());
+
+                    // // fileStream.Write(uniEncoding.GetBytes(tempString), 0, uniEncoding.GetByteCount(tempString));
+                    // //byte[] info = new UTF8Encoding(true).GetBytes(sXmlFile);
+                    // //byte[] info = UTF8Encoding.Default.GetBytes(Path.GetFullPath(saveFileDialog1.FileName));
+                    // //byte[] info = UTF8Encoding.Default.GetBytes(xDoc.OuterXml);
+                    // byte[] info = UTF8Encoding.Default.GetBytes(xmlTDES.Doc.OuterXml);
+                    // fs.Write(info, 0, info.Length);
+                    // /*
+                    // if (File.Exists(scriptFileLocation))
+                    // {
+                    //     MessageBox.Show("Deleting existing file and re-creating " + scriptFile);
+                    //     File.Delete(scriptFileLocation);
+                    // }
+                    // else
+                    // {
+                    //     MessageBox.Show("Creating new script file: " + scriptFile);
+                    // }
+
+                    // System.IO.StreamWriter sqlFile = new StreamWriter(scriptFileLocation);
+                    // sqlFile.WriteLine(rTxtBox_Script.Text);
+                    // sqlFile.Flush();
+                    // sqlFile.Close();
+                    //  */
+
+                    // fs.Close();
+                    // xmlTDES.Clear();
+
+                    /*string text = System.IO.File.ReadAllText(saveFileDialog1.FileName);
+                    string decryptedText = Decryption(text, tDESkey.ToString());
+                    MessageBox.Show(decryptedText);*/
+
+                    string filedata = System.IO.File.ReadAllText(saveFileDialog1.FileName);
+                    filedata = DecryptData(filedata);
+                    //MessageBox.Show(filedata);
+                    byte[] buffer = Encoding.UTF8.GetBytes(filedata);
+                    fs.Write(buffer, 0, buffer.Length);
+                    fs.Close();
+                }
+            }
+            else
+            {
+                // Cancel the import process
+            }
+            
+        }
+
+        public static string Decryption(string CypherText, string key)
+        {
+            byte[] b = Convert.FromBase64String(CypherText);
+            //byte[] b = Encoding.Default.GetBytes(CypherText);
+            TripleDES des = CreateDES(key);
+            ICryptoTransform ct = des.CreateDecryptor();
+            byte[] output = ct.TransformFinalBlock(b, 0, b.Length);
+            return Encoding.Default.GetString(output);
+        }
+
+        public static string DecryptXml(string input, string key)
+        {
+            //byte[] inputArray = Convert.FromBase64String(input);
+            byte[] inputArray = UTF8Encoding.Default.GetBytes(input);
+            TripleDESCryptoServiceProvider tripleDES = new TripleDESCryptoServiceProvider();
+            tripleDES.Key = UTF8Encoding.UTF8.GetBytes(key);
+            tripleDES.Mode = CipherMode.ECB;
+            tripleDES.Padding = PaddingMode.PKCS7;
+            ICryptoTransform cTransform = tripleDES.CreateDecryptor();
+            byte[] resultArray = cTransform.TransformFinalBlock(inputArray, 0, inputArray.Length);
+            tripleDES.Clear();
+            return UTF8Encoding.UTF8.GetString(resultArray);
         }
 
         private bool CanAddNewRow()
@@ -2641,6 +2930,128 @@ namespace IppBackups
 
         private void txtBox_Value_Validated(object sender, EventArgs e)
         {
+
+        }
+
+    }
+
+    class TrippleDESDocumentEncryption
+    {
+        protected XmlDocument docValue;
+        protected TripleDES algValue;
+
+        public TrippleDESDocumentEncryption(XmlDocument Doc, TripleDES Key)
+        {
+            if (Doc != null)
+            {
+                docValue = Doc;
+            }
+            else
+            {
+                throw new ArgumentNullException("Doc");
+            }
+
+            if (Key != null)
+            {
+
+                algValue = Key;
+            }
+            else
+            {
+                throw new ArgumentNullException("Key");
+            }
+        }
+
+        public XmlDocument Doc { set { docValue = value; } get { return docValue; } }
+        public TripleDES Alg { set { algValue = value; } get { return algValue; } }
+
+        public void Clear()
+        {
+            if (algValue != null)
+            {
+                algValue.Clear();
+            }
+            else
+            {
+                throw new Exception("No TripleDES key was found to clear.");
+            }
+        }
+
+        public void Encrypt(string Element)
+        {
+            // Find the element by name and create a new
+            // XmlElement object.
+            XmlElement inputElement = docValue.GetElementsByTagName(Element)[0] as XmlElement;
+
+            // If the element was not found, throw an exception.
+            if (inputElement == null)
+            {
+                throw new Exception("The element was not found.");
+            }
+
+            // Create a new EncryptedXml object.
+            EncryptedXml exml = new EncryptedXml(docValue);
+
+            // Encrypt the element using the symmetric key.
+            byte[] rgbOutput = exml.EncryptData(inputElement, algValue, false);
+
+            // Create an EncryptedData object and populate it.
+            EncryptedData ed = new EncryptedData();
+
+            // Specify the namespace URI for XML encryption elements.
+            ed.Type = EncryptedXml.XmlEncElementUrl;
+
+            // Specify the namespace URI for the TrippleDES algorithm.
+            ed.EncryptionMethod = new EncryptionMethod(EncryptedXml.XmlEncTripleDESUrl);
+
+            // Create a CipherData element.
+            ed.CipherData = new CipherData();
+
+            // Set the CipherData element to the value of the encrypted XML element.
+            ed.CipherData.CipherValue = rgbOutput;
+
+            // Replace the plaintext XML elemnt with an EncryptedData element.
+            EncryptedXml.ReplaceElement(inputElement, ed, false);
+        }
+
+        public void Decrypt()
+        {
+
+            // XmlElement object.
+            XmlElement encryptedElement = docValue.GetElementsByTagName("EncryptedData")[0] as XmlElement;
+
+            // If the EncryptedData element was not found, throw an exception.
+            if (encryptedElement == null)
+            {
+                throw new Exception("The EncryptedData element was not found.");
+            }
+
+            // Create an EncryptedData object and populate it.
+            EncryptedData ed = new EncryptedData();
+            ed.LoadXml(encryptedElement);
+
+            // Create a new EncryptedXml object.
+            EncryptedXml exml = new EncryptedXml();
+
+            // Decrypt the element using the symmetric key.
+            byte[] rgbOutput = exml.DecryptData(ed, algValue);
+
+            // Replace the encryptedData element with the plaintext XML elemnt.
+            exml.ReplaceData(encryptedElement, rgbOutput);
+
+        }
+
+        public static void Decrypt(XmlDocument Doc)
+        {
+            // Check the arguments.  
+            if (Doc == null)
+                throw new ArgumentNullException("Doc");
+
+            // Create a new EncryptedXml object.
+            EncryptedXml exml = new EncryptedXml(Doc);
+
+            // Decrypt the XML document.
+            exml.DecryptDocument();
 
         }
 
