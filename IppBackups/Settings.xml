@@ -1,70 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Servers>
-  <Server name="LocalHost" ip="127.0.0.1">
-    <Instance instance="Default" port="1433" user="" password="" backups="">
-      <Environment name="DEV" data="C:\SQLData" log="C:\SQLLogs">DEV</Environment>
-    </Instance>
-  </Server>
-  <Server name="UK-CHDEVSQL01" ip="10.103.109.45">
-    <Instance instance="Default" port="1433" user="qa-cloudadmin" password="Password1" backups="S:\CBS">
-      <Environment name="QA" data="E:\SQLData" log="L:\SQLLogs">QA</Environment>
-      <Environment name="CI" data="E:\SQLData" log="L:\SQLLogs">CI</Environment>
-    </Instance>
-  </Server>
-  <Server name="FDC_TAB" ip="127.0.0.1">
-    <Instance instance="DEV_SQL2K12" port="1433" user="dev-admin" password="Password1" backups="D:\Backups\SQL2012">
-      <Environment name="DEV" data="D:\SQL\SQL2K12\DATA" log="D:\SQL\SQL2K12\LOG">DEV</Environment>
-    </Instance>
-    <Instance instance="DEV_SQL2K14" port="1433" user="dev-admin" password="Password1" backups="D:\Backups\SQL2014">
-      <Environment name="TEST" data="D:\SQL\SQL2K14\Data" log="D:\SQL\SQL2K14\Logs">TEST</Environment>
-    </Instance>
-  </Server>
-  <Server name="CHI-7S45842" ip="127.0.0.1">
-    <Instance instance="Default" port="1433" user="dev-admin" password="Password1" backups="C:\SQLBackups">
-      <Environment name="DEV" data="C:\SQLData" log="C:\SQLLogs">DEV</Environment>
-    </Instance>
-  </Server>
-  <Server name="UK-CHDEVSQL02" ip="10.103.109.46">
-    <Instance instance="Default" port="1433" user="uat-cloudadmin" password="Password1" backups="S:\CBS">
-      <Environment name="UAT" data="E:\SQLData" log="L:\SQLLogs">UAT</Environment>
-    </Instance>
-  </Server>
-  <Server name="DEV-SENT01" ip="10.103.109.123">
-    <Instance instance="Default" port="1500" user="dev-cloudadmin" password="Password1" backups="D:\backup">
-      <Environment name="TEST" data="D:\SQL\TEST\SQLData" log="D:\SQL\TEST\SQLLogs">TEST</Environment>
-    </Instance>
-    <Instance instance="SQLEXPRESS" port="1433" user="dev-cloudadmin" password="Password1" backups="D:\Backup">
-      <Environment name="DEV" data="D:\SQL\DEV\SQLData" log="D:\SQL\DEV\SQLLogs">DEV</Environment>
-    </Instance>
-    <Instance instance="SENDEV" port="1433" user="dev-cloudadmin" password="Password1" backups="D:\backup">
-      <Environment name="CI" data="D:\SQL\CI\SQLData" log="D:\SQL\CI\SQLLogs">CI</Environment>
-    </Instance>
-  </Server>
-  <Server name="BSI16DBS03PRV" ip="10.33.203.33">
-    <Instance instance="Default" port="1433" user="prod-cloudadmin" password="!C0mm4nd1ng$" backups="S:\SQL Backups\CBS">
-      <Environment name="PPD" data="F:\MSSQL\Data" log="L:\MSSQL\Logs">PPD</Environment>
-      <Environment name="PROD" data="F:\MSSQL\Data" log="L:\MSSQL\Logs">PROD</Environment>
-    </Instance>
-  </Server>
-  <Server name="BSI10DBS03PRV" ip="10.41.203.33">
-    <Instance instance="Default" port="1433" user="prod-cloudadmin" password="!C0mm4nd1ng$" backups="S:\SQL Backups\CBS">
-      <Environment name="PPD" data="F:\MSSQL\Data" log="L:\MSSQL\Logs">PPD</Environment>
-      <Environment name="PROD" data="F:\MSSQL\Data" log="L:\MSSQL\Logs">PROD</Environment>
-    </Instance>
-  </Server>
-  <Server name="BSI16DBS04PRV" ip="10.33.203.40">
-    <Instance instance="Default" port="1433" user="prod-cloudadmin" password="!C0mm4nd1ng$" backups="S:\SQL Backups\CBS">
-      <Environment name="PPD" data="F:\MSSQL\Data" log="L:\MSSQL\Logs">PPD</Environment>
-      <Environment name="PROD" data="F:\MSSQL\Data" log="L:\MSSQL\Logs">PROD</Environment>
-    </Instance>
-  </Server>
-  <Server name="UK-DEVEPI7" ip="10.103.109.38">
-    <Instance instance="Default" port="" user="" password="" backups="">
-      <Environment name="" data="" log="">
-      </Environment>
-    </Instance>
-    <Instance instance="SQLEXPRESS" port="1433" user="dev-cloudadmin" password="Password1" backups="E:\Databasebackup\CBSB">
-      <Environment name="DEV" data="E:\SQL\SQLDATA" log="E:\SQL\SQLLOGS">DEV</Environment>
-    </Instance>
-  </Server>
+	<Server name="LocalHost" ip="127.0.0.1">
+		<Instance instance="Default" port="1433" user="" password="" backups="">
+			<Environment name="DEV" data="C:\SQLData" log="C:\SQLLogs">DEV</Environment>
+		</Instance>
+	</Server>
 </Servers>
