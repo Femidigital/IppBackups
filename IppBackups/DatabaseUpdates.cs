@@ -2341,6 +2341,24 @@ namespace IppBackups
                         rTxtBox_Script.AppendText("\n");
                     break;
                     case "Ending":
+                        rTxtBox_Script.AppendText("\nSET ", Color.Blue);
+                        rTxtBox_Script.AppendText("@Current" + cBox_Field[0].SelectedItem + " = (", Color.Black);
+                        rTxtBox_Script.AppendText("SELECT ", Color.Black);
+                        rTxtBox_Script.AppendText("TOP 1", Color.Orange);
+                        rTxtBox_Script.AppendText("" + cBox_Field[0].SelectedItem, Color.Black);
+                        rTxtBox_Script.AppendText(" FROM ", Color.Blue);
+                        rTxtBox_Script.AppendText("" + cBox_Tables.SelectedItem, Color.Blue);
+                        rTxtBox_Script.AppendText(" (NOLOCK)", Color.Black);
+                        rTxtBox_Script.AppendText("\n");
+                        rTxtBox_Script.AppendText("SELECT ", Color.Blue);
+                        rTxtBox_Script.AppendText("@Current" + cBox_Field[0].SelectedItem + " = ", Color.Black);
+                        rTxtBox_Script.AppendText(" SUBSTRING ", Color.Pink);
+                        rTxtBox_Script.AppendText("(@Current" + cBox_Field[0].SelectedItem + ", ", Color.Black);
+                        rTxtBox_Script.AppendText(" 0", Color.Orange);
+                        rTxtBox_Script.AppendText("PARTINDEX(", Color.Pink);
+
+                        rTxtBox_Script.AppendText("" + txtBox_Value[0].Text + "", Color.Red);
+                        rTxtBox_Script.AppendText(" ,@Current" + cBox_Field[0].SelectedItem + "))\n");
                     break;
                 }
 

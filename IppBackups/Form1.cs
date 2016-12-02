@@ -102,23 +102,7 @@ namespace IppBackups
 
         public void LoadValuesFromSettings()
         {
-            //MessageBox.Show("Checking File");
             String path = Application.ExecutablePath;
-            //if (sSettingPath == "")
-            //{
-            //    //String path = Application.ExecutablePath;
-            //    if (File.Exists(path + "\\" + ConfigFileName))
-            //    {
-            //        sXmlFile = path + "\\" + ConfigFileName;
-            //    //MessageBox.Show("Empty Configuration");
-            //    }
-            //    else
-            //    { 
-            //    sXmlFile = "..\\..\\" + ConfigFileName;
-            //    //sXmlFile = ConfigFileName;
-            //    }
-            //}
-            //{
                 
                 sXmlFile = GetSettingsPath(); //sSettingPath + ConfigFileName;
                 XmlDocument doc = new XmlDocument();
@@ -140,16 +124,11 @@ namespace IppBackups
                         inst.User = xInstance.Attributes["user"].Value;
                         inst.Password = xInstance.Attributes["password"].Value;
                         inst.Backups = xInstance.Attributes["backups"].Value;
-                        //svr.Instances.Add(xInstance);
-                        //svr.Instances.Add(inst);
-                        // read the envs for this server
+
                         foreach (XmlNode xEnvironment in xInstance.ChildNodes)
                         {
                             var env = new Environments { Name = xEnvironment.InnerText, data = xEnvironment.Attributes["data"].Value, log = xEnvironment.Attributes["log"].Value };
-                            //env.Name = xEnvironment.InnerText;
 
-                            // svr.Instances.Environments.Add(xEnvironment.InnerText);
-                            //inst.Environments.Add(xEnvironment.InnerText);
                             inst.Environments.Add(env);
                         }
 
@@ -157,23 +136,11 @@ namespace IppBackups
                     }
                     _servers.Add(svr);
                     _servers2.Add(svr);
-                    //cBox_Server.Items.Add(xServer.Attributes["name"].Value);
-                    //cBox_DestServer.Items.Add(xServer.Attributes["name"].Value);
-                    //cBox_Server.Items.Add(svr);
-                    //cBox_DestServer.Items.Add(svr);
                     i++;
                 }
 
                 cBox_Server.DataSource = _servers;
                 cBox_DestServer.DataSource = _servers2;
-
-
-                //XmlNodeList environment = doc.SelectNodes("Servers/Server/Environment");
-                //foreach (XmlNode xEnvironment in environment)
-                //{
-                //    cBox_Environment.Items.Add(xEnvironment.InnerText);
-                //}
-            //}
         }
 
         private void ConnectToBackupServer()
@@ -744,7 +711,7 @@ namespace IppBackups
 
         private void serversToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Settings oSettings = new Settings();
+            Settings oSettings = new Settings(this);
             oSettings.Show();
         }
 

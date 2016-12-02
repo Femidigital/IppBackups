@@ -29,8 +29,16 @@ namespace IppBackups
         bool bEnvironment = false;
         bool bEnvironment_Edit = false;
 
+        private Form1 mainForm = null;
+
         public Settings()
         {
+            InitializeComponent();
+        }
+
+        public Settings(Form CallingForm)
+        {
+            mainForm = (Form1)CallingForm;
             InitializeComponent();
 
             InitializeTreeViewEvents();
@@ -167,6 +175,8 @@ namespace IppBackups
             }
             else
             {
+                // Update the main form with new settings then close.
+                this.mainForm.LoadValuesFromSettings();
                 this.Close();
             }
         }
@@ -234,7 +244,7 @@ namespace IppBackups
                     //tBox_Password.Text = nNode.Attributes["password"].Value;
                     //tBox_BackupLocation.Text = nNode.Attributes["backups"].Value;
                 }
-                else if (e.Node.Tag.ToString() == "Instance")
+                else if (e.Node.Parent.Parent.FullPath == "Servers") //(e.Node.Parent.Tag.ToString() == "Server") //(e.Node.Tag.ToString() == "Instance")
                 {
                     tBox_Environment.Text = "";
                     tBox_DataFile.Text = "";
@@ -296,7 +306,7 @@ namespace IppBackups
                         AddMenuItem(cm, "Edit Server");
                         AddMenuItem(cm, "Remove Server");
                     }
-                    else if (tView_Servers.SelectedNode.Tag == "Instance")
+                    else if (tView_Servers.SelectedNode.Parent.Parent.Text == "Servers") //(tView_Servers.SelectedNode.Tag.ToString() == "Instance") 
                     {
                         AddMenuItem(cm, "New Environment");
                         AddMenuItem(cm, "Edit Instance");
@@ -457,8 +467,9 @@ namespace IppBackups
 
                     XDocument xdoc = XDocument.Load(sXmlFile);
                     var q = from node in xdoc.Descendants("Environment")
+                            let pAttr = node.Parent.Attribute("instance")
                             let attr = node.Attribute("name")
-                            where attr != null && attr.Value == toDelete
+                            where (attr != null && attr.Value == toDelete)  && (pAttr != null && pAttr.Value == tBox_Instance.Text)
                             select node;
                     q.ToList().ForEach(x => x.Remove());
                     xdoc.Save(sXmlFile);
@@ -471,7 +482,9 @@ namespace IppBackups
 
         private void RemoveItemFromXml(string nType, string itemToDelete)
         {
-            XDocument xdoc = XDocument.Load(sXmlFile);
+            //XDocument xdoc = XDocument.Load(sXmlFile);
+            XmlDocument xdoc = new XmlDocument();
+            xdoc.Load(sXmlFile);
             /*
             var q = from node in xdoc.Descendants(nType)
                     let attr = node.Attribute("name")
@@ -479,7 +492,31 @@ namespace IppBackups
                     select node;
              */
             //TODO: Remove only the selected item, not all occurrence of item.
-            var q = from node in xdoc.Descendants(nType)
+            if (itemToDelete != null)
+            {
+                XmlNode nodeToDelete;
+                switch(nType)
+                {
+                    case "Server":
+                        nodeToDelete = xdoc.SelectSingleNode("//Servers/Server[@name='" + itemToDelete + "']");
+                        nodeToDelete.ParentNode.RemoveChild(nodeToDelete);
+                        break;
+                    case "Instance":
+                        nodeToDelete = xdoc.SelectSingleNode("//Servers/Server[@name='" + tBox_ServerName.Text + "']/Instance[@instance='" + itemToDelete + "']");
+                        nodeToDelete.ParentNode.RemoveChild(nodeToDelete);
+                        break;
+                    case "Environment":
+                        nodeToDelete = xdoc.SelectSingleNode("//Servers/Server[@name='" + tBox_ServerName.Text + "']/Instance[@instance='" + tBox_Instance.Text + "']/Environment[@name='" + itemToDelete + "']");
+                        nodeToDelete.ParentNode.RemoveChild(nodeToDelete);
+                        break;
+                    default:
+                        MessageBox.Show("Item selected does not exist");
+                        break;
+                }
+
+                //nodeToDelete.ParentNode.RemoveChild(nodeToDelete);
+            }
+            /*var q = from node in xdoc.Descendants(nType)
                     let pAttr = node.Parent.Attribute("name")
                     let attr = node.Attribute("name")
                     let inst = node.Attribute("instance")
@@ -487,6 +524,7 @@ namespace IppBackups
                     select node;
 
             q.ToList().ForEach(x => x.Remove());
+            */
             xdoc.Save(sXmlFile);
             MessageBox.Show("Removed " + itemToDelete);
         }
@@ -653,11 +691,11 @@ namespace IppBackups
             {
                 int count = 0;
                 InstElement.AppendChild(elemEnv);
-                //elem.AppendChild(InstElement);
+                
                 //Add the node to the document.
-                //TODO: If the server node in treeview already has child instance append, else update the default instance
+                // Check if the server node in treeview already has child instance append, else update the default instance
                 int instCount = tView_Servers.SelectedNode.Parent.Nodes.Count;
-                //MessageBox.Show(tView_Servers.SelectedNode.Parent.Text + " has " + instCount.ToString() + " instance(s)");
+                
                 if (tView_Servers.SelectedNode.Parent.Nodes.Count > 1)
                 {
                     //MessageBox.Show("Not the first Instance of " + tView_Servers.SelectedNode.Parent.Text);
@@ -669,25 +707,14 @@ namespace IppBackups
                 }
                 else
                 {
+                    // Override the default instance
                     string defaultStr = "Default";
                     XmlNode DefaultElement = root.SelectSingleNode("//Servers/Server[@name='" + tBox_ServerName.Text + "']/Instance[@instance='" + defaultStr + "']");
-                    MessageBox.Show("First instance and selected instance is " + tView_Servers.SelectedNode.Text);
-                    // Override the default instance
-                    MessageBox.Show("Update the default instance");
+                                                           
                     root.SelectSingleNode("//Servers/Server[@name='" + tBox_ServerName.Text + "']/Instance[@instance='" + defaultStr + "']").ParentNode.ReplaceChild(InstElement, DefaultElement);
                 }
-                // End TODO
-               /* XmlNode curNode = root.SelectSingleNode("//Servers/Server[@name='" + tBox_ServerName.Text + "']").AppendChild(InstElement);
-                count = curNode.ChildNodes.Count;
-                if (count <= 1)
-                {
-                    //root.InsertAfter(elem, root.LastChild);
-                }
-                else
-                {
-                    root.InsertAfter(elem, curNode);
-                }*/
-                bInstance = false;
+
+               bInstance = false;
             }
             else if (bInstance_Edit)
             {
@@ -734,7 +761,6 @@ namespace IppBackups
             DisableServerDetails();
             DisableInstanceDetails();
             DisableEnvironmentDetails();
-
         }
 
         private void tBox_Instance_TextChanged(object sender, EventArgs e)
