@@ -53,7 +53,8 @@ namespace IppBackups
         string r_sUsername = "";
         string r_sPassword = "";
         string serverInstanceToRestoreTo = "";
-        string scriptLocation = "..\\..\\SQL_Scripts\\";
+        //string scriptLocation = "..\\..\\SQL_Scripts\\";
+        string scriptLocation = Directory.Exists(Application.StartupPath + "..\\bin") ? Application.StartupPath + "..\\..\\SQL_Scripts\\" : Application.StartupPath + "..\\Scripts\\";
         Dictionary<string, bool> backStatus = new Dictionary<string, bool>();
 
         enum Environment

@@ -12,6 +12,8 @@ using System.Xml.Linq;
 using System.Configuration;
 using System.Text.RegularExpressions;
 using System.IO;
+using System.Security.Cryptography;
+using System.Security.Cryptography.Xml;
 
 namespace IppBackups
 {
@@ -39,6 +41,24 @@ namespace IppBackups
         public Settings(Form CallingForm)
         {
             mainForm = (Form1)CallingForm;
+
+            // Check if existing server to import
+            string expMsg = String.Format("Would you like to import previous configuration?");
+
+            if (MessageBox.Show(expMsg, "Import Configuration", MessageBoxButtons.YesNo) != DialogResult.No)
+            {
+                ImportServerSettings();
+            }
+            //else
+            //{
+            //    Close();
+            //}
+            // Update the main form with new settings then close.
+            //this.mainForm.LoadValuesFromSettings();
+
+            // End Import 
+
+
             InitializeComponent();
 
             InitializeTreeViewEvents();
@@ -167,6 +187,7 @@ namespace IppBackups
             if (btn_Apply.Enabled)
             {
                 string strMsg = String.Format("Are you sure you want to close this window without applying pending changes?");
+                
 
                 if (MessageBox.Show(strMsg, "Close Window", MessageBoxButtons.YesNo) != DialogResult.No)
                 {
@@ -175,6 +196,12 @@ namespace IppBackups
             }
             else
             {
+                string expMsg = String.Format("Would you like to export your current configuration?");
+
+                if (MessageBox.Show(expMsg, "Close Window", MessageBoxButtons.YesNo) != DialogResult.No)
+                {
+                    ExportServerSettings();
+                }
                 // Update the main form with new settings then close.
                 this.mainForm.LoadValuesFromSettings();
                 this.Close();
@@ -469,7 +496,7 @@ namespace IppBackups
                     var q = from node in xdoc.Descendants("Environment")
                             let pAttr = node.Parent.Attribute("instance")
                             let attr = node.Attribute("name")
-                            where (attr != null && attr.Value == toDelete)  && (pAttr != null && pAttr.Value == tBox_Instance.Text)
+                            where (attr != null && attr.Value == toDelete) && (pAttr != null && pAttr.Value == tBox_Instance.Text)
                             select node;
                     q.ToList().ForEach(x => x.Remove());
                     xdoc.Save(sXmlFile);
@@ -495,7 +522,7 @@ namespace IppBackups
             if (itemToDelete != null)
             {
                 XmlNode nodeToDelete;
-                switch(nType)
+                switch (nType)
                 {
                     case "Server":
                         nodeToDelete = xdoc.SelectSingleNode("//Servers/Server[@name='" + itemToDelete + "']");
@@ -691,18 +718,18 @@ namespace IppBackups
             {
                 int count = 0;
                 InstElement.AppendChild(elemEnv);
-                
+
                 //Add the node to the document.
                 // Check if the server node in treeview already has child instance append, else update the default instance
                 int instCount = tView_Servers.SelectedNode.Parent.Nodes.Count;
-                
+
                 if (tView_Servers.SelectedNode.Parent.Nodes.Count > 1)
                 {
                     //MessageBox.Show("Not the first Instance of " + tView_Servers.SelectedNode.Parent.Text);
                     //XmlNode curNode = root.SelectSingleNode("//Servers/Server[@name='" + tBox_ServerName.Text + "']").ParentNode.AppendChild(InstElement);
                     XmlNode curNode = root.SelectSingleNode("//Servers/Server[@name='" + tBox_ServerName.Text + "']/Instance");
                     //elem.AppendChild(InstElement);
-                   // root.InsertAfter(elem, curNode);
+                    // root.InsertAfter(elem, curNode);
                     root.SelectSingleNode("//Servers/Server[@name='" + tBox_ServerName.Text + "']").InsertAfter(InstElement, curNode);
                 }
                 else
@@ -710,11 +737,11 @@ namespace IppBackups
                     // Override the default instance
                     string defaultStr = "Default";
                     XmlNode DefaultElement = root.SelectSingleNode("//Servers/Server[@name='" + tBox_ServerName.Text + "']/Instance[@instance='" + defaultStr + "']");
-                                                           
+
                     root.SelectSingleNode("//Servers/Server[@name='" + tBox_ServerName.Text + "']/Instance[@instance='" + defaultStr + "']").ParentNode.ReplaceChild(InstElement, DefaultElement);
                 }
 
-               bInstance = false;
+                bInstance = false;
             }
             else if (bInstance_Edit)
             {
@@ -729,7 +756,7 @@ namespace IppBackups
             }
             else if (bEnvironment)
             {
-                root.SelectSingleNode("//Servers/Server[@name='" + tBox_ServerName.Text +"']/Instance[@instance='" + tBox_Instance.Text + "']").AppendChild(elemEnv);
+                root.SelectSingleNode("//Servers/Server[@name='" + tBox_ServerName.Text + "']/Instance[@instance='" + tBox_Instance.Text + "']").AppendChild(elemEnv);
 
                 bEnvironment = false;
                 int count = 0;
@@ -743,7 +770,7 @@ namespace IppBackups
                     {
                         root.SelectSingleNode("//Servers/Server[@name='" + tBox_ServerName.Text + "']/Instance[@instance='" + tBox_Instance.Text + "']").RemoveChild(curElem[0]);
                     }
-                    
+
 
                 }
             }
@@ -814,20 +841,126 @@ namespace IppBackups
         {
             Regex re = new Regex(@"^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$");
 
-             //if (re.IsMatch(tBox_IPaddress.Text) || tBox_IPaddress.Text == "")
-            if ( !re.IsMatch(tBox_IPaddress.Text))           
+            //if (re.IsMatch(tBox_IPaddress.Text) || tBox_IPaddress.Text == "")
+            if (!re.IsMatch(tBox_IPaddress.Text))
             {
                 errorProvider1.SetError(tBox_IPaddress, "Valid IP is required");
                 e.Cancel = true;
                 return;
             }
-           
+
             /*if(tBox_IPaddress.Text == "")
             {
                 errorProvider1.SetError(tBox_IPaddress, "Valid IP is required");
                 e.Cancel = true;
                 return;
             }*/
+        }
+
+        private void ImportServerSettings()
+        {
+            string strMsg = "Import will over write existing update values, do you wish to continue?";
+            if (MessageBox.Show(strMsg, "Import Warning", MessageBoxButtons.YesNo) != DialogResult.No)
+            {
+                String path = Application.ExecutablePath;
+                //string duv_ImportPath = "";
+                // Displays a SaveFileDialog so the user can save the DatabaseUpdateValues
+                // to the specified location.
+                SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+                //saveFileDialog1.Filter = "JPeg Image|*.jpg|Bitmap Image|*.bmp|Gif Image|*.gif";
+                saveFileDialog1.Filter = "Export values (*.cbs)|*.cbs|All files (*.*)|*.*";
+                saveFileDialog1.Title = "Import Server settings";
+                saveFileDialog1.ShowDialog();
+
+                // If the file name is not an empty string open it for saving.
+                if (saveFileDialog1.FileName != "")
+                {
+                    XmlDocument xDoc = new XmlDocument();
+
+                    path = GetSettingsPath();
+
+                    System.IO.FileStream fs = new System.IO.FileStream(path , FileMode.Create);
+                    //System.IO.FileStream fs = new System.IO.FileStream(path + "\\Settings.xml", FileMode.Create);
+
+                    // // Create a new TripleDES key. 
+                    TripleDESCryptoServiceProvider tDESkey = new TripleDESCryptoServiceProvider();
+
+                    string filedata = System.IO.File.ReadAllText(saveFileDialog1.FileName);
+                    filedata = DecryptData(filedata);
+
+                    byte[] buffer = Encoding.UTF8.GetBytes(filedata);
+                    fs.Write(buffer, 0, buffer.Length);
+                    fs.Close();
+                }
+            }
+        }
+
+        private void ExportServerSettings()
+        {
+            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+
+            saveFileDialog1.InitialDirectory = "C:\\";
+            saveFileDialog1.Filter = "Export settings (*.cbs)|*.cbs|All files (*.*)|*.*";
+            saveFileDialog1.Title = "Export Server configurations";
+            saveFileDialog1.FileName = "Settings.cbs";
+            saveFileDialog1.ShowDialog();
+
+
+            if (saveFileDialog1.FileName != "")
+            {
+                XmlDocument xmlDoc = doc;
+
+                // // Create a new TripleDES key. 
+                TripleDESCryptoServiceProvider tDESkey = new TripleDESCryptoServiceProvider();
+
+                string filedata = xmlDoc.OuterXml;
+                filedata = EncryptData(filedata);
+                byte[] buffer = Encoding.UTF8.GetBytes(filedata);
+
+                System.IO.FileStream _filename = new FileStream(saveFileDialog1.FileName, System.IO.FileMode.Create, System.IO.FileAccess.Write);
+                _filename.Write(buffer, 0, buffer.Length);
+
+                _filename.Close();
+            }
+        }
+
+        public string DecryptData(string toDecrypt)
+        {
+            byte[] keyArray = UTF8Encoding.UTF8.GetBytes("12345678901234567890123456789012");
+
+            //AES-256 key
+            byte[] toEncryptArray = Convert.FromBase64String(toDecrypt);
+            RijndaelManaged rDel = new RijndaelManaged();
+            rDel.Key = keyArray;
+            rDel.Mode = CipherMode.ECB;
+
+            rDel.Padding = PaddingMode.PKCS7;
+
+            //better lang support
+            ICryptoTransform cTransform = rDel.CreateDecryptor();
+
+            byte[] resultArray = cTransform.TransformFinalBlock(toEncryptArray, 0, toEncryptArray.Length);
+
+            return UTF8Encoding.UTF8.GetString(resultArray);
+        }
+
+        public string EncryptData(string toEncrypt)
+        {
+            byte[] keyArray = UTF8Encoding.UTF8.GetBytes("12345678901234567890123456789012");
+
+            //256-AES key
+            byte[] toEncryptArray = UTF8Encoding.UTF8.GetBytes(toEncrypt);
+            RijndaelManaged rDel = new RijndaelManaged();
+
+            rDel.Key = keyArray;
+            rDel.Mode = CipherMode.ECB;
+
+            rDel.Padding = PaddingMode.PKCS7;
+
+            ICryptoTransform cTransform = rDel.CreateEncryptor();
+            byte[] resultArray = cTransform.TransformFinalBlock(toEncryptArray, 0, toEncryptArray.Length);
+
+            return Convert.ToBase64String(resultArray, 0, resultArray.Length);
         }
     }
 }

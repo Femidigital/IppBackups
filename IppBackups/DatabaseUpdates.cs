@@ -202,7 +202,8 @@ namespace IppBackups
                 delRowBtnPic[i] = new PictureBox();
                 delRowBtnPic[i].Size = new Size(16, 16);
                 delRowBtnPic[i].Anchor = AnchorStyles.Left;
-                delRowBtnPic[i].ImageLocation = "";
+                //delRowBtnPic[i].ImageLocation = "";
+                delRowBtnPic[i].ImageLocation = resourcesPath;
 
 
                 //delRowBtn[i] = new Button();
@@ -254,6 +255,14 @@ namespace IppBackups
 
         private void btn_Close_Click(object sender, EventArgs e)
         {
+            string logs = "";
+            rTxtBox_Script.SelectAll();
+            rTxtBox_Script.Copy();
+            logs = Clipboard.GetText();
+            System.IO.StreamWriter logFile = new System.IO.StreamWriter("logs.txt");
+            logFile.WriteLine(logs);
+            logFile.Close();
+            logFile.Close();
             //doc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
             this.Close();
         }
@@ -702,7 +711,8 @@ namespace IppBackups
 
                             delRowBtnPic[i] = new PictureBox();
                             delRowBtnPic[i].Size = new Size(16, 16);                            
-                            delRowBtnPic[i].ImageLocation = "..\\..\\Resources\\Images\\delete.png";
+                            //delRowBtnPic[i].ImageLocation = "..\\..\\Resources\\Images\\delete.png";
+                            delRowBtnPic[i].ImageLocation = resourcesPath + "delete.png";
                             delRowBtnPic[i].Click += new EventHandler(delRowBtn_Click);
                             delRowBtnPic[i].Anchor = AnchorStyles.Left;
                             tlp_ScriptBuilder.Controls.Add(delRowBtnPic[i], 0, y - 1);
@@ -912,6 +922,7 @@ namespace IppBackups
 
                     string selectedTbl = cBox_Tables.SelectedItem.ToString();
                     queryName = selectedTbl.Substring(7, selectedTbl.Length - 8);
+                    sel_query = queryName;
 
 
                     if (tlp_ScriptBuilder.RowCount - min_rowCount > 1)
@@ -1104,6 +1115,7 @@ namespace IppBackups
                                     envXmlNode = doc.CreateNode(XmlNodeType.Element, "Environment", null);
                                     XmlAttribute envNameAtt = doc.CreateAttribute("name");
                                     envNameAtt.Value = cur_environment;
+                                    sel_environment = cur_environment;
                                     envXmlNode.Attributes.Append(envNameAtt);
 
                                     tokensNode = doc.CreateNode(XmlNodeType.Element, "Tokens", null);
