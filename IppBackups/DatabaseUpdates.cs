@@ -434,7 +434,7 @@ namespace IppBackups
 
                     int scriptLine = tlp_ScriptBuilder.RowCount;
                     int rtNodeCount = rtNodeToReplace.ChildNodes.Count;
-                    int ftNodeCount = ftNodeToReplace.ChildNodes.Count;
+                    //int ftNodeCount = ftNodeToReplace.ChildNodes.Count;
                     int i = 0;
 
                     foreach (XmlNode token in rtNodeToReplace.ChildNodes )
@@ -453,13 +453,18 @@ namespace IppBackups
                         i++;
                     }
 
-                    foreach (XmlNode token in ftNodeToReplace.ChildNodes)
+                    if (ftNodeToReplace != null)
                     {
-                        token.Attributes["set"].Value = cBox_Logic[i].SelectedItem.ToString();
-                        token.Attributes["columnName"].Value = cBox_Field[i].SelectedItem.ToString();
-                        token.Attributes["operand"].Value = cBox_Operand[i].SelectedItem.ToString();
-                        token.Attributes["value"].Value = txtBox_Value[i].Text;
-                        i++;
+                        int ftNodeCount = ftNodeToReplace.ChildNodes.Count;
+
+                        foreach (XmlNode token in ftNodeToReplace.ChildNodes)
+                        {
+                            token.Attributes["set"].Value = cBox_Logic[i].SelectedItem.ToString();
+                            token.Attributes["columnName"].Value = cBox_Field[i].SelectedItem.ToString();
+                            token.Attributes["operand"].Value = cBox_Operand[i].SelectedItem.ToString();
+                            token.Attributes["value"].Value = txtBox_Value[i].Text;
+                            i++;
+                        }
                     }
 
                     // Check if there are any (new) more tokens in the script builder.
@@ -922,7 +927,15 @@ namespace IppBackups
 
                     string selectedTbl = cBox_Tables.SelectedItem.ToString();
                     queryName = selectedTbl.Substring(7, selectedTbl.Length - 8);
-                    sel_query = queryName;
+
+                    if (!scriptFromTreeView)
+                    {
+                        sel_query = InputMessageBox();
+                    }
+                    //else
+                    //{
+                    //    sel_query = queryName;
+                    //}                    
 
 
                     if (tlp_ScriptBuilder.RowCount - min_rowCount > 1)
@@ -1036,9 +1049,11 @@ namespace IppBackups
                                 //MessageBox.Show("Creating new query XML node");
                                 repNode = doc.CreateNode(XmlNodeType.Element, "ReplaceToken", null);
                                 XmlAttribute repName = doc.CreateAttribute("name");
-                                repName.Value = tblName;
+                                //repName.Value = tblName;
+                                repName.Value = sel_query;
                                 XmlAttribute repType = doc.CreateAttribute("type");
-                                repType.Value = "";
+                                repType.Value = replaceOption;
+
                                 XmlAttribute repDML = doc.CreateAttribute("dml");
 
                                 var checkedButton = grpBox_DML.Controls.OfType<RadioButton>()
@@ -2403,7 +2418,7 @@ namespace IppBackups
 
         void tViewScripts_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            scriptFromTreeView = true;
+           // scriptFromTreeView = true;
             afterWhile = false;
             tlp_ScriptBuilder.SuspendLayout();
             ClearScriptBuilder();
@@ -2419,6 +2434,7 @@ namespace IppBackups
                     sel_table = e.Node.Parent.Parent.Text;
                     sel_query = e.Node.Text;
                     sel_tag = "ReplaceToken";
+                    scriptFromTreeView = true;
 
                     nNode = startNode.SelectNodes("Tables/Table[@name='" + sel_table + "']/Environments/Environment[@name='" + sel_environment + "']/Tokens");
                     UpdateScriptWindow();
@@ -2457,6 +2473,8 @@ namespace IppBackups
                                     else if (replaceNode.Attributes["dml"].Value.ToLower() == "replace")
                                     {
                                         rBtn_Replace.Checked = true;
+                                        replaceOption = replaceNode.Attributes["type"].Value;
+                                       // btn_Generate.PerformClick();
                                     }
                                 }
 
@@ -2961,6 +2979,26 @@ namespace IppBackups
         private void txtBox_Value_Validated(object sender, EventArgs e)
         {
 
+        }
+
+        private string InputMessageBox()
+        {
+            InputBox.SetLanguage(InputBox.Language.English);
+            //Save the DialogResult as res
+            DialogResult res = InputBox.ShowDialog("Enter Query Name:", "New Query",   //Text message (mandatory), Title (optional)
+                InputBox.Icon.Question,                                                                         //Set icon type Error/Exclamation/Question/Warning (default info)
+                InputBox.Buttons.OkCancel,                                                                      //Set buttons set OK/OKcancel/YesNo/YesNoCancel (default ok)
+                InputBox.Type.TextBox,                                                                         //Set type ComboBox/TextBox/Nothing (default nothing)
+                new string[] { "Starting", "Wildcard", "Ending" },                                                        //Set string field as ComboBox items (default null)
+                true,                                                                                           //Set visible in taskbar (default false)
+                new System.Drawing.Font("Calibri", 10F, System.Drawing.FontStyle.Bold));                        //Set font (default by system)
+            //Check InputBox result
+            if (res == System.Windows.Forms.DialogResult.OK || res == System.Windows.Forms.DialogResult.Yes)
+            {
+                return InputBox.ResultValue;
+               // this.Close();
+            }               
+            return InputBox.ResultValue;
         }
 
     }
