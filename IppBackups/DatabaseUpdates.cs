@@ -1165,6 +1165,12 @@ namespace IppBackups
                                 {
                                     MessageBox.Show("Updating existing environment XML node");
                                     doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table/Environments/Environment[@name='" + cur_environment + "']/Tokens").InsertAfter(repNode, doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table/Environments/Environment[@name='" + cur_environment + "']/Tokens").LastChild);
+                                    if (filterToken != null )
+                                    {
+                                        doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table/Environments/Environment[@name='" + cur_environment + "']/Tokens").AppendChild(filterToken);
+                                    }
+                                    if (sel_environment == "")
+                                        sel_environment = cur_environment;
                                 }
                             }
                             else
