@@ -962,15 +962,15 @@ namespace IppBackups
                                             //MessageBox.Show(cBox_Tables.SelectedText + " table already exists");
                                             foreach (TreeNode en in cn.Nodes)
                                             {
-                                                //if (en.Tag == "Environment" && en.Text == cur_environment)
-                                                if (en.Tag == "Environment" && en.Text == sel_environment)
+                                                if (en.Tag == "Environment" && en.Text == cur_environment)
+                                                //if (en.Tag == "Environment" && en.Text == sel_environment)
                                                 {
                                                     envFound = true;
                                                     //MessageBox.Show(cur_environment + "already exits");
 
                                                     foreach (TreeNode qn in en.Nodes)
                                                     {
-                                                        if (qn.Tag == "ReplaceToken" && qn.Text == queryName)
+                                                        if (qn.Tag == "ReplaceToken" && qn.Text == sel_query)
                                                         {
                                                             queryFound = true;
                                                             //MessageBox.Show(queryName + " query node already exists, you want to overwrite it?");
@@ -1015,7 +1015,7 @@ namespace IppBackups
                                             TreeNode tblNode = new TreeNode(queryName);
                                             tblNode.Tag = "Table";
 
-                                            TreeNode qNode = new TreeNode(queryName);
+                                            TreeNode qNode = new TreeNode(sel_query);
                                             qNode.Tag = "ReplaceToken";
 
                                             TreeNode envNode = new TreeNode(cur_environment);
@@ -1069,7 +1069,7 @@ namespace IppBackups
                                 XmlNode filterToken = doc.CreateNode(XmlNodeType.Element, "FilterToken", null);
 
                                 XmlAttribute filTokenName = doc.CreateAttribute("name");
-                                filTokenName.Value = tblName;
+                                filTokenName.Value = sel_query;
 
                                 XmlAttribute filTokenType = doc.CreateAttribute("type");
                                 filTokenType.Value = "FilterToken";
