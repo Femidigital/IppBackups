@@ -2495,13 +2495,9 @@ namespace IppBackups
                                     txtBox_Value[i].Text = token.Attributes["value"].Value;
 
                                     tlp_ScriptBuilder.RowCount++;
-                                    //int y = tlp_ScriptBuilder.RowCount;
-                                    tlp_ScriptBuilder.RowStyles.Insert(tlp_ScriptBuilder.RowCount - 2, new RowStyle(SizeType.AutoSize));
 
-                                    /*rowLabel[i].Size = new Size(20, 20);
-                                    rowLabel[i].Image = delImage;
-                                    tlp_ScriptBuilder.Controls.Add(rowLabel[i], 0, y - 1);*/
-                                    //rowLabel[i].Text = i.ToString();
+                                    tlp_ScriptBuilder.RowStyles.Insert(tlp_ScriptBuilder.RowCount - 2, new RowStyle(SizeType.AutoSize));
+                                                                        
                                     delRowBtnPic[i].Size = new Size(19, 19);
                                     delRowBtnPic[i].Tag = i;
                                     delRowBtnPic[i].ImageLocation = resourcesPath + "delete.png";
@@ -2778,20 +2774,7 @@ namespace IppBackups
                 string queryName = "";
                 string activeNode = tViewScripts.SelectedNode.Tag.ToString();
                 queryName = "New Query";
-                /*if (cBox_Tables.SelectedItem == null)
-                {
-                    queryName = "New Query";
-                }
-                else if (cBox_Tables.SelectedItem != null && tViewScripts.SelectedNode.Tag == "Environment")
-                {
-                    queryName = "New Query";
-                }
-                else if (cBox_Tables.SelectedItem != null && tViewScripts.SelectedNode.Tag != "Environment")
-                {
-                    string selectedTbl = cBox_Tables.SelectedItem.ToString();
-                    queryName = selectedTbl.Substring(7, selectedTbl.Length - 8);
-                }*/
-                //TreeNode newNode = new TreeNode("New Query");
+                
                 TreeNode newNode = new TreeNode(queryName);
                 newNode.Tag = "ReplaceToken";
 
@@ -2881,6 +2864,7 @@ namespace IppBackups
                     if (targetNode != null)
                     {
                         targetNode.AppendChild(copyNode);
+                        targetNode.AppendChild(copyFilterNode);
                     }
                     else 
                     {
