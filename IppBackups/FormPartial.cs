@@ -12,9 +12,16 @@ namespace IppBackups
         {
             this.cBox_Server.DisplayMember = "Name";
             this.cBox_Server.ValueMember = "Id";
+            this.rTxtBox_Output.TextChanged += rTxtBox_Output_TextChanged;
 
 
             this.rBtn_Restore.CheckedChanged += new System.EventHandler(this.rBtn_Restore_CheckedChanged);
+        }
+
+        void rTxtBox_Output_TextChanged(object sender, EventArgs e)
+        {
+            rTxtBox_Output.ScrollToCaret();
+            //throw new NotImplementedException();
         }
     }
 }

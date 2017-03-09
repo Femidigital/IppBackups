@@ -69,6 +69,7 @@ namespace IppBackups
         string source_table = "";
         TreeNode cloneNode;
         XmlNode copyNode;
+        XmlNode copyFilterNode;
         XmlNode targetNode;
         //Image delImage = Image.FromFile("..\\..\\Resources\\Images\\delete.png");
         //Image acceptImage = Image.FromFile("..\\..\\Resources\\Images\\accept.png");
@@ -2807,10 +2808,17 @@ namespace IppBackups
             }
             else if (m.Text.ToLower() == "copy query")
             {
-                XmlNode clickedNode = startNode.SelectSingleNode("Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Parent.Text + "']/Tokens");
+                //XmlNode clickedNode = startNode.SelectSingleNode("Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Parent.Text + "']/Tokens");  //last working version - copies all query
+                XmlNode clickedNode = startNode.SelectSingleNode("Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Parent.Text + "']/Tokens/ReplaceToken[@name='" + tViewScripts.SelectedNode.Text +"']");
+                XmlNode clickedNodeFilter = startNode.SelectSingleNode("Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Parent.Text + "']/Tokens/FilterToken[@name='" + tViewScripts.SelectedNode.Text + "']");
                 source_table = tViewScripts.SelectedNode.Parent.Parent.Text;
 
                 copyNode = clickedNode.CloneNode(true);
+
+                if(clickedNodeFilter != null)
+                {
+                    copyFilterNode = clickedNodeFilter.CloneNode(true);
+                }
 
                 TreeNode clickNode = tViewScripts.SelectedNode;
                 cloneNode = (TreeNode)clickNode.Clone();
@@ -2866,10 +2874,25 @@ namespace IppBackups
 
                 if (tViewScripts.SelectedNode.Tag == "Environment")
                 {
-                    XmlNode updateNode = doc.SelectSingleNode("Databases/Database[@name='" + bare_database + "']/Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Text + "']");
-                    //targetNode = startNode.SelectSingleNode("Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Text + "']/Tokens");
-                    targetNode = startNode.SelectSingleNode("Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Text + "']");
-                    targetNode.AppendChild(copyNode);
+                    XmlNode updateNode = doc.SelectSingleNode("Databases/Database[@name='" + bare_database + "']/Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Text + "']"); // last working version                   
+                    targetNode = startNode.SelectSingleNode("Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Text + "']/Tokens");
+                    //targetNode = startNode.SelectSingleNode("Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Text + "']");
+
+                    if (targetNode != null)
+                    {
+                        targetNode.AppendChild(copyNode);
+                    }
+                    else 
+                    {
+                        // add the Tokens node to the environment node.
+                        targetNode = startNode.SelectSingleNode("Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Text + "']");
+                        XmlNode newTokens;
+                        newTokens = doc.CreateNode(XmlNodeType.Element, "Tokens", null);                        
+                        XmlNode tokensNode = targetNode.AppendChild(newTokens);
+                        //targetNode.AppendChild(newTokens).AppendChild(copyNode);
+                        tokensNode.AppendChild(copyNode);
+                        tokensNode.AppendChild(copyFilterNode);
+                    }
 
                     updateNode = targetNode;
 
