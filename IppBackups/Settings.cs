@@ -30,6 +30,7 @@ namespace IppBackups
         bool bInstance_Edit = false;
         bool bEnvironment = false;
         bool bEnvironment_Edit = false;
+        bool bBackupToAzure = false;
 
         private Form1 mainForm = null;
 
@@ -287,6 +288,7 @@ namespace IppBackups
                     tBox_Username.Text = nNode.Attributes["user"].Value;
                     tBox_Password.Text = nNode.Attributes["password"].Value;
                     tBox_BackupLocation.Text = nNode.Attributes["backups"].Value;
+                    txtBox_AzureKey.Text = nNode.Attributes["azureKey"].Value;
                 }
                 else
                 {
@@ -301,6 +303,7 @@ namespace IppBackups
                     tBox_Username.Text = pNode.Attributes["user"].Value;
                     tBox_Password.Text = pNode.Attributes["password"].Value;
                     tBox_BackupLocation.Text = pNode.Attributes["backups"].Value;
+                    txtBox_AzureKey.Text = pNode.Attributes["azureKey"].Value;
 
                     tBox_Environment.Text = e.Node.Text;
                     tBox_DataFile.Text = nNode.Attributes["data"].Value;
@@ -574,9 +577,15 @@ namespace IppBackups
             // tBox_ServerName.Enabled = true;
             //tBox_Instance.Enabled = true;
             tBox_Port.Enabled = true;
+            chkBox_Azure.Enabled = true;
             tBox_Username.Enabled = true;
             tBox_Password.Enabled = true;
             tBox_BackupLocation.Enabled = true;
+            if (chkBox_Azure.Checked)
+            {
+                txtBox_AzureKey.Enabled = true;
+            }
+
 
             //if (!btn_Apply.Enabled)
             //    btn_Apply.Enabled = false;
@@ -600,9 +609,11 @@ namespace IppBackups
             tBox_ServerName.Enabled = false;
             tBox_Instance.Enabled = false;
             tBox_Port.Enabled = false;
+            chkBox_Azure.Enabled = false;
             tBox_Username.Enabled = false;
             tBox_Password.Enabled = false;
             tBox_BackupLocation.Enabled = false;
+            txtBox_AzureKey.Enabled = false;
 
             //if (btn_Apply.Enabled)
             btn_Apply.Enabled = false;
@@ -669,6 +680,9 @@ namespace IppBackups
             XmlAttribute backups = doc.CreateAttribute("backups");
             backups.Value = tBox_BackupLocation.Text;
 
+            XmlAttribute azureKey = doc.CreateAttribute("azureKey");
+            azureKey.Value = txtBox_AzureKey.Text;
+
 
             // Create and empty Environment Node under new Server.
             XmlElement elemEnv = doc.CreateElement("Environment");
@@ -693,6 +707,7 @@ namespace IppBackups
             InstElement.Attributes.Append(user);
             InstElement.Attributes.Append(password);
             InstElement.Attributes.Append(backups);
+            InstElement.Attributes.Append(azureKey);
 
             elemEnv.Attributes.Append(EnvName);
             elemEnv.Attributes.Append(data);
@@ -751,6 +766,7 @@ namespace IppBackups
                 oldElem.Attributes["user"].Value = tBox_Username.Text;
                 oldElem.Attributes["password"].Value = tBox_Password.Text;
                 oldElem.Attributes["backups"].Value = tBox_BackupLocation.Text;
+                oldElem.Attributes["azureKey"].Value = txtBox_AzureKey.Text;
                 // root.ReplaceChild(elem, oldElem);
                 bInstance_Edit = false;
             }

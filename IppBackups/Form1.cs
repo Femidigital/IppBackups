@@ -56,6 +56,7 @@ namespace IppBackups
         //string scriptLocation = "..\\..\\SQL_Scripts\\";
         string scriptLocation = Directory.Exists(Application.StartupPath + "..\\bin") ? Application.StartupPath + "..\\..\\SQL_Scripts\\" : Application.StartupPath + "..\\Scripts\\";
         Dictionary<string, bool> backStatus = new Dictionary<string, bool>();
+        string azureKey = "";
 
         enum Environment
         {
@@ -125,6 +126,9 @@ namespace IppBackups
                         inst.User = xInstance.Attributes["user"].Value;
                         inst.Password = xInstance.Attributes["password"].Value;
                         inst.Backups = xInstance.Attributes["backups"].Value;
+
+                        if (inst.Backups.Contains("https://"))
+                            inst.AzureKey = xInstance.Attributes["azureKey"].Value;
 
                         foreach (XmlNode xEnvironment in xInstance.ChildNodes)
                         {
@@ -210,7 +214,9 @@ namespace IppBackups
                         sPort = _servers[cBox_Server.SelectedIndex].Instances[i].Port;
                         sUsername = _servers[cBox_Server.SelectedIndex].Instances[i].User;
                         sPassword = _servers[cBox_Server.SelectedIndex].Instances[i].Password;
-                        backupDestination = _servers[cBox_Server.SelectedIndex].Instances[i].Backups;
+                        backupDestination = _servers[cBox_Server.SelectedIndex].Instances[i].Backups;                      
+
+
                         curSrvInstanceToConnect += curSrv;
                         if ( curSrvInstance != "Default" )
                         {
@@ -225,6 +231,12 @@ namespace IppBackups
 
                         if (sUsername == "")
                             sUsername = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+
+                        // Check if backupDestion is a URL then assigne value for azureKey
+                        if(backupDestination.Contains("https"))
+                        {
+                            azureKey = _servers[cBox_Server.SelectedIndex].Instances[i].AzureKey;
+                        }
                     }
                 }
             }
@@ -331,10 +343,26 @@ namespace IppBackups
             sqlBackup.BackupSetName = "Archive";
 
             sqlBackup.Database = databaseName;
+            BackupDeviceItem deviceItem;
 
-            BackupDeviceItem deviceItem = new BackupDeviceItem(destinationPath, DeviceType.File);
+            if (destinationPath.Contains("https:"))
+            {
+                string credentialName = "mycredential";
+                destinationPath = destinationPath.Replace("\\", "/");
+                deviceItem = new BackupDeviceItem(destinationPath, DeviceType.Url);
+                sqlBackup.CredentialName = credentialName;
+            }
+            else
+            {
+                deviceItem = new BackupDeviceItem(destinationPath, DeviceType.File);
+            }
+
+            //BackupDeviceItem deviceItem = new BackupDeviceItem(destinationPath, DeviceType.File);
             ServerConnection connection = new ServerConnection(serverName, userName, password);
             Server sqlServer = new Server(connection);
+
+            Credential credential = new Credential(sqlServer, "cbsbackups");
+            //credential.Create("cbsbackups", azureKey);
 
             Database db = sqlServer.Databases[databaseName];
 
@@ -343,7 +371,8 @@ namespace IppBackups
             sqlBackup.ContinueAfterError = true;
             sqlBackup.CopyOnly = true;
 
-            sqlBackup.Devices.Add(deviceItem);
+
+            sqlBackup.Devices.Add(deviceItem);            
             sqlBackup.Incremental = false;
 
             sqlBackup.ExpirationDate = DateTime.Now.AddDays(3);
@@ -838,9 +867,26 @@ namespace IppBackups
                 rTxtBox_Output.AppendText("Backup process started at " + DateTime.Now + "\n", Color.Black);
                 foreach (string db in databaseList)
                 {
-                    string destPath = backupDestination + "\\" + db + ".bak";
+                    //TODO: rewrite to cater for azure location
+                    /*string destPath = backupDestination + "\\" + db + ".bak";
                     string destFilePath = "\\\\" + cBox_Server.Text + "\\" + backupDestination + "\\" + db + ".bak";
-                    destFilePath = destFilePath.Replace(':', '$');
+                    destFilePath = destFilePath.Replace(':', '$');*/
+
+                    string destPath = "";
+                    string destFilePath = "";
+
+                    if (backupDestination.Contains("https:"))
+                    {
+                        backupDestination = backupDestination.Replace("\\", "/");
+                        destPath = backupDestination + "/" + db + ".bak";
+                        destFilePath = backupDestination + "/" + db + ".bak";
+                    }
+                    else
+                    {
+                        destPath = backupDestination + "\\" + db + ".bak";
+                        destFilePath = "\\\\" + cBox_Server.Text + "\\" + backupDestination + "\\" + db + ".bak";
+                        destFilePath = destFilePath.Replace(':', '$');
+                    }
                     
                     /* Trace Comments */
                     //lbl_Oupt.Text += "Backing up to " + destPath + "\n";
@@ -860,9 +906,19 @@ namespace IppBackups
 
                         // Perform a time consuming operation and report progress
                         //BackupDatabase(db, sUsername, sPassword, curSrvInstance, destPath);
-                        BackupDatabase(db, sUsername, sPassword, curSrvInstanceToConnect, destPath);
-                        backStatus.Add(db, true);
-                        //worker.ReportProgress();
+                        //TODO: Check AzureKey, if it is not empty then backup to Azure.
+                        rTxtBox_Output.AppendText("Backup destination is " + destPath + "\n", Color.Pink);
+                        if (destPath.Contains("https:"))
+                        {
+                            rTxtBox_Output.AppendText("Backup to Azure blob storage., with Azure Key " + azureKey + " ..\n ", Color.Pink);
+                            BackupDatabase(db, sUsername, sPassword, curSrvInstanceToConnect, destPath);
+                        }
+                        else
+                        {
+                            BackupDatabase(db, sUsername, sPassword, curSrvInstanceToConnect, destPath);
+                            backStatus.Add(db, true);
+                            //worker.ReportProgress();
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -1620,6 +1676,7 @@ namespace IppBackups
         public string User { get; set; }
         public string Password { get; set; }
         public string Backups { get; set; }
+        public string AzureKey { get; set; }
         public List<Environments> Environments { get; set; }
         //public override string ToString()
         //{

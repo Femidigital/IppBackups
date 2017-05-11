@@ -952,38 +952,34 @@ namespace IppBackups
                             }
                             else
                             {
-                                foreach (TreeNode tn in tViewScripts.Nodes)
+                                foreach (TreeNode tn in tViewScripts.Nodes) // tranverse the database node
                                 {
-                                    foreach (TreeNode cn in tn.Nodes)
+                                    foreach (TreeNode cn in tn.Nodes)   // iterate through all the table nodes
                                     {
                                         //if (tViewScripts.Nodes.ContainsKey(cur_environment))
                                         if (cn.Tag == "Table" && cn.Text == queryName)
                                         {
                                             tblFound = true;
-                                            //MessageBox.Show(cBox_Tables.SelectedText + " table already exists");
+                                            
                                             foreach (TreeNode en in cn.Nodes)
                                             {
-                                                if (en.Tag == "Environment" && en.Text == cur_environment)
-                                                //if (en.Tag == "Environment" && en.Text == sel_environment)
+                                                if (en.Tag == "Environment" && en.Text == cur_environment)                                                
                                                 {
-                                                    envFound = true;
-                                                    //MessageBox.Show(cur_environment + "already exits");
+                                                    envFound = true;                                                    
 
                                                     foreach (TreeNode qn in en.Nodes)
                                                     {
                                                         if (qn.Tag == "ReplaceToken" && qn.Text == sel_query)
                                                         {
-                                                            queryFound = true;
-                                                            //MessageBox.Show(queryName + " query node already exists, you want to overwrite it?");
+                                                            queryFound = true;                                                            
                                                         }
-                                                        else
+                                                        /*else
                                                         {
-                                                            queryFound = false;
-                                                            //MessageBox.Show("Creating a new query node");
-                                                        }
+                                                            queryFound = false;                                                           
+                                                        }*/
                                                     }
                                                 }
-                                                else
+                                                /*else
                                                 {
                                                     envFound = false;
                                                     MessageBox.Show("Creating new environment node as " + cur_environment);
@@ -1006,10 +1002,10 @@ namespace IppBackups
                                                         tViewScripts.SelectedNode = envNode;
                                                         envNode.ExpandAll();
                                                     }
-                                                }
+                                                }*/
                                             }
                                         }
-                                        else
+                                       /* else
                                         {
                                             tblFound = false;
                                             //MessageBox.Show("Creating new table node as " + queryName);
@@ -1033,12 +1029,13 @@ namespace IppBackups
                                                 tViewScripts.SelectedNode = tblNode;
                                                 tblNode.ExpandAll();
                                             }
-                                        }
+                                        }*/
                                     }
                                 }
                             }
                             // Update the xml file with newly created node.                    
-                            updateNode = doc.SelectSingleNode("Databases/Database[@name='" + cur_database + "']");
+                            //updateNode = doc.SelectSingleNode("Databases/Database[@name='" + cur_database + "']");
+                            updateNode = doc.SelectSingleNode("Databases/Database[@name='" + _cur_Db + "']");
                             if (!queryFound)
                             {
                                 int NoToken = tlp_ScriptBuilder.RowCount - 3;
@@ -1165,10 +1162,10 @@ namespace IppBackups
                                 else
                                 {
                                     MessageBox.Show("Updating existing environment XML node");
-                                    doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table/Environments/Environment[@name='" + cur_environment + "']/Tokens").InsertAfter(repNode, doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table/Environments/Environment[@name='" + cur_environment + "']/Tokens").LastChild);
+                                    doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/TableTable[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + queryName + "']/Environments/Environment[@name='" + cur_environment + "']/Tokens").InsertAfter(repNode, doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table/Environments/Environment[@name='" + cur_environment + "']/Tokens").LastChild);
                                     if (filterToken != null )
                                     {
-                                        doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table/Environments/Environment[@name='" + cur_environment + "']/Tokens").AppendChild(filterToken);
+                                        doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + queryName + "']/Environments/Environment[@name='" + cur_environment + "']/Tokens").AppendChild(filterToken);
                                     }
                                     if (sel_environment == "")
                                         sel_environment = cur_environment;
@@ -2831,7 +2828,8 @@ namespace IppBackups
                     newNode.Tag = "Environment";
 
                     tViewScripts.SelectedNode.Nodes.Add(newNode);
-                    newNode.Nodes.Add(cloneNode.LastNode);
+                    //newNode.Nodes.Add(cloneNode.LastNode);
+                    newNode.Nodes.Add(cloneNode);
                     tViewScripts.SelectedNode = newNode;
 
                     tViewScripts.LabelEdit = true;
