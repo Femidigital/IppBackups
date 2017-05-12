@@ -347,7 +347,7 @@ namespace IppBackups
 
             if (destinationPath.Contains("https:"))
             {
-                string credentialName = "mycredential";
+                string credentialName = "cbsbackups";
                 destinationPath = destinationPath.Replace("\\", "/");
                 deviceItem = new BackupDeviceItem(destinationPath, DeviceType.Url);
                 sqlBackup.CredentialName = credentialName;
@@ -355,6 +355,7 @@ namespace IppBackups
             else
             {
                 deviceItem = new BackupDeviceItem(destinationPath, DeviceType.File);
+                sqlBackup.ExpirationDate = DateTime.Now.AddDays(3);
             }
 
             //BackupDeviceItem deviceItem = new BackupDeviceItem(destinationPath, DeviceType.File);
@@ -362,7 +363,7 @@ namespace IppBackups
             Server sqlServer = new Server(connection);
 
             Credential credential = new Credential(sqlServer, "cbsbackups");
-            //credential.Create("cbsbackups", azureKey);
+           // credential.Create("cbsbackups", azureKey);
 
             Database db = sqlServer.Databases[databaseName];
 
@@ -375,7 +376,7 @@ namespace IppBackups
             sqlBackup.Devices.Add(deviceItem);            
             sqlBackup.Incremental = false;
 
-            sqlBackup.ExpirationDate = DateTime.Now.AddDays(3);
+            //sqlBackup.ExpirationDate = DateTime.Now.AddDays(3);
             sqlBackup.LogTruncation = BackupTruncateLogType.NoTruncate;
 
             sqlBackup.FormatMedia = false;
@@ -924,7 +925,8 @@ namespace IppBackups
                     {
                         backStatus.Add(db, false);
                         //lbl_Oupt.Text += ex.Message + "\n";
-                        rTxtBox_Output.AppendText(ex.Message + "\n",Color.Black);
+                        rTxtBox_Output.AppendText(ex.Message + "\n",Color.Red);
+                        rTxtBox_Output.AppendText(ex.InnerException + "\n", Color.Red);
                     }
                     finally
                     {
