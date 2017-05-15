@@ -345,11 +345,32 @@ namespace IppBackups
             sqlBackup.Database = databaseName;
             BackupDeviceItem deviceItem;
 
-            if (destinationPath.Contains("https:"))
+            /*if (destinationPath.Contains("https:"))
             {
                 string credentialName = "cbsbackups";
                 destinationPath = destinationPath.Replace("\\", "/");
                 deviceItem = new BackupDeviceItem(destinationPath, DeviceType.Url);
+                //sqlBackup.CredentialName = credentialName;
+            }
+            else
+            {
+                deviceItem = new BackupDeviceItem(destinationPath, DeviceType.File);
+                sqlBackup.ExpirationDate = DateTime.Now.AddDays(3);
+            }*/
+
+            //BackupDeviceItem deviceItem = new BackupDeviceItem(destinationPath, DeviceType.File);
+            ServerConnection connection = new ServerConnection(serverName, userName, password);
+            Server sqlServer = new Server(connection);
+
+            if (destinationPath.Contains("https:"))
+            {
+                string credentialName = "mycredential";
+                destinationPath = destinationPath.Replace("\\", "/");
+                deviceItem = new BackupDeviceItem(destinationPath, DeviceType.Url);
+                //sqlBackup.CredentialName = credentialName;
+
+                Credential credential = new Credential(sqlServer, credentialName);
+                credential.Create("cbsbackups", azureKey);
                 sqlBackup.CredentialName = credentialName;
             }
             else
@@ -357,13 +378,7 @@ namespace IppBackups
                 deviceItem = new BackupDeviceItem(destinationPath, DeviceType.File);
                 sqlBackup.ExpirationDate = DateTime.Now.AddDays(3);
             }
-
-            //BackupDeviceItem deviceItem = new BackupDeviceItem(destinationPath, DeviceType.File);
-            ServerConnection connection = new ServerConnection(serverName, userName, password);
-            Server sqlServer = new Server(connection);
-
-            Credential credential = new Credential(sqlServer, "cbsbackups");
-           // credential.Create("cbsbackups", azureKey);
+            
 
             Database db = sqlServer.Databases[databaseName];
 
