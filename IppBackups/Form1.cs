@@ -337,6 +337,7 @@ namespace IppBackups
         public void BackupDatabase(String databaseName, String userName, String password, String serverName, String destinationPath)
         {
             Backup sqlBackup = new Backup();
+            Credential credential;
 
             sqlBackup.Action = BackupActionType.Database;
             sqlBackup.BackupSetDescription = "ArchiveDataBase:" + DateTime.Now.ToShortDateString();
@@ -363,15 +364,32 @@ namespace IppBackups
             Server sqlServer = new Server(connection);
 
             if (destinationPath.Contains("https:"))
-            {
+            {                
                 string credentialName = "mycredential";
                 destinationPath = destinationPath.Replace("\\", "/");
                 deviceItem = new BackupDeviceItem(destinationPath, DeviceType.Url);
                 //sqlBackup.CredentialName = credentialName;
-
-                Credential credential = new Credential(sqlServer, credentialName);
-                credential.Create("cbsbackups", azureKey);
-                sqlBackup.CredentialName = credentialName;
+                
+                credential = new Credential(sqlServer, credentialName);
+ 
+                try
+                {
+                    credential.Create("cbsbackups", azureKey);
+                }                
+                catch(ExecutionFailureException ex)
+                {
+                    rTxtBox_Output.AppendText("Backup already exists...", Color.Red);
+                }
+                catch (Exception e)
+                {
+                    rTxtBox_Output.AppendText("Exception Details " + e.InnerException + "\n", Color.Red);
+                }
+                finally
+                {
+                    sqlBackup.CredentialName = credentialName;
+                    sqlBackup.FormatMedia = true;
+                    //credential.Drop();
+                }
             }
             else
             {
@@ -397,6 +415,7 @@ namespace IppBackups
             sqlBackup.FormatMedia = false;
 
             sqlBackup.SqlBackup(sqlServer);
+
 
         }
 
@@ -932,14 +951,15 @@ namespace IppBackups
                         else
                         {
                             BackupDatabase(db, sUsername, sPassword, curSrvInstanceToConnect, destPath);
-                            backStatus.Add(db, true);
+                            
                             //worker.ReportProgress();
                         }
+                        backStatus.Add(db, true);
                     }
                     catch (Exception ex)
                     {
                         backStatus.Add(db, false);
-                        //lbl_Oupt.Text += ex.Message + "\n";
+                        rTxtBox_Output.AppendText("Dictionary error after backup \n",Color.Red);
                         rTxtBox_Output.AppendText(ex.Message + "\n",Color.Red);
                         rTxtBox_Output.AppendText(ex.InnerException + "\n", Color.Red);
                     }
