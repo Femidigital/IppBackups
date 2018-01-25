@@ -876,7 +876,7 @@ namespace IppBackups
 
                     if (destFilePath.Contains("https://"))
                     {
-                        rTxtBox_Output.AppendText("Will have to check if backup exists in Azure....", Color.Blue);
+                        rTxtBox_Output.AppendText("Will have to check if backup exists in Azure....\n", Color.Blue);
                     }
                     else
                     {

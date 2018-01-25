@@ -288,7 +288,10 @@ namespace IppBackups
                     tBox_Username.Text = nNode.Attributes["user"].Value;
                     tBox_Password.Text = nNode.Attributes["password"].Value;
                     tBox_BackupLocation.Text = nNode.Attributes["backups"].Value;
-                    txtBox_AzureKey.Text = nNode.Attributes["azureKey"].Value;
+                    if (tBox_BackupLocation.Text.Contains("https://"))
+                    {
+                        txtBox_AzureKey.Text = nNode.Attributes["azureKey"].Value;
+                    }
                 }
                 else
                 {
@@ -303,7 +306,10 @@ namespace IppBackups
                     tBox_Username.Text = pNode.Attributes["user"].Value;
                     tBox_Password.Text = pNode.Attributes["password"].Value;
                     tBox_BackupLocation.Text = pNode.Attributes["backups"].Value;
-                    txtBox_AzureKey.Text = pNode.Attributes["azureKey"].Value;
+                    if (tBox_BackupLocation.Text.Contains("https://"))
+                    {
+                        txtBox_AzureKey.Text = pNode.Attributes["azureKey"].Value;
+                    }
 
                     tBox_Environment.Text = e.Node.Text;
                     tBox_DataFile.Text = nNode.Attributes["data"].Value;
