@@ -361,6 +361,7 @@ namespace IppBackups
 
             //BackupDeviceItem deviceItem = new BackupDeviceItem(destinationPath, DeviceType.File);
             ServerConnection connection = new ServerConnection(serverName, userName, password);
+            
             Server sqlServer = new Server(connection);
 
             if (destinationPath.Contains("https:"))
@@ -371,10 +372,13 @@ namespace IppBackups
                 //sqlBackup.CredentialName = credentialName;
                 
                 credential = new Credential(sqlServer, credentialName);
- 
+                
                 try
                 {
-                    credential.Create("cbsbackups", azureKey);
+                    sqlBackup.Initialize = true;
+                    sqlBackup.SkipTapeHeader = true;
+                    //credential.Create("cbsbackups", azureKey);
+                   // credential.Create()
                 }                
                 catch(ExecutionFailureException ex)
                 {
@@ -400,11 +404,10 @@ namespace IppBackups
 
             Database db = sqlServer.Databases[databaseName];
 
-            sqlBackup.Initialize = true;
+            //sqlBackup.Initialize = false;
             sqlBackup.Checksum = true;
             sqlBackup.ContinueAfterError = true;
             sqlBackup.CopyOnly = true;
-
 
             sqlBackup.Devices.Add(deviceItem);            
             sqlBackup.Incremental = false;
@@ -412,7 +415,7 @@ namespace IppBackups
             //sqlBackup.ExpirationDate = DateTime.Now.AddDays(3);
             sqlBackup.LogTruncation = BackupTruncateLogType.NoTruncate;
 
-            sqlBackup.FormatMedia = false;
+            //sqlBackup.FormatMedia = true;
 
             sqlBackup.SqlBackup(sqlServer);
 
@@ -421,7 +424,7 @@ namespace IppBackups
 
         public void RestoreDatabaseToOscar(String databaseName, String filePath, String serverName, String serverInstance, String port, String userName, String password, String dataFilePath, String logFilePath, String localCopyBackup)
         {
-
+            rTxtBox_Output.AppendText("Inside RestoreDatabaseToOscar Method: .\n", Color.Black);
             string dbDataSubFolderPath = dataFilePath + "\\" + databaseName;
             string dbLogSubFolderPath = logFilePath + "\\" + databaseName;
             string CopiedBackup = "\\\\" + serverName + "\\" + System.IO.Path.Combine(localCopyBackup, databaseName + ".bak");
@@ -562,6 +565,7 @@ namespace IppBackups
 
         public void RestoreDatabase(String databaseName, String filePath, String serverName, String userName, String password, String dataFilePath, String logFilePath)
         {
+            rTxtBox_Output.AppendText("Inside RestoreDatabase Method: .\n", Color.Black);
             string dbDataSubFolderPath = dataFilePath + "\\" + databaseName;
             string dbLogSubFolderPath = logFilePath + "\\" + databaseName;
 
@@ -636,6 +640,7 @@ namespace IppBackups
 
         public void RestoreDatabaseToPrivate(String databaseName, String filePath, String serverName, String serverInstance, String userName, String password, String dataFilePath, String logFilePath, String localCopyBackup)
         {
+            rTxtBox_Output.AppendText("Inside RestoreDatabaseToPrivate Method: .\n", Color.Black);
             string dbDataSubFolderPath = dataFilePath + "\\" + databaseName;
             string dbLogSubFolderPath = logFilePath + "\\" + databaseName;
             string CopiedBackup = "\\\\" + serverName + "\\" + System.IO.Path.Combine(localCopyBackup, databaseName + ".bak");
@@ -852,15 +857,32 @@ namespace IppBackups
                             if (cBox_Environment.Text == _servers[cBox_Server.SelectedIndex].Instances[i].Environments[j].Name)
                             {
                                 restorePath = _servers[cBox_Server.SelectedIndex].Instances[i].Backups;
-                                destPath = restorePath + "\\" + db + ".bak";
+                                if (restorePath.Contains("https://"))
+                                {
+                                    destPath = restorePath;
+                                }
+                                else
+                                {
+                                    destPath = restorePath + "\\" + db + ".bak";
+                                }
                             }
                         }
                     }
 
                     
 
-                    string destFilePath = "\\\\" + cBox_Server.Text + "\\" + destPath;
-                    destFilePath = destFilePath.Replace(':', '$');
+                    //string destFilePath = "\\\\" + cBox_Server.Text + "\\" + destPath;
+                    string destFilePath = destPath;
+
+                    if (destFilePath.Contains("https://"))
+                    {
+                        rTxtBox_Output.AppendText("Will have to check if backup exists in Azure....", Color.Blue);
+                    }
+                    else
+                    {
+                        destFilePath = "\\\\" + cBox_Server.Text + "\\" + destPath;
+                        destFilePath = destFilePath.Replace(':', '$');
+                    }
 
                     if (File.Exists(destFilePath))
                     {
@@ -1104,14 +1126,24 @@ namespace IppBackups
                                 {
                                     restore_db = db;
                                 }
-                                string filePath = "\\\\" + curSrv + "\\" + backupDestination.Replace(":", "$") + "\\" + db + ".bak";
-                                //lbl_Oupt.Text += "Starting restore for " + db + ".'\n";
+                                
+                                //string filePath = "\\\\" + curSrv + "\\" + backupDestination.Replace(":", "$") + "\\" + db + ".bak";
+                                string filePath = "";
+                                if (backupDestination.Contains("https"))
+                                {
+                                    rTxtBox_Output.AppendText("Restoring from Azure...\n", Color.Blue);
+                                    filePath = backupDestination;
+                                }
+                                else
+                                {
+                                    rTxtBox_Output.AppendText("Restoring from local folder...\n", Color.Blue);
+                                    filePath = "\\\\" + curSrv + "\\" + backupDestination.Replace(":", "$") + "\\" + db + ".bak";
+                                }
+                               
                                 rTxtBox_Output.AppendText("Starting restore for " + db + ".'\n",Color.Black);
 
                                 // Perform a time consuming operation and report progress
-                                //lbl_Oupt.Text += "Restore : " + db + " database to " + restore_db + " database on : " + filePath + " to : " + restore_dataFilePath + " and : " + restore_logFilePath + "'\n";
-                                //lbl_Oupt.Text += "User : " + r_sUsername + "'\n";
-                                //lbl_Oupt.Text += "Selected destination server  : " + restoreToSrv + "\n";
+
                                 rTxtBox_Output.AppendText("Restore : " + db + " database to " + restore_db + " database on : " + filePath + " to : " + restore_dataFilePath + " and : " + restore_logFilePath + "\n",Color.Black);
                                 rTxtBox_Output.AppendText("User : " + r_sUsername + "\n",Color.Black);
                                 rTxtBox_Output.AppendText("Selected destination server  : " + restoreToSrv + "\n",Color.Black);
