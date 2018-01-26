@@ -57,6 +57,7 @@ namespace IppBackups
         string scriptLocation = Directory.Exists(Application.StartupPath + "..\\bin") ? Application.StartupPath + "..\\..\\SQL_Scripts\\" : Application.StartupPath + "..\\Scripts\\";
         Dictionary<string, bool> backStatus = new Dictionary<string, bool>();
         string azureKey = "";
+        bool restoreFromAzure = false;
 
         enum Environment
         {
@@ -877,6 +878,7 @@ namespace IppBackups
                     if (destFilePath.Contains("https://"))
                     {
                         rTxtBox_Output.AppendText("Will have to check if backup exists in Azure....\n", Color.Blue);
+                        restoreFromAzure = true;
                     }
                     else
                     {
@@ -884,7 +886,25 @@ namespace IppBackups
                         destFilePath = destFilePath.Replace(':', '$');
                     }
 
-                    if (File.Exists(destFilePath))
+                    if(restoreFromAzure)
+                    {
+                        //AzureBlobManager abm = new AzureBlobManager("https://cbsbackups.blob.core.windows.net/backups","ir03ybdkbtQbLnznmB8tahZ86etULyS9DFIfTPFNUhx4VBkzqCi9NZSXbPJpXILn2fCKJttSWaAlq/8c8nWXbA==");
+                        AzureBlobManager abm = new AzureBlobManager();
+                        abm.ContainerName = AzureBlobManager.ROOT_CONTAINER_NAME;
+                        rTxtBox_Output.AppendText("About to check...\n", Color.Blue);
+                        abm.BlobName = destFilePath + "/" + db + "/.bak";                        
+
+
+                        if(abm.DoesBlobExist(abm.ContainerName, abm.BlobName))
+                        {
+                            rTxtBox_Output.AppendText("Backup existing in Azure...\n", Color.Blue);
+                        }
+                        else
+                        {
+                            rTxtBox_Output.AppendText("Backup missing in Azure...\n", Color.Blue);
+                        }
+                    }
+                    else if (File.Exists(destFilePath))
                     {
                         //lbl_Oupt.Text += "Backup file exists for the source database at " + destFilePath + " ...\n";
                         rTxtBox_Output.AppendText("Backup file exists for the source database at " + destFilePath + " ...\n",Color.Black);

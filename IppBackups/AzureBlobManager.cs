@@ -75,7 +75,7 @@ namespace IppBackups
         /// The root top level container in Azure blob.
         /// Rename as appropriate for your system.
         /// </summary>
-        public const string ROOT_CONTAINER_NAME = "TopLevelContainer";
+        public const string ROOT_CONTAINER_NAME = "https://cbsbackups.blob.core.windows.net/";
         #endregion Public Constants
 
         #region Private Members
@@ -87,7 +87,8 @@ namespace IppBackups
 
         //To initialize the default storage credentials if none are provided. 
         //For now we're going to assume everything is going to this blob storage.
-        private StorageCredentials _storageCredentials = new StorageCredentials("your_login", "the_password_from_azure");
+        //private StorageCredentials _storageCredentials = new StorageCredentials("your_login", "the_password_from_azure");
+        private StorageCredentials _storageCredentials = new StorageCredentials("ir03ybdkbtQbLnznmB8tahZ86etULyS9DFIfTPFNUhx4VBkzqCi9NZSXbPJpXILn2fCKJttSWaAlq/8c8nWXbA==");
 
         private CloudStorageAccount _storageAccount;// = new CloudStorageAccount(_storageCredentials, false);
         private CloudBlobContainer _container;
