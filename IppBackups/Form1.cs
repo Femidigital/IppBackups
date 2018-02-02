@@ -58,6 +58,7 @@ namespace IppBackups
         Dictionary<string, bool> backStatus = new Dictionary<string, bool>();
         string azureKey = "";
         bool restoreFromAzure = false;
+        Microsoft.WindowsAzure.Storage.Auth.StorageCredentials myKey = new Microsoft.WindowsAzure.Storage.Auth.StorageCredentials();
 
         enum Environment
         {
@@ -841,6 +842,16 @@ namespace IppBackups
             }
         }
 
+        private Microsoft.WindowsAzure.Storage.Auth.StorageCredentials GetStorageCredentials(string azureKey)
+        {
+            return new Microsoft.WindowsAzure.Storage.Auth.StorageCredentials("cbsbackups", azureKey);
+        }
+
+        private Microsoft.WindowsAzure.Storage.Auth.StorageCredentials GetAccountName(string accountName)
+        {
+            return new Microsoft.WindowsAzure.Storage.Auth.StorageCredentials(accountName);
+        }
+
         private void VerifyBackupExists()
         {
              /* Check the Destination Backup directory for the Source Backup file */
@@ -860,7 +871,35 @@ namespace IppBackups
                                 restorePath = _servers[cBox_Server.SelectedIndex].Instances[i].Backups;
                                 if (restorePath.Contains("https://"))
                                 {
-                                    destPath = restorePath;
+                                    //destPath = restorePath;
+                                    //var myKey = new Microsoft.WindowsAzure.Storage.Auth.StorageCredentials(_servers[cBox_Server.SelectedIndex].Instances[i].AzureKey);
+                                    //myKey. = _servers[cBox_Server.SelectedIndex].Instances[i].AzureKey;
+                                    var azureKey = _servers[cBox_Server.SelectedIndex].Instances[i].AzureKey;
+                                     rTxtBox_Output.AppendText("Key value = " + azureKey + "...\n", Color.Blue);
+                                    
+                                    var bla = GetStorageCredentials(azureKey);
+                                    rTxtBox_Output.AppendText("Key value After GetStorageCredentials = " + bla.SASToken + "...\n", Color.Blue);
+                                    rTxtBox_Output.AppendText("Accountname value After GetStorageCredentials = " + bla.AccountName + "...\n", Color.Blue);
+                                    myKey = bla;
+                                    //bla.AccountName = GetAccountName("cbsbackups");
+
+                                    rTxtBox_Output.AppendText("Will have to check if backup exists in Azure....\n", Color.Blue);
+                                    restoreFromAzure = true;
+                                  //  rTxtBox_Output.AppendText("Using " + bla.ToString(), Color.Blue);
+
+                                    try
+                                    {
+                                        rTxtBox_Output.AppendText("Before the call AzureBlobManager constructor call..\n", Color.Blue);
+                                        var abm = new AzureBlobManager("backups", bla);
+
+                                        //rTxtBox_Output.AppendText("Using " + bla.ToString(), Color.Blue);
+                                        rTxtBox_Output.AppendText("ContainerName = " + abm.ContainerName + "...\n", Color.Blue);
+                                    }
+                                    catch(Exception ex)
+                                    {
+                                        rTxtBox_Output.AppendText("OUR MESSAGE = " + ex.InnerException + "...\n", Color.Blue);
+                                    }
+
                                 }
                                 else
                                 {
@@ -870,8 +909,9 @@ namespace IppBackups
                         }
                     }
 
-                    
 
+                    rTxtBox_Output.AppendText("DestPath is " + destPath + "\n", Color.Blue);
+                    rTxtBox_Output.AppendText("RestorePath is " + restorePath + "...\n", Color.Blue);
                     //string destFilePath = "\\\\" + cBox_Server.Text + "\\" + destPath;
                     string destFilePath = destPath;
 
@@ -888,11 +928,19 @@ namespace IppBackups
 
                     if(restoreFromAzure)
                     {
-                        //AzureBlobManager abm = new AzureBlobManager("https://cbsbackups.blob.core.windows.net/backups","ir03ybdkbtQbLnznmB8tahZ86etULyS9DFIfTPFNUhx4VBkzqCi9NZSXbPJpXILn2fCKJttSWaAlq/8c8nWXbA==");
-                        AzureBlobManager abm = new AzureBlobManager();
-                        abm.ContainerName = AzureBlobManager.ROOT_CONTAINER_NAME;
-                        rTxtBox_Output.AppendText("About to check...\n", Color.Blue);
-                        abm.BlobName = destFilePath + "/" + db + "/.bak";                        
+
+                        //myKey = _servers[cBox_Server.SelectedIndex].Instances[i].AzureKey;
+                       AzureBlobManager abm = new AzureBlobManager(destFilePath, myKey);
+                       rTxtBox_Output.AppendText("After calling second AzureBlobManager constructor ..\n", Color.Blue);
+                       rTxtBox_Output.AppendText("ContainerName is " + abm.ContainerName + "...\n", Color.Blue);
+                       rTxtBox_Output.AppendText("BlobName is " + abm.BlobName + "...\n", Color.Blue);
+                       rTxtBox_Output.AppendText("DirectoryName is " + abm.DirectoryName + "...\n", Color.Blue);
+                       //AzureBlobManager abm = new AzureBlobManager(destFilePath, GetStorageCredentials(myKey));
+
+                        //AzureBlobManager abm = new AzureBlobManager();
+                        //abm.ContainerName = AzureBlobManager.ROOT_CONTAINER_NAME;
+                        //rTxtBox_Output.AppendText("About to check...\n", Color.Blue);
+                        //abm.BlobName = destFilePath + "/" + db + "/.bak";                        
 
 
                         if(abm.DoesBlobExist(abm.ContainerName, abm.BlobName))
