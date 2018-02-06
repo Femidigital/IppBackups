@@ -430,7 +430,17 @@ namespace IppBackups
             string dbDataSubFolderPath = dataFilePath + "\\" + databaseName;
             string dbLogSubFolderPath = logFilePath + "\\" + databaseName;
             string CopiedBackup = "\\\\" + serverName + "\\" + System.IO.Path.Combine(localCopyBackup, databaseName + ".bak");
-            string targetCopy = CopiedBackup.Replace(":", "$");
+            //string targetCopy = CopiedBackup.Replace(":", "$");
+            string targetCopy = "";
+
+            if(filePath.Contains("https://"))
+            {
+                targetCopy = filePath;
+            }
+            else
+            {
+                targetCopy = CopiedBackup.Replace(":", "$");
+            }
 
 
             if (!Directory.Exists(dbDataSubFolderPath))
@@ -471,11 +481,23 @@ namespace IppBackups
                 rTxtBox_Output.AppendText("Copyied backup file locally \n", Color.Black);
             }
 
-            targetCopy = localiseUNCPath(targetCopy);
-
             Restore sqlRestore = new Restore();
+            BackupDeviceItem deviceItem;
+            
+            if (!targetCopy.Contains("https://"))
+            {
+                targetCopy = localiseUNCPath(targetCopy);
+                deviceItem = new BackupDeviceItem(targetCopy, DeviceType.Url);
+            }
+            else
+            {
+                targetCopy = targetCopy + "/DEV-J4C.bak";
+                deviceItem = new BackupDeviceItem(targetCopy, DeviceType.File);
+            }
+           
+            
 
-            BackupDeviceItem deviceItem = new BackupDeviceItem(targetCopy, DeviceType.File);
+            //BackupDeviceItem deviceItem = new BackupDeviceItem(targetCopy, DeviceType.File);
             sqlRestore.Devices.Add(deviceItem);
             sqlRestore.Database = databaseName;
             ////lbl_Oupt.Text += "Before connecting to : " + serverName + " by : " + userName + " \n";
@@ -894,6 +916,7 @@ namespace IppBackups
 
                                         //rTxtBox_Output.AppendText("Using " + bla.ToString(), Color.Blue);
                                         rTxtBox_Output.AppendText("ContainerName = " + abm.ContainerName + "...\n", Color.Blue);
+                                        destPath = restorePath + "\\" + db + ".bak";
                                     }
                                     catch(Exception ex)
                                     {
@@ -930,11 +953,30 @@ namespace IppBackups
                     {
 
                         //myKey = _servers[cBox_Server.SelectedIndex].Instances[i].AzureKey;
-                       AzureBlobManager abm = new AzureBlobManager(destFilePath, myKey);
+                       //AzureBlobManager abm = new AzureBlobManager(destFilePath, myKey);
+                        AzureBlobManager abm = new AzureBlobManager("backups", myKey);
                        rTxtBox_Output.AppendText("After calling second AzureBlobManager constructor ..\n", Color.Blue);
                        rTxtBox_Output.AppendText("ContainerName is " + abm.ContainerName + "...\n", Color.Blue);
-                       rTxtBox_Output.AppendText("BlobName is " + abm.BlobName + "...\n", Color.Blue);
-                       rTxtBox_Output.AppendText("DirectoryName is " + abm.DirectoryName + "...\n", Color.Blue);
+                       if(abm.BlobClient != null)
+                       {
+                           rTxtBox_Output.AppendText("Blob client is fine\n", Color.Blue);
+                       }
+                       else
+                       {
+                           rTxtBox_Output.AppendText("Blob client has issue", Color.Blue);
+                       }
+
+                       if (abm.AzureContainer != null)
+                       {
+                           rTxtBox_Output.AppendText("Azure Container is fine\n", Color.Blue);
+                       }
+                       else
+                       {
+                           rTxtBox_Output.AppendText("Azure Container has issue", Color.Blue);
+                       }
+          
+                       //rTxtBox_Output.AppendText("BlobName is " + abm.BlobName + "...\n", Color.Blue);
+                       //rTxtBox_Output.AppendText("DirectoryName is " + abm.DirectoryName + "...\n", Color.Blue);
                        //AzureBlobManager abm = new AzureBlobManager(destFilePath, GetStorageCredentials(myKey));
 
                         //AzureBlobManager abm = new AzureBlobManager();
@@ -943,14 +985,44 @@ namespace IppBackups
                         //abm.BlobName = destFilePath + "/" + db + "/.bak";                        
 
 
-                        if(abm.DoesBlobExist(abm.ContainerName, abm.BlobName))
-                        {
-                            rTxtBox_Output.AppendText("Backup existing in Azure...\n", Color.Blue);
-                        }
-                        else
-                        {
-                            rTxtBox_Output.AppendText("Backup missing in Azure...\n", Color.Blue);
-                        }
+                        //if(abm.DoesBlobExist(abm.ContainerName, abm.BlobName))
+
+                       if (abm.DoesContainerExist("backups"))
+                       {
+                           rTxtBox_Output.AppendText("Container in Azure...\n", Color.Blue);
+                       }
+                       else
+                       {
+                           rTxtBox_Output.AppendText("Container missing in Azure...\n", Color.Blue);
+                       }
+
+                       try
+                       {
+                            if (abm.DoesBlobExist("backups", "DEV-J4C.bak"))
+                            {
+                                rTxtBox_Output.AppendText("Found existing Backup in Azure...\n", Color.Blue);
+
+                                if(!backStatus.ContainsKey(db))
+                                {
+                                    backStatus.Add(db, true);
+                                }
+
+                                if(restorebackgroundWorker.IsBusy != true)
+                                {
+                                    restorebackgroundWorker.RunWorkerAsync();
+                                }
+                            }
+                            else
+                            {
+                                rTxtBox_Output.AppendText("Backup missing in Azure...\n", Color.Blue);
+                            }
+
+                       }
+                        catch(Exception ex)
+                       {
+                           rTxtBox_Output.AppendText("Exception:" + ex.InnerException, Color.Blue);
+                       }
+
                     }
                     else if (File.Exists(destFilePath))
                     {
@@ -1129,7 +1201,7 @@ namespace IppBackups
                 string restoreToSrv = "";
                 string restoreToEnv = "";
                 bool restoringToOscar = false;
-                List<string> oscarServers = new List<string>() { "UK-CHFMIGSQL", "UK-CHDEVSQL01", "UK-CHDEVSQL02", "FDC_TAB", "CHI-7S45842", "DEV-SENT01", "UK-DEVEPI7", "BSI16DBS04PRV", "BSI16DBS03PRV", "BSI10DBS03PRV" };
+                List<string> oscarServers = new List<string>() { "UK-CHFMIGSQL", "UK-CHDEVSQL01", "UK-CHDEVSQL02", "FDC_TAB", "CHI-7S45842", "CHI-PC0R83SJ", "DEV-SENT01", "UK-DEVEPI7", "BSI16DBS04PRV", "BSI16DBS03PRV", "BSI10DBS03PRV" };
 
                 ServerX si2 = new ServerX();
                 if (rBtn_Refresh.Checked)

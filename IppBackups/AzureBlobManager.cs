@@ -93,6 +93,7 @@ namespace IppBackups
         private CloudStorageAccount _storageAccount;// = new CloudStorageAccount(_storageCredentials, false);
         private CloudBlobContainer _container;
         private CloudBlockBlob _blockBlob; // = _container.GetBlockBlobReference("myfirstupload.txt");
+        private CloudPageBlob _pageBlob; // = _container.GetBlockBlobReference("myfirstupload.txt");
 
         #endregion Private Members
 
@@ -138,6 +139,30 @@ namespace IppBackups
             set
             {
                 _containerName = value;
+            }
+        }
+
+        public CloudBlobClient BlobClient
+        {
+            get
+            {
+                return _blobClient;
+            }
+            set
+            {
+                _blobClient = value;
+            }
+        }
+
+        public CloudBlobContainer AzureContainer
+        {
+            get
+            {
+                return _container;
+            }
+            set
+            {
+                _container = value;
             }
         }
 
@@ -276,13 +301,19 @@ namespace IppBackups
         public bool DoesBlobExist(string containerName, string blobName)
         {
             bool returnValue = false;
-            ExecuteWithExceptionHandling(
-                    () =>
-                    {
-                        CloudBlobContainer container = _blobClient.GetContainerReference(containerName);
-                        _blockBlob = container.GetBlockBlobReference(blobName);
-                        returnValue = _blockBlob.Exists();
-                    });
+            try
+            {
+                CloudBlobContainer container = _blobClient.GetContainerReference(containerName);
+
+                _pageBlob = container.GetPageBlobReference(blobName);
+                returnValue = _pageBlob.Exists();
+            }
+            catch(Exception ex)
+            {
+                System.Console.Write("exception");
+                throw ex;
+            }
+
             return returnValue;
         }
 
