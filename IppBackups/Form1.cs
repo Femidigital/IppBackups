@@ -558,6 +558,9 @@ namespace IppBackups
                 // TODO: Change font color
                 //lbl_Oupt.Text += ex.InnerException.Message + "'\n";
                 rTxtBox_Output.AppendText(ex.InnerException.Message + "'\n", Color.Red);
+                rTxtBox_Output.AppendText("Setting Database back to MultipleUser mode... '\n", Color.Black);
+                db.DatabaseOptions.UserAccess = DatabaseUserAccess.Multiple;
+                db.Alter(TerminationClause.RollbackTransactionsImmediately);
             }
 
             db = sqlServer.Databases[databaseName];
