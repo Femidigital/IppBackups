@@ -231,6 +231,7 @@ namespace IppBackups
                     tBox_Username.Text = "";
                     tBox_Password.Text = "";
                     tBox_BackupLocation.Text = "";
+                    txtBox_AzureKey.Text = "";
 
                     tBox_Environment.Text = "";
                     tBox_DataFile.Text = "";
@@ -251,6 +252,7 @@ namespace IppBackups
                     tBox_Username.Text = nNode.Attributes["user"].Value;
                     tBox_Password.Text = nNode.Attributes["password"].Value;
                     tBox_BackupLocation.Text = nNode.Attributes["backups"].Value;
+                    txtBox_AzureKey.Text = nNode.Attributes["azureKey"].Value;
                 }
                 else if (e.Node.Parent.FullPath == "Servers")
                 {
@@ -259,6 +261,7 @@ namespace IppBackups
                     tBox_Username.Text = "";
                     tBox_Password.Text = "";
                     tBox_BackupLocation.Text = "";
+                    txtBox_AzureKey.Text = "";
                     tBox_Environment.Text = "";
                     tBox_DataFile.Text = "";
                     tBox_LogFiles.Text = "";
@@ -292,6 +295,7 @@ namespace IppBackups
                     {
                         txtBox_AzureKey.Text = nNode.Attributes["azureKey"].Value;
                     }
+                    //txtBox_AzureKey.Text = nNode.Attributes["azureKey"].Value;
                 }
                 else
                 {
@@ -310,6 +314,7 @@ namespace IppBackups
                     {
                         txtBox_AzureKey.Text = pNode.Attributes["azureKey"].Value;
                     }
+                    //txtBox_AzureKey.Text = pNode.Attributes["azureKey"].Value;
 
                     tBox_Environment.Text = e.Node.Text;
                     tBox_DataFile.Text = nNode.Attributes["data"].Value;

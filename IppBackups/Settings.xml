@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Servers>
 	<Server name="LocalHost" ip="127.0.0.1">
-		<Instance instance="Default" port="1433" user="" password="" backups="">
+		<Instance instance="Default" port="1433" user="" password="" backups="" azureKey="">
 			<Environment name="DEV" data="C:\SQLData" log="C:\SQLLogs">DEV</Environment>
 		</Instance>
 	</Server>

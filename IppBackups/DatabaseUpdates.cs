@@ -2625,7 +2625,12 @@ namespace IppBackups
                 XmlNode tokens = doc.CreateNode(XmlNodeType.Element, "Tokens", null);
                 //envNode.AppendChild(tokens);
 
-                foreach (XmlNode dbNode in doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table/Environments"))
+                //doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + sel_table + "']/Environments/Environment[@name='" + cur_environment + "']/Tokens").AppendChild(filterToken);
+                // "/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table/Environments" 
+                // book=root.SelectSingleNode("descendant::book[author/last-name='Austen']");
+                XmlNode testNode = doc.SelectSingleNode("/Databases/Database[@name='" + _cur_Db + "']/Tables/Table[@name='" + sel_table + "']/Environments");
+                //XmlNode testNode = doc.SelectSingleNode("descendant::Database[Tables/Table[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + sel_table + "']/Environments");
+                foreach (XmlNode dbNode in doc.SelectSingleNode("/Databases/Database[@name='" + _cur_Db + "']/Tables/Table[@name='" + sel_table + "']/Environments"))
                 {
                     if (dbNode.Attributes["name"].Value == tViewScripts.SelectedNode.Text)
                     {
@@ -2639,12 +2644,12 @@ namespace IppBackups
                     {
                         envNode.AppendChild(copyNode);
                     }
-                    doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table/Environments").InsertAfter(envNode, doc.SelectSingleNode("/Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']/Tables/Table/Environments").LastChild);
+                    doc.SelectSingleNode("/Databases/Database[@name='" + _cur_Db + "']/Tables/Table[@name='" + sel_table + "']/Environments").InsertAfter(envNode, doc.SelectSingleNode("/Databases/Database[@name='" + _cur_Db + "']/Tables/Table[@name='" + sel_table + "']/Environments").LastChild);
                 }
 
                 doc.Save(sXmlFile);
                 //doc.Save(".\\Scripts\\DatabaseUpdateValues.xml");
-                startNode = doc.SelectSingleNode("Databases/Database[translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') " + "='" + _cur_Db.ToLower() + "']");
+                startNode = doc.SelectSingleNode("Databases/Database[@name='" + _cur_Db.ToLower() + "']");
             }
             else if (tViewScripts.SelectedNode.Tag == "ReplaceToken")
             {
@@ -2807,7 +2812,7 @@ namespace IppBackups
             }
             else if (m.Text.ToLower() == "copy environment")
             {
-                XmlNode clickedXmlNode = startNode.SelectSingleNode("Tables/Table/Environments/Environment[@name='" + tViewScripts.SelectedNode.Text + "']/Tokens");
+                XmlNode clickedXmlNode = startNode.SelectSingleNode("Tables/Table[@name='" + tViewScripts.SelectedNode.Parent.Text + "']/Environments/Environment[@name='" + tViewScripts.SelectedNode.Text + "']/Tokens");
                 copyNode = clickedXmlNode.CloneNode(true);
 
                 TreeNode clickedNode = tViewScripts.SelectedNode;
@@ -2829,6 +2834,7 @@ namespace IppBackups
                     TreeNode newNode = new TreeNode("New Environment");
                     newNode.Tag = "Environment";
 
+                    sel_table = tViewScripts.SelectedNode.Text;
                     tViewScripts.SelectedNode.Nodes.Add(newNode);
                     //newNode.Nodes.Add(cloneNode.LastNode);
                     newNode.Nodes.Add(cloneNode);
@@ -2962,6 +2968,7 @@ namespace IppBackups
                 MessageBox.Show("Creating new script file: " + scriptFile);
             }
 
+            //rTxtBox_Script.AppendText("\nGO", Color.Blue);
             System.IO.StreamWriter sqlFile = new StreamWriter(scriptFileLocation);
             sqlFile.WriteLine(rTxtBox_Script.Text);
             sqlFile.Flush();
