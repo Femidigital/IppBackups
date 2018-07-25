@@ -1202,7 +1202,7 @@ namespace IppBackups
                     try
                     {
                         //lbl_Oupt.Text += "Starting Backup for " + db + ".\n";
-                        rTxtBox_Output.AppendText("Starting Backup for " + db + ".\n",Color.Black);
+                        rTxtBox_Output.AppendText("\nStarting Backup for " + db + ".\n",Color.Black);
 
                         // Perform a time consuming operation and report progress
                         //BackupDatabase(db, sUsername, sPassword, curSrvInstance, destPath);
@@ -1247,7 +1247,7 @@ namespace IppBackups
                         //restorebackgroundWorker.RunWorkerAsync();
                     }
                 }
-                rTxtBox_Output.AppendText("Backup process completed at " + DateTime.Now + "\n", Color.Black);
+                rTxtBox_Output.AppendText("Backup process completed at " + DateTime.Now + "\n", Color.Green);
             }
         }
 
@@ -1457,7 +1457,7 @@ namespace IppBackups
                             }
                             finally
                             {
-                                rTxtBox_Output.AppendText(db + "Restore completed...\n\n",Color.Black);
+                                rTxtBox_Output.AppendText(db + " Restore completed...\n\n",Color.Green);
                             }
                         //}
                         //else
@@ -1470,7 +1470,7 @@ namespace IppBackups
                         rTxtBox_Output.AppendText("\nThere was a problem with the last " + db + " backup, restore can not be performed...\n\n", Color.Red);
                     }
                 }
-                rTxtBox_Output.AppendText("Restore process completed at " + DateTime.Now + "\n", Color.Black);
+                rTxtBox_Output.AppendText("Restore process completed at " + DateTime.Now + "\n", Color.Green);
             }
         }
 
@@ -1592,26 +1592,26 @@ namespace IppBackups
                 // Connect to the specified instance of SQL Server.
                 srv = new Server(serverInstanceToRestoreTo);
                 //lbl_Oupt.Text += "Connected to " + serverInstanceToRestoreTo + " specied instance...'\n";
-                rTxtBox_Output.AppendText("curSrvInstanceToConnect is " + curSrvInstanceToConnect + "...\n", Color.Black);
-                rTxtBox_Output.AppendText("curSrvInstance is " + curSrvInstance + "...\n", Color.Black);
-                rTxtBox_Output.AppendText("serverInstance is " + serverInstance + "...\n", Color.Black);
-                rTxtBox_Output.AppendText("serverInstanceToRestoreTo is " + serverInstanceToRestoreTo + "...\n", Color.Black);
+                rTxtBox_Output.AppendText("DEBUG: curSrvInstanceToConnect is " + curSrvInstanceToConnect + "...\n", Color.Purple);
+                rTxtBox_Output.AppendText("DEBUG: curSrvInstance is " + curSrvInstance + "...\n", Color.Purple);
+                rTxtBox_Output.AppendText("DEBUG: serverInstance is " + serverInstance + "...\n", Color.Purple);
+                rTxtBox_Output.AppendText("DEBUG: serverInstanceToRestoreTo is " + serverInstanceToRestoreTo + "...\n", Color.Purple);
                 //curSrvInstanceToConnect = curSrvInstanceToConnect + "\\" + curSrvInstance;
                 curSrvInstanceToConnect = serverName + "\\" + curSrvInstance;
                 curSrvInstance = curSrvInstanceToConnect;
                 serverInstance = serverInstanceToRestoreTo;
-                rTxtBox_Output.AppendText("Connected to " + serverInstanceToRestoreTo + " specified instance...'\n", Color.Black);
+                rTxtBox_Output.AppendText("DEBUG: Connected to " + serverInstanceToRestoreTo + " specified instance...'\n", Color.Purple);
             }
-            //else
-            //{
-            //    // Connect to the default instance of SQL Server.
-            //    srv = new Server();
-            //    //lbl_Oupt.Text += "Connected to default instance...'\n";
-                
-            //    rTxtBox_Output.AppendText("Connected to default instance...'\n", Color.Black);
-            //}  
-            
-            
+            else
+            {
+                // Connect to the default instance of SQL Server.
+                srv = new Server();
+                //lbl_Oupt.Text += "Connected to default instance...'\n";
+                serverInstance = serverName;
+                rTxtBox_Output.AppendText("Connected to default instance...'\n", Color.Black);
+            }
+
+
             /*if (curSrvInstance != "Default")
             {
                 rTxtBox_Output.AppendText("Incoming server details is " + serverInstance + "...\n", Color.Black);
@@ -1627,7 +1627,9 @@ namespace IppBackups
             FileInfo file = new FileInfo(scriptFile);
             string script = file.OpenText().ReadToEnd();
             SqlConnection conn = new SqlConnection(sqlConnectionString);
+            rTxtBox_Output.AppendText("DEBUG: About to open connection with " + sqlConnectionString + "...\n", Color.Purple);
             conn.Open();
+            rTxtBox_Output.AppendText("DEBUG: Connection opened...\n", Color.Purple);
             SqlCommand cmd = new SqlCommand(script, conn);
             //ServerConnection connection = new ServerConnection(serverInstance);
             //Server sqlServer = new Server(connection);
@@ -1635,9 +1637,10 @@ namespace IppBackups
             {
                 //sqlServer.ConnectionContext.ExecuteNonQuery(script);
                 cmd.ExecuteNonQuery();
-                conn.Close();
                 rTxtBox_Output.AppendText("Script executed successfully...\n", Color.Green);
-                rTxtBox_Output.AppendText("Script executed successfully from " + scriptFile + "...\n", Color.Green);  // debug code
+                conn.Close();
+                rTxtBox_Output.AppendText("DEBUG: Connection closed...\n", Color.Purple);
+                rTxtBox_Output.AppendText("DEBUG: Script executed successfully from " + scriptFile + "...\n", Color.Purple);  // debug code
             }
             catch (SqlServerManagementException e)
             {
