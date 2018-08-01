@@ -366,7 +366,7 @@ namespace IppBackups
 
             //BackupDeviceItem deviceItem = new BackupDeviceItem(destinationPath, DeviceType.File);
             ServerConnection connection = new ServerConnection(serverName, userName, password);
-            
+
             Server sqlServer = new Server(connection);
 
             if (destinationPath.Contains("https:"))
@@ -376,17 +376,17 @@ namespace IppBackups
                 destinationPath = destinationPath.Replace("\\", "/");
                 deviceItem = new BackupDeviceItem(destinationPath, DeviceType.Url);
                 //sqlBackup.CredentialName = credentialName;
-                
+
                 credential = new Credential(sqlServer, credentialName);
-                
+
                 try
-                {                    
+                {
                     sqlBackup.Initialize = true;
                     sqlBackup.SkipTapeHeader = true;
                     //credential.Create("cbsbackups", azureKey);
                     //credential.Create();
-                }                
-                catch(ExecutionFailureException ex)
+                }
+                catch (ExecutionFailureException ex)
                 {
                     rTxtBox_Output.AppendText("Backup already exists...", Color.Red);
                 }
@@ -406,7 +406,7 @@ namespace IppBackups
                 deviceItem = new BackupDeviceItem(destinationPath, DeviceType.File);
                 sqlBackup.ExpirationDate = DateTime.Now.AddDays(3);
             }
-            
+
 
             Database db = sqlServer.Databases[databaseName];
 
@@ -415,25 +415,23 @@ namespace IppBackups
             sqlBackup.ContinueAfterError = true;
             sqlBackup.CopyOnly = true;
 
-            sqlBackup.Devices.Add(deviceItem);            
+            sqlBackup.Devices.Add(deviceItem);
             sqlBackup.Incremental = false;
 
             //sqlBackup.ExpirationDate = DateTime.Now.AddDays(3);
             sqlBackup.LogTruncation = BackupTruncateLogType.NoTruncate;
 
             //sqlBackup.FormatMedia = true;
-            rTxtBox_Output.AppendText("Before SqlBackup() url is " + destinationPath + "\n...", Color.Red);
+            //rTxtBox_Output.AppendText("DEBUG: Before SqlBackup() url is " + destinationPath + "\n...", Color.Purple);
             try
             {
                 sqlBackup.SqlBackup(sqlServer);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                rTxtBox_Output.AppendText("In the catch block...\n", Color.Blue);
-                rTxtBox_Output.AppendText("Exception Details " + e.InnerException + "\n", Color.Blue);
+                rTxtBox_Output.AppendText("DEBUG: In the catch block...\n", Color.Purple);
+                rTxtBox_Output.AppendText("Exception Details " + e.InnerException + "\n", Color.Red);
             }
-
-
         }
 
         public void RestoreDatabaseToOscar(String databaseName, String filePath, String serverName, String serverInstance, String port, String userName, String password, String dataFilePath, String logFilePath, String localCopyBackup)
@@ -443,7 +441,7 @@ namespace IppBackups
             string CopiedBackup = "\\\\" + serverName + "\\" + System.IO.Path.Combine(localCopyBackup, databaseName + ".bak");
             //string targetCopy = CopiedBackup.Replace(":", "$");
             string targetCopy = "";
-            rTxtBox_Output.AppendText("Filepath is : " + filePath + ".\n", Color.Black);
+            rTxtBox_Output.AppendText("Restoring from backup file : " + filePath + ".\n", Color.Black);
             if (filePath.Contains("https://"))
             {
                 targetCopy = filePath;
@@ -494,7 +492,7 @@ namespace IppBackups
 
             Restore sqlRestore = new Restore();
             BackupDeviceItem deviceItem;
-            
+
             if (targetCopy.Contains("https://"))
             {
                 //targetCopy = localiseUNCPath(targetCopy);
@@ -527,25 +525,25 @@ namespace IppBackups
                 targetCopy = targetCopy + "\\" + databaseName + ".bak";
                 deviceItem = new BackupDeviceItem(targetCopy, DeviceType.File);
             }
-           
-            
+
+
 
             //BackupDeviceItem deviceItem = new BackupDeviceItem(targetCopy, DeviceType.File);
             sqlRestore.Devices.Add(deviceItem);
             sqlRestore.Database = databaseName;
             ////lbl_Oupt.Text += "Before connecting to : " + serverName + " by : " + userName + " \n";
 
-            rTxtBox_Output.AppendText("Server Name : " + serverName +  " ; Instance : " + serverInstance + " ... \n", Color.Black);
+            // rTxtBox_Output.AppendText("DEBUG: Server Name : " + serverName +  " ; Instance : " + serverInstance + " ... \n", Color.Purple);
 
             serverInstanceToRestoreTo = serverName;
             //serverInstanceToRestoreTo = serverName + "," + port;
 
             if (serverInstance != "Default")
                 serverInstanceToRestoreTo = serverName + "\\" + serverInstance;
-                //serverInstanceToRestoreTo = serverName + "\\" + serverInstance + "," + port;
+            //serverInstanceToRestoreTo = serverName + "\\" + serverInstance + "," + port;
             //ServerConnection connection = new ServerConnection(serverInstance);
             //ServerConnection connection = new ServerConnection(serverInstanceToRestoreTo);
-            ServerConnection connection = new ServerConnection(serverInstanceToRestoreTo, userName, password);            
+            ServerConnection connection = new ServerConnection(serverInstanceToRestoreTo, userName, password);
             Server sqlServer = new Server(connection);
 
             Database db = sqlServer.Databases[databaseName];
@@ -568,20 +566,20 @@ namespace IppBackups
             logFileLocation = localiseUNCPath(logFileLocation);
 
             try
-            {                
-                db = sqlServer.Databases[databaseName];                
+            {
+                db = sqlServer.Databases[databaseName];
                 RelocateFile rf = new RelocateFile(databaseName, dataFileLocation);
-                
+
                 System.Data.DataTable logicalRestoreFiles = sqlRestore.ReadFileList(sqlServer);
-                
+
                 sqlRestore.RelocateFiles.Add(new RelocateFile(logicalRestoreFiles.Rows[0][0].ToString(), dataFileLocation));
                 sqlRestore.RelocateFiles.Add(new RelocateFile(logicalRestoreFiles.Rows[1][0].ToString(), logFileLocation));
                 sqlRestore.ReplaceDatabase = true;
                 sqlRestore.Complete += new ServerMessageEventHandler(sqlRestore_Complete);
                 sqlRestore.PercentCompleteNotification = 10;
                 sqlRestore.PercentComplete += new PercentCompleteEventHandler(sqlRestore_PercentComplete);
-                
-                rTxtBox_Output.AppendText("About to restore... \n", Color.Black);
+
+                rTxtBox_Output.AppendText("Restoring database... \n", Color.Black);
 
                 //KillAllConnectionsToDb(serverInstanceToRestoreTo, cBox_DestEnvironment.Text, databaseName);
                 sqlRestore.SqlRestore(sqlServer);
@@ -617,10 +615,9 @@ namespace IppBackups
                 db.Alter();
             }
 
-            db.SetOnline();            
+            db.SetOnline();
             sqlServer.Refresh();
             connection.Disconnect();
-
         }
 
         public void RestoreDatabase(String databaseName, String filePath, String serverName, String userName, String password, String dataFilePath, String logFilePath)
@@ -861,13 +858,13 @@ namespace IppBackups
             else if (rBtn_Restore.Checked)
             {
                 backupSource = InputMessageBox();
-                rTxtBox_Output.AppendText("Selected backup source is : " + backupSource, Color.Green);
-                
+                //rTxtBox_Output.AppendText("DEBUG: Selected backup source is : " + backupSource, Color.Purple);
+
                 if (restorebackgroundWorker.IsBusy != true)
                 {
                     restorebackgroundWorker.RunWorkerAsync();
                 }
-               
+
                 ////lbl_Oupt.Text += "Restoring " + cBox_DestEnvironment.Text + " environment with selected database(s)... \n";
                 //restorebackgroundWorker.RunWorkerAsync();
             }
@@ -879,27 +876,27 @@ namespace IppBackups
                     if (backupbackgroundWorker.IsBusy != true)
                     {
                         //lbl_Oupt.Text += "Backing up source database... \n";
-                        rTxtBox_Output.AppendText("Backing up source database... \n",Color.Black);
+                        rTxtBox_Output.AppendText("Backing up selected source database(s)... \n", Color.Black);
                         // Start the asynchronous operation.
                         backupbackgroundWorker.RunWorkerAsync();
                     }
                     else
                     {
                         //lbl_Oupt.Text += "Refresh environment... \n";
-                        rTxtBox_Output.AppendText("Refresh environment... \n",Color.Black);
+                        rTxtBox_Output.AppendText("Refresh environment... \n", Color.Black);
                     }
                 }
                 else
                 {
                     // TODO: Change font color
                     //lbl_Oupt.Text += "Cannot refresh from a lower environemnt...\n";
-                    rTxtBox_Output.AppendText("Cannot refresh from a lower environemnt...\n",Color.Red);
+                    rTxtBox_Output.AppendText("Cannot refresh from a lower environemnt...\n", Color.Red);
                 }
             }
             else
             {
                 //lbl_Oupt.Text += "Select an action to perform...\n";
-                rTxtBox_Output.AppendText("Select an action to perform...\n",Color.Red);
+                rTxtBox_Output.AppendText("Select an action to perform...\n", Color.Red);
             }
         }
 
@@ -933,7 +930,7 @@ namespace IppBackups
 
         private Microsoft.WindowsAzure.Storage.Auth.StorageCredentials GetStorageCredentials(string azureKey)
         {
-            return new Microsoft.WindowsAzure.Storage.Auth.StorageCredentials("cbsbackups", azureKey);
+            return new Microsoft.WindowsAzure.Storage.Auth.StorageCredentials("bsisqlbackups", azureKey);
         }
 
         private Microsoft.WindowsAzure.Storage.Auth.StorageCredentials GetAccountName(string accountName)
@@ -943,117 +940,122 @@ namespace IppBackups
 
         private void VerifyBackupExists()
         {
-             /* Check the Destination Backup directory for the Source Backup file */
-               
-                foreach (string db in databaseList)
+            /* Check the Destination Backup directory for the Source Backup file */
+
+            foreach (string db in databaseList)
+            {
+                string restorePath = "";
+                string destPath = "";
+                r_env = cBox_Environment.SelectedItem.ToString();
+                string curContName = "";
+
+                for (int i = 0; i < _servers[cBox_Server.SelectedIndex].Instances.Count; i++)
                 {
-                    string restorePath = "";
-                    string destPath = "";
-                    r_env = cBox_Environment.SelectedItem.ToString();
-
-                    for (int i = 0; i < _servers[cBox_Server.SelectedIndex].Instances.Count; i++ )
+                    for (int j = 0; j < _servers[cBox_Server.SelectedIndex].Instances[i].Environments.Count; j++)
                     {
-                        for (int j = 0; j < _servers[cBox_Server.SelectedIndex].Instances[i].Environments.Count; j++)
+                        if (cBox_Environment.Text == _servers[cBox_Server.SelectedIndex].Instances[i].Environments[j].Name)
                         {
-                            if (cBox_Environment.Text == _servers[cBox_Server.SelectedIndex].Instances[i].Environments[j].Name)
+                            restorePath = _servers[cBox_Server.SelectedIndex].Instances[i].Backups;
+                            if (restorePath.Contains("https://"))
                             {
-                                restorePath = _servers[cBox_Server.SelectedIndex].Instances[i].Backups;
-                                if (restorePath.Contains("https://"))
+                                //destPath = restorePath;
+                                //var myKey = new Microsoft.WindowsAzure.Storage.Auth.StorageCredentials(_servers[cBox_Server.SelectedIndex].Instances[i].AzureKey);
+                                //myKey. = _servers[cBox_Server.SelectedIndex].Instances[i].AzureKey;
+                                var azureKey = _servers[cBox_Server.SelectedIndex].Instances[i].AzureKey;
+                                // rTxtBox_Output.AppendText("DEBUG: Key value = " + azureKey + "...\n", Color.Purple);
+                                string bakUrl = _servers[cBox_Server.SelectedIndex].Instances[i].Backups;
+                                // string contName = bakUrl.Substring(0, bakUrl.LastIndexOf('/') + 1);
+                                string[] bakUrlSplit = Regex.Split(bakUrl, "/");
+
+                                string contName = bakUrlSplit[3];
+                                curContName = contName;
+
+                                var bla = GetStorageCredentials(azureKey);
+                                // rTxtBox_Output.AppendText("DEBUG: Key value After GetStorageCredentials = " + bla.SASToken + "...\n", Color.Purple);
+                                // rTxtBox_Output.AppendText("DEBUG: Accountname value After GetStorageCredentials = " + bla.AccountName + "...\n", Color.Purple);
+                                myKey = bla;
+                                //bla.AccountName = GetAccountName("cbsbackups");                                    
+
+                                // rTxtBox_Output.AppendText("DEBUG: Will have to check if backup exists in Azure....\n", Color.Purple);
+                                restoreFromAzure = true;
+
+                                try
                                 {
-                                    //destPath = restorePath;
-                                    //var myKey = new Microsoft.WindowsAzure.Storage.Auth.StorageCredentials(_servers[cBox_Server.SelectedIndex].Instances[i].AzureKey);
-                                    //myKey. = _servers[cBox_Server.SelectedIndex].Instances[i].AzureKey;
-                                    var azureKey = _servers[cBox_Server.SelectedIndex].Instances[i].AzureKey;
-                                     rTxtBox_Output.AppendText("Key value = " + azureKey + "...\n", Color.Blue);
-                                    
-                                    var bla = GetStorageCredentials(azureKey);
-                                    rTxtBox_Output.AppendText("Key value After GetStorageCredentials = " + bla.SASToken + "...\n", Color.Blue);
-                                    rTxtBox_Output.AppendText("Accountname value After GetStorageCredentials = " + bla.AccountName + "...\n", Color.Blue);
-                                    myKey = bla;
-                                    //bla.AccountName = GetAccountName("cbsbackups");                                    
+                                    // rTxtBox_Output.AppendText("DEBUG: Before the call AzureBlobManager constructor call..\n", Color.Purple);
+                                    var abm = new AzureBlobManager(contName, bla);
 
-                                    rTxtBox_Output.AppendText("Will have to check if backup exists in Azure....\n", Color.Blue);
-                                    restoreFromAzure = true;
-                                  //  rTxtBox_Output.AppendText("Using " + bla.ToString(), Color.Blue);
-
-                                    try
-                                    {
-                                        rTxtBox_Output.AppendText("Before the call AzureBlobManager constructor call..\n", Color.Blue);
-                                        var abm = new AzureBlobManager("cbs", bla);
-
-                                        //rTxtBox_Output.AppendText("Using " + bla.ToString(), Color.Blue);
-                                        rTxtBox_Output.AppendText("ContainerName = " + abm.ContainerName + "...\n", Color.Blue);
-                                        destPath = restorePath + "/" + db + ".bak";
-                                    }
-                                    catch(Exception ex)
-                                    {
-                                        rTxtBox_Output.AppendText("OUR MESSAGE = " + ex.InnerException + "...\n", Color.Blue);
-                                    }
-
+                                    // rTxtBox_Output.AppendText("DEBUG: ContainerName = " + abm.ContainerName + "...\n", Color.Purple);
+                                    destPath = restorePath + "/" + db + ".bak";
                                 }
-                                else
+                                catch (Exception ex)
                                 {
-                                    destPath = restorePath + "\\" + db + ".bak";
+                                    rTxtBox_Output.AppendText("Azure Blob Manager Exception:" + ex.InnerException + "...\n", Color.Red);
                                 }
+
+                            }
+                            else
+                            {
+                                destPath = restorePath + "\\" + db + ".bak";
                             }
                         }
                     }
+                }
 
 
-                    rTxtBox_Output.AppendText("DestPath is " + destPath + "\n", Color.Blue);
-                    rTxtBox_Output.AppendText("RestorePath is " + restorePath + "...\n", Color.Blue);
-                    //string destFilePath = "\\\\" + cBox_Server.Text + "\\" + destPath;
-                    string destFilePath = destPath;
+                // rTxtBox_Output.AppendText("DEBUG: DestPath is " + destPath + "\n", Color.Purple);
+                // rTxtBox_Output.AppendText("DEBUG: RestorePath is " + restorePath + "...\n", Color.Purple);
 
-                    if (destFilePath.Contains("https://"))
+                string destFilePath = destPath;
+
+                if (destFilePath.Contains("https://"))
+                {
+                    // rTxtBox_Output.AppendText("DEBUG: Will have to check if backup exists in Azure....\n", Color.Purple);
+                    restoreFromAzure = true;
+                }
+                else
+                {
+                    destFilePath = "\\\\" + cBox_Server.Text + "\\" + destPath;
+                    destFilePath = destFilePath.Replace(':', '$');
+                }
+
+                if (restoreFromAzure)
+                {
+
+                    //myKey = _servers[cBox_Server.SelectedIndex].Instances[i].AzureKey;
+                    //AzureBlobManager abm = new AzureBlobManager(destFilePath, myKey);
+                    //AzureBlobManager abm = new AzureBlobManager("backups", myKey);
+                    AzureBlobManager abm2 = new AzureBlobManager(curContName, myKey);
+                    // rTxtBox_Output.AppendText("DEBUG: After calling second AzureBlobManager constructor ..\n", Color.Purple);
+                    // rTxtBox_Output.AppendText("DEBUG: ContainerName is " + abm2.ContainerName + "...\n", Color.Purple);
+                    /*if(abm2.BlobClient != null)
                     {
-                        rTxtBox_Output.AppendText("Will have to check if backup exists in Azure....\n", Color.Blue);
-                        restoreFromAzure = true;
+                         rTxtBox_Output.AppendText("DEBUG: Blob client is " + abm2.BlobClient.ToString()  + "\n", Color.Purple);
+                         rTxtBox_Output.AppendText("DEBUG: Blob client is fine\n", Color.Purple);
                     }
                     else
                     {
-                        destFilePath = "\\\\" + cBox_Server.Text + "\\" + destPath;
-                        destFilePath = destFilePath.Replace(':', '$');
+                        rTxtBox_Output.AppendText("DEBUG: Blob client has issue", Color.Purple);
                     }
 
-                    if(restoreFromAzure)
+                    if (abm2.AzureContainer != null)
                     {
+                         rTxtBox_Output.AppendText("DEBUG: Azure Container is " + abm2.AzureContainer.Name + "...\n", Color.Purple);
+                         rTxtBox_Output.AppendText("DEBUG: Azure Container is fine\n", Color.Purple);
+                    }
+                    else
+                    {
+                        rTxtBox_Output.AppendText("DEBUG: Azure Container has issue", Color.Purple);
+                    }*/
 
-                        //myKey = _servers[cBox_Server.SelectedIndex].Instances[i].AzureKey;
-                        //AzureBlobManager abm = new AzureBlobManager(destFilePath, myKey);
-                        //AzureBlobManager abm = new AzureBlobManager("backups", myKey);
-                        AzureBlobManager abm2 = new AzureBlobManager("cbs", myKey);
-                        rTxtBox_Output.AppendText("After calling second AzureBlobManager constructor ..\n", Color.Blue);
-                       rTxtBox_Output.AppendText("ContainerName is " + abm2.ContainerName + "...\n", Color.Blue);
-                       if(abm2.BlobClient != null)
-                       {
-                            rTxtBox_Output.AppendText("Blob client is " + abm2.BlobClient.ToString()  + "\n", Color.Green);
-                            rTxtBox_Output.AppendText("Blob client is fine\n", Color.Blue);
-                       }
-                       else
-                       {
-                           rTxtBox_Output.AppendText("Blob client has issue", Color.Blue);
-                       }
+                    //rTxtBox_Output.AppendText("BlobName is " + abm.BlobName + "...\n", Color.Blue);
+                    //rTxtBox_Output.AppendText("DirectoryName is " + abm.DirectoryName + "...\n", Color.Blue);
+                    //AzureBlobManager abm = new AzureBlobManager(destFilePath, GetStorageCredentials(myKey));
 
-                       if (abm2.AzureContainer != null)
-                       {
-                            rTxtBox_Output.AppendText("Azure Container is " + abm2.AzureContainer.Name + "...\n", Color.Blue);
-                            rTxtBox_Output.AppendText("Azure Container is fine\n", Color.Blue);
-                       }
-                       else
-                       {
-                           rTxtBox_Output.AppendText("Azure Container has issue", Color.Blue);
-                       }
-
-                        //rTxtBox_Output.AppendText("BlobName is " + abm.BlobName + "...\n", Color.Blue);
-                        //rTxtBox_Output.AppendText("DirectoryName is " + abm.DirectoryName + "...\n", Color.Blue);
-                        //AzureBlobManager abm = new AzureBlobManager(destFilePath, GetStorageCredentials(myKey));
-
-                        //AzureBlobManager abm = new AzureBlobManager();
-                        //abm.ContainerName = AzureBlobManager.ROOT_CONTAINER_NAME;
-                        //rTxtBox_Output.AppendText("About to check...\n", Color.Blue);
-                        //abm.BlobName = destFilePath + "/" + db + "/.bak";                        
-                        string curDb = db.ToString() + ".bak";
+                    //AzureBlobManager abm = new AzureBlobManager();
+                    //abm.ContainerName = AzureBlobManager.ROOT_CONTAINER_NAME;
+                    //rTxtBox_Output.AppendText("About to check...\n", Color.Blue);
+                    //abm.BlobName = destFilePath + "/" + db + "/.bak";                        
+                    string curDb = db.ToString() + ".bak";
                     /*
                         //if(abm.DoesBlobExist(abm.ContainerName, abm.BlobName))
                         rTxtBox_Output.AppendText("About to check Container for " + curDb + " ...\n", Color.Blue);
@@ -1068,59 +1070,60 @@ namespace IppBackups
                            rTxtBox_Output.AppendText("Container missing in Azure...\n", Color.Blue);
                         }*/
 
-                        try
+                    try
+                    {
+
+                        rTxtBox_Output.AppendText("Checking Azure container for " + curDb + "\n...", Color.Black);
+
+                        //if(abm2.DoesBlobExist("cbs", db))
+                        if (abm2.DoesBlobExist(curContName, curDb))
                         {
-                            
-                            rTxtBox_Output.AppendText("Checking Container for " + curDb + "\n...", Color.Green);
+                            rTxtBox_Output.AppendText("Found existing Backup in Azure...\n", Color.Black);
 
-                            if (abm2.DoesBlobExist("cbs", db))
+                            if (!backStatus.ContainsKey(db))
                             {
-                                rTxtBox_Output.AppendText("Found existing Backup in Azure...\n", Color.Blue);
-
-                                if(!backStatus.ContainsKey(db))
-                                {
-                                    backStatus.Add(db, true);
-                                }
-
-                                if(restorebackgroundWorker.IsBusy != true)
-                                {
-                                    restorebackgroundWorker.RunWorkerAsync();
-                                }
-                            }
-                            else
-                            {
-                                rTxtBox_Output.AppendText("Backup missing in Azure...\n", Color.Blue);
+                                backStatus.Add(db, true);
                             }
 
+                            if (restorebackgroundWorker.IsBusy != true)
+                            {
+                                restorebackgroundWorker.RunWorkerAsync();
+                            }
                         }
-                        catch(Exception ex)
+                        else
                         {
-                            rTxtBox_Output.AppendText("Exception:" + ex.InnerException, Color.Red);
-                        }                                                                                        
+                            rTxtBox_Output.AppendText("Backup missing in Azure...\n", Color.Red);
+                        }
 
                     }
-                    else if (File.Exists(destFilePath))
+                    catch (Exception ex)
                     {
-                        //lbl_Oupt.Text += "Backup file exists for the source database at " + destFilePath + " ...\n";
-                        rTxtBox_Output.AppendText("Backup file exists for the source database at " + destFilePath + " ...\n",Color.Black);
-                        //File.Delete(destPath);
-                        if (!backStatus.ContainsKey(db))
-                        {
-                            backStatus.Add(db, true);
-                        }
-                        //lbl_Oupt.Text += "Restoring " + cBox_Environment.Text + " environment with selected database(s)... \n";
-                        rTxtBox_Output.AppendText("Restoring " + cBox_Environment.Text + " environment with selected database(s)... \n",Color.Black);
-                        if (restorebackgroundWorker.IsBusy != true)
-                        {
-                            restorebackgroundWorker.RunWorkerAsync();
-                        }
-                    }        
-                    else
+                        rTxtBox_Output.AppendText("Exception:" + ex.InnerException + "\n", Color.Red);
+                    }
+
+                }
+                else if (File.Exists(destFilePath))
+                {
+                    //lbl_Oupt.Text += "Backup file exists for the source database at " + destFilePath + " ...\n";
+                    rTxtBox_Output.AppendText("Backup file exists for the source database at " + destFilePath + " ...\n", Color.Black);
+                    //File.Delete(destPath);
+                    if (!backStatus.ContainsKey(db))
                     {
-                        //lbl_Oupt.Text += "Missing backup file to restore at " + destFilePath + "...\n";
-                        rTxtBox_Output.AppendText("Missing backup file to restore at " + destFilePath + "...\n",Color.Red);
+                        backStatus.Add(db, true);
+                    }
+                    //lbl_Oupt.Text += "Restoring " + cBox_Environment.Text + " environment with selected database(s)... \n";
+                    rTxtBox_Output.AppendText("Restoring " + cBox_Environment.Text + " environment with selected database(s)... \n", Color.Black);
+                    if (restorebackgroundWorker.IsBusy != true)
+                    {
+                        restorebackgroundWorker.RunWorkerAsync();
                     }
                 }
+                else
+                {
+                    //lbl_Oupt.Text += "Missing backup file to restore at " + destFilePath + "...\n";
+                    rTxtBox_Output.AppendText("Missing backup file to restore at " + destFilePath + "...\n", Color.Red);
+                }
+            }
         }
 
         //public int doRestore()
@@ -1164,7 +1167,7 @@ namespace IppBackups
             else
             {
                 // TODO: Fix deleting or relacing existing backup file
-                rTxtBox_Output.AppendText("Backup process started at " + DateTime.Now + "\n", Color.Black);
+                rTxtBox_Output.AppendText("\tBackup process started at " + DateTime.Now + "\n", Color.Black);
                 foreach (string db in databaseList)
                 {
                     //TODO: rewrite to cater for azure location
@@ -1187,36 +1190,36 @@ namespace IppBackups
                         destFilePath = "\\\\" + cBox_Server.Text + "\\" + backupDestination + "\\" + db + ".bak";
                         destFilePath = destFilePath.Replace(':', '$');
                     }
-                    
+
                     /* Trace Comments */
                     //lbl_Oupt.Text += "Backing up to " + destPath + "\n";
-                    rTxtBox_Output.AppendText("Backing up to " + destPath + "\n",Color.Black);
+                    //rTxtBox_Output.AppendText("Backing up to " + destPath + "\n",Color.Black);
 
                     if (File.Exists(destFilePath))
                     {
                         //lbl_Oupt.Text += "Deleting existing backup file ...\n";
-                        rTxtBox_Output.AppendText("Deleting existing backup file ...\n",Color.Black);
+                        rTxtBox_Output.AppendText("Deleting existing backup file ...\n", Color.Black);
                         File.Delete(destFilePath);
                     }
 
                     try
                     {
                         //lbl_Oupt.Text += "Starting Backup for " + db + ".\n";
-                        rTxtBox_Output.AppendText("\nStarting Backup for " + db + ".\n",Color.Black);
+                        rTxtBox_Output.AppendText("\n\tStarting Backup for " + db + ".\n", Color.Black);
 
                         // Perform a time consuming operation and report progress
                         //BackupDatabase(db, sUsername, sPassword, curSrvInstance, destPath);
                         //TODO: Check AzureKey, if it is not empty then backup to Azure.
-                        rTxtBox_Output.AppendText("Backup destination is " + destPath + "\n", Color.Pink);
+                        //rTxtBox_Output.AppendText("DEBUG: Backup destination is " + destPath + "\n", Color.Purple);
                         if (destPath.Contains("https:"))
                         {
-                            rTxtBox_Output.AppendText("Backup to Azure blob storage., with Azure Key " + azureKey + " ..\n ", Color.Pink);
+                            // rTxtBox_Output.AppendText("DEBUG: Backup to Azure blob storage., with Azure Key " + azureKey + " ..\n ", Color.Purple);
                             BackupDatabase(db, sUsername, sPassword, curSrvInstanceToConnect, destPath);
                         }
                         else
                         {
                             BackupDatabase(db, sUsername, sPassword, curSrvInstanceToConnect, destPath);
-                            
+
                             //worker.ReportProgress();
                         }
                         backStatus.Add(db, true);
@@ -1224,8 +1227,8 @@ namespace IppBackups
                     catch (Exception ex)
                     {
                         backStatus.Add(db, false);
-                        rTxtBox_Output.AppendText("Dictionary error after backup \n",Color.Red);
-                        rTxtBox_Output.AppendText(ex.Message + "\n",Color.Red);
+                        rTxtBox_Output.AppendText("Dictionary error after backup \n", Color.Red);
+                        rTxtBox_Output.AppendText(ex.Message + "\n", Color.Red);
                         rTxtBox_Output.AppendText(ex.InnerException + "\n", Color.Red);
                     }
                     finally
@@ -1236,18 +1239,18 @@ namespace IppBackups
                         {
                             // TODO: Change font color to green
                             //lbl_Oupt.Text += "Backup completed...\n";
-                            rTxtBox_Output.AppendText("Backup completed...\n",Color.Black);
+                            rTxtBox_Output.AppendText("\tBackup completed...\n", Color.Green);
                         }
                         else
                         {
                             // TODO: Change font color
                             //lbl_Oupt.Text += "Backup completed with error(s)...\n";
-                            rTxtBox_Output.AppendText("Backup completed with error(s)...\n",Color.Red);
+                            rTxtBox_Output.AppendText("\tBackup completed with error(s)...\n", Color.Red);
                         }
                         //restorebackgroundWorker.RunWorkerAsync();
                     }
                 }
-                rTxtBox_Output.AppendText("Backup process completed at " + DateTime.Now + "\n", Color.Green);
+                rTxtBox_Output.AppendText("\n\tBackup process completed at " + DateTime.Now + "\n", Color.Green);
             }
         }
 
@@ -1262,7 +1265,7 @@ namespace IppBackups
             if (e.Cancelled == true)
             {
                 //lbl_Oupt.Text += "Canceled! \n";
-                rTxtBox_Output.AppendText("Canceled! \n",Color.Black);
+                rTxtBox_Output.AppendText("Canceled! \n",Color.Yellow);
             }
             else if (e.Error != null)
             {
@@ -1273,7 +1276,7 @@ namespace IppBackups
             else
             {
                 //lbl_Oupt.Text += "Done!!!\n\n";
-                rTxtBox_Output.AppendText("Done!!!\n\n",Color.Black);
+                rTxtBox_Output.AppendText("All selected backups completed\n\n",Color.Black);
                 if (rBtn_Refresh.Checked)
                 {
                     //lbl_Oupt.Text += "Refreshing " + cBox_DestEnvironment.Text + " environment with selected database(s)... \n";
@@ -1355,7 +1358,6 @@ namespace IppBackups
                 {
                     if (backStatus.ContainsKey(db) || rBtn_Restore.Checked)
                     {
-                        rTxtBox_Output.AppendText("In outer if statement... " + DateTime.Now + "\n", Color.Black);
                         ///if (backStatus[db] || rBtn_Restore.Checked)
                         //if (rBtn_Restore.Checked)
                         //{
@@ -1375,11 +1377,11 @@ namespace IppBackups
                                 string filePath = "";
                                 if (backupDestination.Contains("https"))
                                 {
-                                    rTxtBox_Output.AppendText("Restoring from Azure...\n", Color.Blue);
+                                    rTxtBox_Output.AppendText("Restoring from Azure...\n", Color.Black);
                                     filePath = backupDestination + "/" + db + ".bak";
                                     if (rBtn_Restore.Checked)
                                     {
-                                        rTxtBox_Output.AppendText("Updating from soure path in Azure...\n", Color.Blue);
+                                        rTxtBox_Output.AppendText("Updating from soure path in Azure...\n", Color.Black);
                                         filePath = filePath.Replace(cBox_Environment.Text, backupSource);
                                     }
                                     //else
@@ -1389,30 +1391,30 @@ namespace IppBackups
                                 }
                                 else
                                 {
-                                    rTxtBox_Output.AppendText("Restoring from local folder...\n", Color.Blue);
+                                    rTxtBox_Output.AppendText("Restoring from local folder...\n", Color.Black);
                                     filePath = "\\\\" + curSrv + "\\" + backupDestination.Replace(":", "$") + "\\" + db + ".bak";
                                 }
                                
-                                rTxtBox_Output.AppendText("Starting restore for " + db + ".'\n",Color.Black);
+                                rTxtBox_Output.AppendText("\n\tStarting restore for " + db + ".'\n",Color.Black);
 
                                 // Perform a time consuming operation and report progress
 
-                                rTxtBox_Output.AppendText("Restore : " + db.Replace(cBox_Environment.Text, backupSource) + " database to " + restore_db + " database on : " + filePath + " to : " + restore_dataFilePath + " and : " + restore_logFilePath + "\n",Color.Black);
-                                rTxtBox_Output.AppendText("User : " + r_sUsername + "\n",Color.Black);
-                                rTxtBox_Output.AppendText("Selected destination server  : " + restoreToSrv + "\n",Color.Black);
+                                //rTxtBox_Output.AppendText("Restore : " + db.Replace(cBox_Environment.Text, backupSource) + " database to " + restore_db + " database on : " + filePath + " to : " + restore_dataFilePath + " and : " + restore_logFilePath + "\n",Color.Black);
+                                //rTxtBox_Output.AppendText("DEBUG: User :- " + r_sUsername + "\n",Color.Purple);
+                                //rTxtBox_Output.AppendText("DEBUG: Selected destination server  : " + restoreToSrv + "\n",Color.Purple);
                                 // TODO: Workout how to identify which domain the server is under
                                 restoringToOscar = oscarServers.Any(restoreToSrv.Contains);
                                 //if (restoreToSrv == "UK-CHFMIGSQL" || restoreToSrv == "UK-CHDEVSQL01" || restoreToSrv == "UK-CHDEVSQL02" || restoreToSrv == "FDC_TAB" || restoreToSrv == "CHI-7S45842" || restoreToSrv == "DEV-SENT01" || restoreToSrv == "UK-DEVEPI7" || restoreToSrv == "BSI16DBS04PRV" || restoreToSrv == "BSI16DBS03PRV" || restoreToSrv == "BSI10DBS03PRV")
                                 if (restoringToOscar)
                                 {
                                     //lbl_Oupt.Text += "Restoring database to OSCAR domain.\n";
-                                    rTxtBox_Output.AppendText("Restoring database to OSCAR domain.\n",Color.Black);
+                                    //rTxtBox_Output.AppendText("DEBUG: Restoring database to OSCAR domain.\n",Color.Purple);
                                     RestoreDatabaseToOscar(restore_db, filePath, srvName, srvInstance, r_port, r_sUsername, r_sPassword, restore_dataFilePath, restore_logFilePath, localcopy);
                                 }
                                 else
                                 {
                                     //lbl_Oupt.Text += "Restoring database to PRIVATE domain.\n";
-                                    rTxtBox_Output.AppendText("Restoring database to PRIVATE domain.\n",Color.Black);
+                                    //rTxtBox_Output.AppendText("DEBUG: Restoring database to PRIVATE domain.\n",Color.Purple);
                                     // RestoreDatabase(restore_db, filePath, srvName, r_sUsername, r_sPassword, dataFilePath, logFilePath);
                                     RestoreDatabaseToPrivate(restore_db, filePath, srvName, srvInstance, r_sUsername, r_sPassword, restore_dataFilePath, restore_logFilePath, localcopy);
                                 }
@@ -1423,7 +1425,7 @@ namespace IppBackups
                                     //Server myServer = new Server(srvInstance);
                                     Server myServer = new Server(srvName);
                                     //lbl_Oupt.Text += "Calling GenerateViewScriptWithDependencies " + srvName +" ...\n";
-                                    rTxtBox_Output.AppendText("Calling GenerateViewScriptWithDependencies " + srvName + " ...\n",Color.Black);
+                                    rTxtBox_Output.AppendText("\tCalling GenerateViewScriptWithDependencies " + srvName + " ...\n",Color.Black);
                                     //GenerateViewScript(myServer, restore_db);
                                     GenerateViewScriptWithDependencies(myServer, restore_db);
                                 }
@@ -1457,7 +1459,7 @@ namespace IppBackups
                             }
                             finally
                             {
-                                rTxtBox_Output.AppendText(db + " Restore completed...\n\n",Color.Green);
+                                rTxtBox_Output.AppendText("\t" + db + " Restore completed...\n\n",Color.Green);
                             }
                         //}
                         //else
@@ -1467,7 +1469,7 @@ namespace IppBackups
                     }
                     else
                     {
-                        rTxtBox_Output.AppendText("\nThere was a problem with the last " + db + " backup, restore can not be performed...\n\n", Color.Red);
+                        rTxtBox_Output.AppendText("\n\tThere was a problem with the last " + db + " backup, restore can not be performed...\n\n", Color.Red);
                     }
                 }
                 rTxtBox_Output.AppendText("Restore process completed at " + DateTime.Now + "\n", Color.Green);
@@ -1485,7 +1487,7 @@ namespace IppBackups
             if (e.Cancelled == true)
             {
                 //lbl_Oupt.Text += "Canceled! '\n";
-                rTxtBox_Output.AppendText("Canceled! '\n",Color.Black);
+                rTxtBox_Output.AppendText("Canceled! '\n",Color.Yellow);
             }
             else if (e.Error != null)
             {
@@ -1496,7 +1498,7 @@ namespace IppBackups
             else
             {
                 //lbl_Oupt.Text += "Restore Done! '\n";
-                rTxtBox_Output.AppendText("Restore Done! '\n",Color.Black);
+                rTxtBox_Output.AppendText("All selected databases has been restored. '\n",Color.Green);
             }
         }
 
@@ -1583,7 +1585,7 @@ namespace IppBackups
         private void update_DatabaseEntries(string serverName, string serverInstance, string env, string db, string cur_ScriptFile)
         {
             //lbl_Oupt.Text += "Updating Database entries for " + db + "...\n";
-            rTxtBox_Output.AppendText("Updating Database entries for " + db + " using " + cur_ScriptFile  + " on server " + serverName + " instance " + serverInstance + "...\n",Color.Black);
+            rTxtBox_Output.AppendText("Updating Database entries for " + db + " using " + cur_ScriptFile + " on server " + serverName + " instance " + serverInstance + "...\n", Color.Black);
 
             /* Try manipulating the incoming server details to cater for both default and instanced SQL */
             Server srv;
@@ -1645,13 +1647,13 @@ namespace IppBackups
             catch (SqlServerManagementException e)
             {
                 rTxtBox_Output.AppendText("Inside SqlServerManagementExcecption block...\n", Color.Red);
-                rTxtBox_Output.AppendText(e.InnerException + "\n",Color.Red);
+                rTxtBox_Output.AppendText(e.InnerException + "\n", Color.Red);
             }
             catch (SqlException e)
             {
                 rTxtBox_Output.AppendText("Inside SqlException...\n", Color.Red);
                 rTxtBox_Output.AppendText(e.Message + "\n" + e.StackTrace + "\n", Color.Red);
-                rTxtBox_Output.AppendText(e.InnerException + "\n",Color.Red);
+                rTxtBox_Output.AppendText(e.InnerException + "\n", Color.Red);
             }
         }
 
