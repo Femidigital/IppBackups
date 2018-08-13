@@ -369,6 +369,7 @@ namespace IppBackups
 
             //BackupDeviceItem deviceItem = new BackupDeviceItem(destinationPath, DeviceType.File);
             ServerConnection connection = new ServerConnection(serverName, userName, password);
+            connection.StatementTimeout = 3600;
 
             Server sqlServer = new Server(connection);
 
@@ -421,6 +422,7 @@ namespace IppBackups
             sqlBackup.Devices.Add(deviceItem);
             sqlBackup.Incremental = false;
             sqlBackup.PercentComplete += SqlBackup_PercentComplete;
+            //sqlBackup.
             //sqlBackup.Abort 
 
             //sqlBackup.ExpirationDate = DateTime.Now.AddDays(3);
@@ -555,6 +557,7 @@ namespace IppBackups
             //ServerConnection connection = new ServerConnection(serverInstance);
             //ServerConnection connection = new ServerConnection(serverInstanceToRestoreTo);
             ServerConnection connection = new ServerConnection(serverInstanceToRestoreTo, userName, password);
+            connection.StatementTimeout = 3600;
             Server sqlServer = new Server(connection);
 
             Database db = sqlServer.Databases[databaseName];
@@ -597,6 +600,7 @@ namespace IppBackups
                 sqlRestore.Complete += new ServerMessageEventHandler(sqlRestore_Complete);
                 sqlRestore.PercentCompleteNotification = 10;
                 sqlRestore.PercentComplete += SqlRestore_PercentComplete1;
+    
                 //sqlRestore.PercentComplete += new PercentCompleteEventHandler(sqlRestore_PercentComplete);
 
                 rTxtBox_Output.AppendText("\tRestoring database... \n", Color.Black);
@@ -604,11 +608,18 @@ namespace IppBackups
                 //KillAllConnectionsToDb(serverInstanceToRestoreTo, cBox_DestEnvironment.Text, databaseName);
                 sqlRestore.SqlRestore(sqlServer);
             }
+            catch (SmoException ex)
+            {
+                rTxtBox_Output.AppendText("\tSMO Exception : " + ex.InnerException + " \n", Color.Red);
+            }
             catch (Exception ex)
             {
                 // TODO: Change font color
                 //lbl_Oupt.Text += ex.InnerException.Message + "'\n";
-                rTxtBox_Output.AppendText(ex.InnerException.Message + "'\n", Color.Red);
+                rTxtBox_Output.AppendText("\tException: " + ex.InnerException.Message + "\n", Color.Red);                
+            }
+            finally
+            {
                 rTxtBox_Output.AppendText("\tSetting Database back to MultipleUser mode... '\n", Color.Black);
                 db.DatabaseOptions.UserAccess = DatabaseUserAccess.Multiple;
                 db.Alter(TerminationClause.RollbackTransactionsImmediately);
@@ -1416,9 +1427,14 @@ namespace IppBackups
                                     //Server myServer = new Server(srvInstance);
                                     Server myServer = new Server(srvName);
                                     //lbl_Oupt.Text += "Calling GenerateViewScriptWithDependencies " + srvName +" ...\n";
-                                    rTxtBox_Output.AppendText("\t\tCalling GenerateViewScriptWithDependencies " + srvName + " ...\n",Color.Black);
-                                    //GenerateViewScript(myServer, restore_db);
-                                    GenerateViewScriptWithDependencies(myServer, restore_db);
+                                    rTxtBox_Output.AppendText("\t\tCalling GenerateDatabaseObjectsScriptWithDependencies " + srvName + " ...\n",Color.Black);
+                                    
+                                    //GenerateViewScriptWithDependencies(myServer, restore_db);                                    
+                                    if (restore_db == (restoreToEnv + "-CloudAdmin"))
+                                    {
+                                        GenerateDatabaseObjectsScriptWithDependencies(myServer, restore_db, "Synonyms");
+                                    }
+                                    GenerateDatabaseObjectsScriptWithDependencies(myServer, restore_db, "Views");
                                 }
 
                                 //if (restore_db.Contains("CloudAdmin") || restore_db.Contains("PersonalData"))
@@ -1429,7 +1445,8 @@ namespace IppBackups
                                 {
                                     string dbPart = db.Substring(dashIndex, db.Length - dashIndex);
 
-                                    if (file.Name.ToLower().Contains("_" + restoreToEnv.ToLower()) && file.Name.ToLower().Contains(dbPart.ToLower() + "_") && restore_db.ToLower().Contains(restoreToEnv.ToLower() + "-") && restore_db.ToLower().Contains("-" + dbPart.ToLower()))
+                                    //if (file.Name.ToLower().Contains("_" + restoreToEnv.ToLower()) && file.Name.ToLower().Contains(dbPart.ToLower() + "_") && restore_db.ToLower().Contains(restoreToEnv.ToLower() + "-") && restore_db.ToLower().Contains("-" + dbPart.ToLower()))
+                                    if ( file.Name.ToLower().Contains("_" + restoreToEnv.ToLower()) && file.Name.ToLower().Contains(dbPart.ToLower() + "_") && restore_db.ToLower().Contains(restoreToEnv.ToLower() + "-") && restore_db.ToLower().Contains("-" + dbPart.ToLower()) && file.Name.StartsWith(dbPart) )
                                     {
                                         //update_DatabaseEntries(srvName, restoreToEnv, restore_db, file.Name);
                                         update_DatabaseEntries(srvName, srvInstance, restoreToEnv, restore_db, file.Name);
@@ -1718,7 +1735,7 @@ namespace IppBackups
                         else if (rBtn_Restore.Checked)
                         {
                             //updatedScript = Regex.Replace(create_script, Environment.CI | Environment.DEV | Environment.MIG | Environment.PPD | Environment.PROD | Environment.QA | Environment.TEST  + "-", cBox_Environment.Text + "-", RegexOptions.IgnoreCase);
-                            updatedScript = Regex.Replace(create_script,  "PROD-", cBox_Environment.Text + "-", RegexOptions.IgnoreCase);
+                            updatedScript = Regex.Replace(create_script,  backupSource + "-", cBox_Environment.Text + "-", RegexOptions.IgnoreCase);
                         }
 
                         sqlFile.WriteLine(updatedScript);
@@ -1868,6 +1885,322 @@ namespace IppBackups
             UpdateView(rServer.ToString(), destEnv, db);
         }
 
+        private void GenerateDatabaseObjectsScriptWithDependencies(Server rServer, string db, string dbObj)
+        {
+            string destEnv = "";
+            System.IO.StreamWriter sqlFile = new StreamWriter("Create" + dbObj + "_" + db + ".sql");
+
+            Server srv;
+            if (serverInstanceToRestoreTo != "Default")
+            {
+                // Connect to the specified instance of SQL Server.
+                srv = new Server(serverInstanceToRestoreTo);
+            }
+            else
+            {
+                // Connect to the default instance of SQL Server.
+                srv = new Server();
+            }
+
+            // Reference the database.
+            Database restoreDb = srv.Databases[db];
+
+            // Define a Scripter object and set the required scripting options.
+            Scripter scrp = new Scripter(srv);
+            scrp.Options.ScriptDrops = true;
+            scrp.Options.IncludeIfNotExists = true;
+            scrp.Options.WithDependencies = true;
+
+            ScriptingOptions scriptOptions = new ScriptingOptions();
+            scriptOptions.ScriptDrops = true;
+            scriptOptions.IncludeIfNotExists = true;
+
+            ScriptingOptions scriptOptionsForCreate = new ScriptingOptions();
+            scriptOptionsForCreate.AnsiPadding = true;
+            scriptOptionsForCreate.ExtendedProperties = true;
+            scriptOptionsForCreate.IncludeIfNotExists = true;
+
+            UrnCollection udvObjs = new UrnCollection();
+
+            // Iterate through the views in database and script each one. Display the script.
+            rTxtBox_Output.AppendText("\t\tCollating all " + dbObj + " for this database...'\n", Color.Black);
+
+            switch (dbObj)
+            {
+                case "Views":
+                    foreach (Microsoft.SqlServer.Management.Smo.View view in restoreDb.Views)
+                    {
+                        // Check if the view is not a system view            
+                        if (!view.IsSystemObject)
+                        {
+                            udvObjs.Add(view.Urn);
+                        }
+                    }
+                    break;
+                case "Synonyms":
+                    foreach (Microsoft.SqlServer.Management.Smo.Synonym synonym in restoreDb.Synonyms)
+                    {
+                        // Check if the synonym is not a system view
+                        //if (!synonym..IsSchemaOwned)
+                        //{
+                            udvObjs.Add(synonym.Urn);
+                        //}
+                    }
+                    break;
+                case "StdProc":
+                    foreach(Microsoft.SqlServer.Management.Smo.StoredProcedure stdProc in restoreDb.StoredProcedures)
+                    {
+                        // Check if the synonym is not a system view
+                        if (!stdProc.IsSystemObject)
+                        {
+                            udvObjs.Add(stdProc.Urn);
+                        }
+                    }
+                    break;
+                case "Triggers":
+                    foreach(Microsoft.SqlServer.Management.Smo.Trigger trigger in restoreDb.Triggers)
+                    {
+                        // Check if the synonym is not a system view
+                        if(!trigger.IsSystemObject)
+                        {
+                            udvObjs.Add(trigger.Urn);
+                        }
+                    }
+                    break;
+            }
+        //}
+
+            // Creating Dependency Tree
+            DependencyTree dtree = scrp.DiscoverDependencies(udvObjs, true);
+            DependencyWalker dwalker = new DependencyWalker();
+            DependencyCollection dcollect = dwalker.WalkDependencies(dtree);
+
+            StringBuilder sb = new StringBuilder();
+
+            rTxtBox_Output.AppendText("\t\tBuilding Dependencies tree for all " + dbObj + " ...'\n", Color.Black);
+
+            foreach (DependencyCollectionNode dcoln in dcollect)
+            {
+                switch (dbObj)
+                {
+
+                    case "Views":
+                        foreach (Microsoft.SqlServer.Management.Smo.View myView in restoreDb.Views)
+                        {
+                            if (myView.Name == dcoln.Urn.GetAttribute("Name"))
+                            {
+                                if (dcoln.Urn.Type == "View")
+                                {
+                                    rTxtBox_Output.AppendText("\t\t" + dcoln.Urn.GetAttribute("Name") + " will be scripted. '\n", Color.Black);
+
+                                    /* Generating IF EXISTS and DROP command for views */
+                                    StringCollection viewScripts = myView.Script(scriptOptions);
+
+                                    foreach (string script in viewScripts)
+                                    {
+                                        var updatedScript = "";
+
+                                        if (rBtn_Refresh.Checked)
+                                        {
+                                            updatedScript = Regex.Replace(script, cBox_Environment.Text + "-", cBox_DestEnvironment.Text + "-", RegexOptions.IgnoreCase);
+                                        }
+                                        else if (rBtn_Restore.Checked)
+                                        {
+                                            updatedScript = Regex.Replace(script, backupSource + "-", cBox_Environment.Text + "-", RegexOptions.IgnoreCase);
+                                        }
+
+
+                                        sqlFile.WriteLine(updatedScript);
+                                    }
+
+                                    /* Generating CREATE VIEW command */
+                                    viewScripts = myView.Script(scriptOptionsForCreate);
+                                    foreach (string create_script in viewScripts)
+                                    {
+                                        var updatedScript = "";
+                                        if (rBtn_Refresh.Checked)
+                                        {
+                                            updatedScript = Regex.Replace(create_script, cBox_Environment.Text + "-", cBox_DestEnvironment.Text + "-", RegexOptions.IgnoreCase);
+                                        }
+                                        else if (rBtn_Restore.Checked)
+                                        {
+                                            updatedScript = Regex.Replace(create_script, backupSource + "-", cBox_Environment.Text + "-", RegexOptions.IgnoreCase);
+                                        }
+
+                                        sqlFile.WriteLine(updatedScript);
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case "Synonyms":
+                        foreach (Microsoft.SqlServer.Management.Smo.Synonym mySynonyms in restoreDb.Synonyms)
+                        {
+                            if (mySynonyms.Name == dcoln.Urn.GetAttribute("Name"))
+                            {
+                                if (dcoln.Urn.Type == "Synonym")
+                                {
+                                    rTxtBox_Output.AppendText("\t\t" + dcoln.Urn.GetAttribute("Name") + " will be scripted. '\n", Color.Black);
+
+                                    /* Generating IF EXISTS and DROP command for views */
+                                    StringCollection synonymScripts = mySynonyms.Script(scriptOptions);
+
+                                    foreach (string script in synonymScripts)
+                                    {
+                                        var updatedScript = "";
+
+                                        if (rBtn_Refresh.Checked)
+                                        {
+                                            updatedScript = Regex.Replace(script, cBox_Environment.Text + "-", cBox_DestEnvironment.Text + "-", RegexOptions.IgnoreCase);
+                                        }
+                                        else if (rBtn_Restore.Checked)
+                                        {
+                                            updatedScript = Regex.Replace(script, backupSource + "-", cBox_Environment.Text + "-", RegexOptions.IgnoreCase);
+                                        }
+
+
+                                        sqlFile.WriteLine(updatedScript);
+                                    }
+
+                                    /* Generating CREATE VIEW command */
+                                    synonymScripts = mySynonyms.Script(scriptOptionsForCreate);
+                                    foreach (string create_script in synonymScripts)
+                                    {
+                                        var updatedScript = "";
+                                        if (rBtn_Refresh.Checked)
+                                        {
+                                            updatedScript = Regex.Replace(create_script, cBox_Environment.Text + "-", cBox_DestEnvironment.Text + "-", RegexOptions.IgnoreCase);
+                                        }
+                                        else if (rBtn_Restore.Checked)
+                                        {
+                                            updatedScript = Regex.Replace(create_script, backupSource + "-", cBox_Environment.Text + "-", RegexOptions.IgnoreCase);
+                                        }
+
+                                        sqlFile.WriteLine(updatedScript);
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case "StdProc":
+                        foreach (Microsoft.SqlServer.Management.Smo.View myStdProc in restoreDb.StoredProcedures)
+                        {
+                            if (myStdProc.Name == dcoln.Urn.GetAttribute("Name"))
+                            {
+                                if (dcoln.Urn.Type == "View")
+                                {
+                                    rTxtBox_Output.AppendText("\t\t" + dcoln.Urn.GetAttribute("Name") + " will be scripted. '\n", Color.Black);
+
+                                    /* Generating IF EXISTS and DROP command for views */
+                                    StringCollection stdProcScripts = myStdProc.Script(scriptOptions);
+
+                                    foreach (string script in stdProcScripts)
+                                    {
+                                        var updatedScript = "";
+
+                                        if (rBtn_Refresh.Checked)
+                                        {
+                                            updatedScript = Regex.Replace(script, cBox_Environment.Text + "-", cBox_DestEnvironment.Text + "-", RegexOptions.IgnoreCase);
+                                        }
+                                        else if (rBtn_Restore.Checked)
+                                        {
+                                            updatedScript = Regex.Replace(script, backupSource + "-", cBox_Environment.Text + "-", RegexOptions.IgnoreCase);
+                                        }
+
+
+                                        sqlFile.WriteLine(updatedScript);
+                                    }
+
+                                    /* Generating CREATE VIEW command */
+                                    stdProcScripts = myStdProc.Script(scriptOptionsForCreate);
+                                    foreach (string create_script in stdProcScripts)
+                                    {
+                                        var updatedScript = "";
+                                        if (rBtn_Refresh.Checked)
+                                        {
+                                            updatedScript = Regex.Replace(create_script, cBox_Environment.Text + "-", cBox_DestEnvironment.Text + "-", RegexOptions.IgnoreCase);
+                                        }
+                                        else if (rBtn_Restore.Checked)
+                                        {
+                                            updatedScript = Regex.Replace(create_script, backupSource + "-", cBox_Environment.Text + "-", RegexOptions.IgnoreCase);
+                                        }
+
+                                        sqlFile.WriteLine(updatedScript);
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case "Triggers":
+                        foreach (Microsoft.SqlServer.Management.Smo.Trigger myTriggers in restoreDb.Triggers)
+                        {
+                            if (myTriggers.Name == dcoln.Urn.GetAttribute("Name"))
+                            {
+                                if (dcoln.Urn.Type == "Trigger")
+                                {
+                                    rTxtBox_Output.AppendText("\t\t" + dcoln.Urn.GetAttribute("Name") + " will be scripted. '\n", Color.Black);
+
+                                    /* Generating IF EXISTS and DROP command for views */
+                                    StringCollection triggerScripts = myTriggers.Script(scriptOptions);
+
+                                    foreach (string script in triggerScripts)
+                                    {
+                                        var updatedScript = "";
+
+                                        if (rBtn_Refresh.Checked)
+                                        {
+                                            updatedScript = Regex.Replace(script, cBox_Environment.Text + "-", cBox_DestEnvironment.Text + "-", RegexOptions.IgnoreCase);
+                                        }
+                                        else if (rBtn_Restore.Checked)
+                                        {
+                                            updatedScript = Regex.Replace(script, backupSource + "-", cBox_Environment.Text + "-", RegexOptions.IgnoreCase);
+                                        }
+
+
+                                        sqlFile.WriteLine(updatedScript);
+                                    }
+
+                                    /* Generating CREATE VIEW command */
+                                    triggerScripts = myTriggers.Script(scriptOptionsForCreate);
+                                    foreach (string create_script in triggerScripts)
+                                    {
+                                        var updatedScript = "";
+                                        if (rBtn_Refresh.Checked)
+                                        {
+                                            updatedScript = Regex.Replace(create_script, cBox_Environment.Text + "-", cBox_DestEnvironment.Text + "-", RegexOptions.IgnoreCase);
+                                        }
+                                        else if (rBtn_Restore.Checked)
+                                        {
+                                            updatedScript = Regex.Replace(create_script, backupSource + "-", cBox_Environment.Text + "-", RegexOptions.IgnoreCase);
+                                        }
+
+                                        sqlFile.WriteLine(updatedScript);
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                }
+
+                
+            }
+
+            sqlFile.Write(sb);
+            rTxtBox_Output.AppendText("\t" + dbObj + " Scripts completed...\n", Color.Black);
+            sqlFile.Close();
+
+            if (rBtn_Refresh.Checked)
+            {
+                destEnv = cBox_DestEnvironment.Text;
+            }
+            else if (rBtn_Restore.Checked)
+            {
+                destEnv = cBox_Environment.Text;
+            }
+
+            UpdateDatabaseObjects(rServer.ToString(), destEnv, db, dbObj);
+        }
+
         private void UpdateView(string serverInstance, string env, string db)
         {
             string sqlConnectionString = "Data Source=" + serverInstanceToRestoreTo + "; Initial Catalog=" + db + "; Integrated Security=SSPI;";
@@ -1899,6 +2232,39 @@ namespace IppBackups
             catch (Exception ex)
             {
                 rTxtBox_Output.AppendText("\t\tException: " + ex.Message + "\n",Color.Red);
+            }
+        }
+
+        private void UpdateDatabaseObjects(string serverInstance, string env, string db, string dbObj)
+        {
+            string sqlConnectionString = "Data Source=" + serverInstanceToRestoreTo + "; Initial Catalog=" + db + "; Integrated Security=SSPI;";
+            string scriptFile = "Create" + dbObj + "_" + db + ".sql";
+            FileInfo file = new FileInfo(scriptFile);
+            string script = file.OpenText().ReadToEnd();
+            SqlConnection conn = new SqlConnection(sqlConnectionString);
+
+            conn.Open();
+            SqlCommand cmd = new SqlCommand(script, conn);
+
+            rTxtBox_Output.AppendText("\t\tLoading " + dbObj + "update file from: " + scriptFile + "\n", Color.Black);
+
+            try
+            {
+                int resultSet = 0;
+                resultSet = cmd.ExecuteNonQuery();
+                conn.Close();
+            }
+            catch (SqlServerManagementException ex)
+            {
+                rTxtBox_Output.AppendText("\t\tSqlServerManagementException: " + ex.Message + "\n", Color.Red);
+            }
+            catch (SqlException ex)
+            {
+                rTxtBox_Output.AppendText("\t\tSqlException: " + ex.Message + "\n", Color.Red);
+            }
+            catch (Exception ex)
+            {
+                rTxtBox_Output.AppendText("\t\tException: " + ex.Message + "\n", Color.Red);
             }
         }
 
