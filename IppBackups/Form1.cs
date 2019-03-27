@@ -674,13 +674,13 @@ namespace IppBackups
                 {
                     rTxtBox_Output.AppendText("\tSetting Database back to MultipleUser mode... '\n", Color.Black);
                     DatabaseUserAccess dbState = db.DatabaseOptions.UserAccess;
-                    
+
                     db.DatabaseOptions.UserAccess = DatabaseUserAccess.Multiple;
                     rTxtBox_Output.AppendText("\tSetting Database TerminationClause... '\n", Color.Black);
                     db.Alter(TerminationClause.RollbackTransactionsImmediately);
                 }
             }
-            
+
             sqlServer.Refresh();
             db = sqlServer.Databases[databaseName];
             if (db.FileGroups[0].Files[0].Name != databaseName)
