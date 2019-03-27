@@ -65,6 +65,7 @@ namespace IppBackups
         string divider = new string('-', 180);
         Backup sqlBackup;
         Restore sqlRestore;
+        bool CancelRestore = false;
 
         enum Environment
         {
@@ -108,53 +109,53 @@ namespace IppBackups
             string path = File.Exists(basePath + "\\" + ConfigFileName) ? basePath + "\\" + ConfigFileName : "..\\..\\" + ConfigFileName;
             //MessageBox.Show(path);
             return path;
- 
+
         }
 
         public void LoadValuesFromSettings()
         {
             String path = Application.ExecutablePath;
-                
-                sXmlFile = GetSettingsPath(); //sSettingPath + ConfigFileName;
-                XmlDocument doc = new XmlDocument();
-                doc.Load(sXmlFile);
 
-                XmlNodeList server = doc.SelectNodes("Servers/Server");
-                _servers = new Servers();
-                _servers2 = new Servers();
-                var i = 1;
-                foreach (XmlNode xServer in server)
+            sXmlFile = GetSettingsPath(); //sSettingPath + ConfigFileName;
+            XmlDocument doc = new XmlDocument();
+            doc.Load(sXmlFile);
+
+            XmlNodeList server = doc.SelectNodes("Servers/Server");
+            _servers = new Servers();
+            _servers2 = new Servers();
+            var i = 1;
+            foreach (XmlNode xServer in server)
+            {
+                var svr = new ServerX { Id = i, Name = xServer.Attributes["name"].Value, IP = xServer.Attributes["ip"].Value };
+                // this needs to read the instances on this server
+                foreach (XmlNode xInstance in xServer.ChildNodes)
                 {
-                    var svr = new ServerX { Id = i, Name = xServer.Attributes["name"].Value, IP = xServer.Attributes["ip"].Value };
-                    // this needs to read the instances on this server
-                    foreach (XmlNode xInstance in xServer.ChildNodes)
+                    var inst = new Instance();
+                    inst.xInstance = xInstance.Attributes["instance"].Value;
+                    inst.Port = xInstance.Attributes["port"].Value;
+                    inst.User = xInstance.Attributes["user"].Value;
+                    inst.Password = xInstance.Attributes["password"].Value;
+                    inst.Backups = xInstance.Attributes["backups"].Value;
+
+                    if (inst.Backups.Contains("https://"))
+                        inst.AzureKey = xInstance.Attributes["azureKey"].Value;
+
+                    foreach (XmlNode xEnvironment in xInstance.ChildNodes)
                     {
-                        var inst = new Instance();
-                        inst.xInstance = xInstance.Attributes["instance"].Value;
-                        inst.Port = xInstance.Attributes["port"].Value;
-                        inst.User = xInstance.Attributes["user"].Value;
-                        inst.Password = xInstance.Attributes["password"].Value;
-                        inst.Backups = xInstance.Attributes["backups"].Value;
+                        var env = new Environments { Name = xEnvironment.InnerText, data = xEnvironment.Attributes["data"].Value, log = xEnvironment.Attributes["log"].Value };
 
-                        if (inst.Backups.Contains("https://"))
-                            inst.AzureKey = xInstance.Attributes["azureKey"].Value;
-
-                        foreach (XmlNode xEnvironment in xInstance.ChildNodes)
-                        {
-                            var env = new Environments { Name = xEnvironment.InnerText, data = xEnvironment.Attributes["data"].Value, log = xEnvironment.Attributes["log"].Value };
-
-                            inst.Environments.Add(env);
-                        }
-
-                        svr.Instances.Add(inst);
+                        inst.Environments.Add(env);
                     }
-                    _servers.Add(svr);
-                    _servers2.Add(svr);
-                    i++;
-                }
 
-                cBox_Server.DataSource = _servers;
-                cBox_DestServer.DataSource = _servers2;
+                    svr.Instances.Add(inst);
+                }
+                _servers.Add(svr);
+                _servers2.Add(svr);
+                i++;
+            }
+
+            cBox_Server.DataSource = _servers;
+            cBox_DestServer.DataSource = _servers2;
         }
 
         private void ConnectToBackupServer()
@@ -194,16 +195,16 @@ namespace IppBackups
                         sPort = _servers[cBox_Server.SelectedIndex].Instances[i].Port;
                         sUsername = _servers[cBox_Server.SelectedIndex].Instances[i].User;
                         sPassword = _servers[cBox_Server.SelectedIndex].Instances[i].Password;
-                        backupDestination = _servers[cBox_Server.SelectedIndex].Instances[i].Backups;                      
+                        backupDestination = _servers[cBox_Server.SelectedIndex].Instances[i].Backups;
 
 
                         curSrvInstanceToConnect += curSrv;
-                        if ( curSrvInstance != "Default" )
+                        if (curSrvInstance != "Default")
                         {
                             curSrvInstanceToConnect += "\\" + curSrvInstance;
                             curSrvInstance = curSrvInstanceToConnect;
                         }
-                        
+
                         if (sPort != "" && sPort != "1433")
                         {
                             curSrvInstanceToConnect += ", " + sPort;
@@ -213,7 +214,7 @@ namespace IppBackups
                             sUsername = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
 
                         // Check if backupDestion is a URL then assigne value for azureKey
-                        if(backupDestination.Contains("https"))
+                        if (backupDestination.Contains("https"))
                         {
                             azureKey = _servers[cBox_Server.SelectedIndex].Instances[i].AzureKey;
                         }
@@ -231,7 +232,7 @@ namespace IppBackups
                     ManagedComputer mc = new ManagedComputer();
 
                     foreach (ServerInstance si in mc.ServerInstances)
-                    {   
+                    {
                         rTxtBox_Output.AppendText("Connected to " + si.Name + " successfully.\n", Color.Black);
                     }
                 }
@@ -243,50 +244,50 @@ namespace IppBackups
                 selectedServer.ConnectionContext.LoginSecure = false;
                 selectedServer.ConnectionContext.Login = sUsername;
                 selectedServer.ConnectionContext.Password = sPassword;
-             }
-                //ConnectToBackupServer();
+            }
+            //ConnectToBackupServer();
 
-                try
+            try
+            {
+                int selectedDb = 0;
+                int columnCount = 1;
+                int rowSize = 15;
+                int rowCount = selectedServer.Databases.Count;
+                columnCount = (selectedDb / rowSize);
+
+                foreach (Database db in selectedServer.Databases)
                 {
-                    int selectedDb = 0;
-                    int columnCount = 1;
-                    int rowSize = 15;
-                    int rowCount = selectedServer.Databases.Count;
-                    columnCount = (selectedDb / rowSize);
-
-                    foreach (Database db in selectedServer.Databases)
+                    if ((selectedDb < selectedServer.Databases.Count) && (selectedDb < rowSize))
                     {
-                        if ((selectedDb < selectedServer.Databases.Count) && (selectedDb < rowSize))
-                        {
-                            //selectedDb++;
-                        }
-                        else
-                        {
-                            selectedDb = 0;
-                            columnCount++;
-                        }
-
-                        if (db.Name.Contains(cBox_Environment.Text + "-") || chkBox_ShowAll.Checked)
-                        {
-                            CheckBox box = new CheckBox();
-                            box.CheckedChanged += box_CheckedChanged;
-                            box.Tag = db.Name.ToString();
-                            box.Text = db.Name.ToString();
-                            box.AutoSize = true;
-                            box.Location = new Point(10 + (columnCount * 150), (grpBox_Databases.DisplayRectangle.Top + 10) + (selectedDb % rowSize) * 20);
-                            grpBox_Databases.Controls.Add(box);
-
-                            selectedDb++;
-                        }
+                        //selectedDb++;
                     }
-                    
-                    rTxtBox_Output.AppendText("Connected to " + sName + " on " + curSrv + " successfully.\n", Color.Black);
+                    else
+                    {
+                        selectedDb = 0;
+                        columnCount++;
+                    }
+
+                    if (db.Name.Contains(cBox_Environment.Text + "-") || chkBox_ShowAll.Checked)
+                    {
+                        CheckBox box = new CheckBox();
+                        box.CheckedChanged += box_CheckedChanged;
+                        box.Tag = db.Name.ToString();
+                        box.Text = db.Name.ToString();
+                        box.AutoSize = true;
+                        box.Location = new Point(10 + (columnCount * 150), (grpBox_Databases.DisplayRectangle.Top + 10) + (selectedDb % rowSize) * 20);
+                        grpBox_Databases.Controls.Add(box);
+
+                        selectedDb++;
+                    }
                 }
-                catch (Exception ex)
-                {
-                    rTxtBox_Output.AppendText("Error Connecting to " + sName + " on " + curSrv + " as " + sUsername + ".'\n", Color.Red);
-                    rTxtBox_Output.AppendText(ex.Message + ".'\n", Color.Red);
-                }
+
+                rTxtBox_Output.AppendText("Connected to " + sName + " on " + curSrv + " successfully.\n", Color.Black);
+            }
+            catch (Exception ex)
+            {
+                rTxtBox_Output.AppendText("Error Connecting to " + sName + " on " + curSrv + " as " + sUsername + ".'\n", Color.Red);
+                rTxtBox_Output.AppendText(ex.Message + ".'\n", Color.Red);
+            }
         }
 
         void box_CheckedChanged(object sender, EventArgs e)
@@ -326,7 +327,7 @@ namespace IppBackups
 
             //BackupDeviceItem deviceItem = new BackupDeviceItem(destinationPath, DeviceType.File);
             ServerConnection connection = new ServerConnection(serverName, userName, password);
-            connection.StatementTimeout = 3600;
+            connection.StatementTimeout = 0;
 
             Server sqlServer = new Server(connection);
 
@@ -375,11 +376,12 @@ namespace IppBackups
             sqlBackup.Checksum = true;
             sqlBackup.ContinueAfterError = true;
             sqlBackup.CopyOnly = true;
+            sqlBackup.CompressionOption = BackupCompressionOptions.On;
 
             sqlBackup.Devices.Add(deviceItem);
             sqlBackup.Incremental = false;
             sqlBackup.PercentComplete += SqlBackup_PercentComplete;
-            //sqlBackup.
+            sqlBackup.Complete += SqlBackup_Complete;
             //sqlBackup.Abort 
 
             //sqlBackup.ExpirationDate = DateTime.Now.AddDays(3);
@@ -390,38 +392,55 @@ namespace IppBackups
             try
             {
                 sqlBackup.SqlBackup(sqlServer);
+                backStatus.Add(databaseName, true);
             }
             catch (ExecutionFailureException ex)
             {
-                if(ex.InnerException.ToString().Contains("Operation cancelled by user"))
+                if (ex.InnerException.ToString().Contains("Operation cancelled by user"))
                 {
                     rTxtBox_Output.AppendText("\t\tThe backup has been aborted...\n", Color.Red);
                 }
                 rTxtBox_Output.AppendText("\t\tThe backup has been aborted...\n", Color.Red);
+                backStatus.Add(databaseName, false);
+
             }
             catch (Exception e)
             {
                 if (e.InnerException.ToString().Contains("Operation cancelled by user"))
                 {
                     rTxtBox_Output.AppendText("\t\tThe backup was aborted...\n", Color.Red);
+                    if (rBtn_Refresh.Checked)
+                    {
+                        CancelRestore = true;
+                    }
+                    backStatus.Add(databaseName, false);
+
                 }
                 else if (e.InnerException.ToString().Contains("There is currently a lease on the blob and no lease ID "))
                 {
                     rTxtBox_Output.AppendText("\t\tThere is a lease on the blob for this backed up...\n", Color.Red);
+                    backStatus.Add(databaseName, false);
                 }
                 else
                 {
                     rTxtBox_Output.AppendText("\tInner Exception Details " + e.InnerException + "\n", Color.Red);
-                    rTxtBox_Output.AppendText("\n\t\tMessage Details " + e.Message + "\n", Color.Purple);
-                }            
-                
+                    rTxtBox_Output.AppendText("\n\t\tMessage Details " + e.Message + "\n", Color.Red);
+                    backStatus.Add(databaseName, false);
+                }
+
             }
+        }
+
+        private void SqlBackup_Complete(object sender, ServerMessageEventArgs e)
+        {
+            //throw new NotImplementedException();
+            //backStatus.Add(db, true);
+            rTxtBox_Output.AppendText("\tBackup completed...\n", Color.Green);
         }
 
         private void SqlBackup_PercentComplete(object sender, PercentCompleteEventArgs e)
         {
             //throw new NotImplementedException();
-            //if (backupbackgroundWorker.WorkerSupportsCancellation == true && backupbackgroundWorker.IsBusy && backupbackgroundWorker.CancellationPending == true)
             if (backupbackgroundWorker.CancellationPending)
             {
                 rTxtBox_Output.AppendText("\t\tCancelling pending backup from SqlBackup_PercentComplete...\n", Color.Purple);
@@ -432,7 +451,6 @@ namespace IppBackups
             {
                 rTxtBox_Output.AppendText("\t\tPercentage completed: " + e.Percent + "%.\n", Color.Black);
             }
-           // rTxtBox_Output.AppendText("\t\tPercentage completed: " + e.Percent + "%.\n", Color.Black);
         }
 
         public void RestoreDatabaseToOscar(String databaseName, String filePath, String serverName, String serverInstance, String port, String userName, String password, String dataFilePath, String logFilePath, String localCopyBackup)
@@ -442,7 +460,7 @@ namespace IppBackups
             string CopiedBackup = "\\\\" + serverName + "\\" + System.IO.Path.Combine(localCopyBackup, databaseName + ".bak");
             //string targetCopy = CopiedBackup.Replace(":", "$");
             string targetCopy = "";
-            rTxtBox_Output.AppendText("\tRestoring from backup file : " + filePath + ".\n", Color.Black);
+            rTxtBox_Output.AppendText("\tRestoring from backup file : " + filePath + "...\n", Color.Black);
             if (filePath.Contains("https://"))
             {
                 targetCopy = filePath;
@@ -455,13 +473,29 @@ namespace IppBackups
             if (!Directory.Exists(dbDataSubFolderPath))
             {
                 rTxtBox_Output.AppendText("\tCreating Database Data Subfolder: " + dbDataSubFolderPath + ".\n", Color.Black);
-                Directory.CreateDirectory(dbDataSubFolderPath);
+                try
+                {
+                    Directory.CreateDirectory(dbDataSubFolderPath);
+                }
+                catch (Exception e)
+                {
+                    rTxtBox_Output.AppendText("\tCould not create subfolder because " + e.Message + "\n", Color.Red);
+                    rTxtBox_Output.AppendText("\t Inner text : " + e.InnerException + "\n", Color.Red);
+                }
             }
-            
+
             if (!Directory.Exists(dbLogSubFolderPath))
             {
                 rTxtBox_Output.AppendText("\tCreating Database Log Subfolder: " + dbLogSubFolderPath + ".\n", Color.Black);
-                Directory.CreateDirectory(dbLogSubFolderPath);
+                try
+                {
+                    Directory.CreateDirectory(dbLogSubFolderPath);
+                }
+                catch (Exception e)
+                {
+                    rTxtBox_Output.AppendText("\tCould not create subfolder because " + e.Message + "\n", Color.Red);
+                    rTxtBox_Output.AppendText("\t Inner text : " + e.InnerException + "\n", Color.Red);
+                }
             }
 
             if (rBtn_Refresh.Checked)
@@ -543,7 +577,7 @@ namespace IppBackups
             //ServerConnection connection = new ServerConnection(serverInstance);
             //ServerConnection connection = new ServerConnection(serverInstanceToRestoreTo);
             ServerConnection connection = new ServerConnection(serverInstanceToRestoreTo, userName, password);
-            connection.StatementTimeout = 3600;
+            connection.StatementTimeout = 0;
             Server sqlServer = new Server(connection);
 
             Database db = sqlServer.Databases[databaseName];
@@ -551,7 +585,7 @@ namespace IppBackups
             if (db != null)
             {
                 rTxtBox_Output.AppendText("\tSetting Database to SingleUser mode... \n", Color.Black);
-                
+
                 try
                 {
                     db.DatabaseOptions.UserAccess = DatabaseUserAccess.Single;
@@ -561,7 +595,7 @@ namespace IppBackups
                 {
                     if (ex.Message.Contains("Alter failed for Database"))
                     {
-                        rTxtBox_Output.AppendText("\t\tThe database could either be in Restoring state...\n", Color.Red);
+                        rTxtBox_Output.AppendText("\t\tThe database could either be in Restoring state.\n", Color.Red);
                         return;
                     }
                     rTxtBox_Output.AppendText("\tException: " + ex.Message + "\n", Color.Red);
@@ -592,23 +626,30 @@ namespace IppBackups
                 sqlRestore.Complete += new ServerMessageEventHandler(sqlRestore_Complete);
                 sqlRestore.PercentCompleteNotification = 10;
                 sqlRestore.PercentComplete += SqlRestore_PercentComplete1;
-    
+
                 //sqlRestore.PercentComplete += new PercentCompleteEventHandler(sqlRestore_PercentComplete);
 
                 rTxtBox_Output.AppendText("\tRestoring database... \n", Color.Black);
 
                 //KillAllConnectionsToDb(serverInstanceToRestoreTo, cBox_DestEnvironment.Text, databaseName);
                 sqlRestore.SqlRestore(sqlServer);
+                /*rTxtBox_Output.AppendText("\tsqlRestore done...\n", Color.Purple);
+                rTxtBox_Output.AppendText("\tSetting Database: " + db.ToString() + " back to MultipleUser mode... '\n", Color.Black);
+                DatabaseUserAccess dbState = db.DatabaseOptions.UserAccess;
+                rTxtBox_Output.AppendText("\tCurrent database state is " + dbState.ToString() + "\n", Color.Purple);
+                db.DatabaseOptions.UserAccess = DatabaseUserAccess.Multiple;
+                rTxtBox_Output.AppendText("\tSetting Database TerminationClause... '\n", Color.Black);
+                db.Alter(TerminationClause.RollbackTransactionsImmediately);*/
             }
             catch (SmoException ex)
             {
                 if (ex.InnerException.ToString().Contains("Operation cancelled by user"))
                 {
-                    rTxtBox_Output.AppendText("\t\tThe restore was aborted...\n", Color.Red);
+                    rTxtBox_Output.AppendText("\t\tThe restore was aborted.\n", Color.Red);
                 }
                 else if (ex.InnerException.ToString().Contains("cannot operate on database"))
                 {
-                    rTxtBox_Output.AppendText("\t\tDatabase is currently in Restoring state...", Color.Red);
+                    rTxtBox_Output.AppendText("\t\tDatabase is currently in Restoring state.", Color.Red);
                 }
                 else
                 {
@@ -617,42 +658,49 @@ namespace IppBackups
             }
             catch (Exception ex)
             {
-                // TODO: Change font color
-                //lbl_Oupt.Text += ex.InnerException.Message + "'\n";
                 if (ex.InnerException.ToString().Contains("Operation cancelled by user"))
                 {
-                    rTxtBox_Output.AppendText("\t\tThe restore was aborted...\n", Color.Red);
+                    rTxtBox_Output.AppendText("\t\tThe restore was aborted.\n", Color.Red);
                 }
-                else if(ex.InnerException.ToString().Contains("cannot operate on database"))
+                else if (ex.InnerException.ToString().Contains("cannot operate on database"))
                 {
-                    rTxtBox_Output.AppendText("\t\tDatabase is currently in Restoring state...", Color.Red);
+                    rTxtBox_Output.AppendText("\t\tDatabase is currently in Restoring state.", Color.Red);
                 }
-                rTxtBox_Output.AppendText("\tException: " + ex.InnerException.Message + "\n", Color.Red);                
+                rTxtBox_Output.AppendText("\tException: " + ex.InnerException.Message + "\n", Color.Red);
             }
             finally
             {
-                rTxtBox_Output.AppendText("\tSetting Database back to MultipleUser mode... '\n", Color.Black);
-                db.DatabaseOptions.UserAccess = DatabaseUserAccess.Multiple;
-                db.Alter(TerminationClause.RollbackTransactionsImmediately);
+                if (db != null)
+                {
+                    rTxtBox_Output.AppendText("\tSetting Database back to MultipleUser mode... '\n", Color.Black);
+                    DatabaseUserAccess dbState = db.DatabaseOptions.UserAccess;
+                    
+                    db.DatabaseOptions.UserAccess = DatabaseUserAccess.Multiple;
+                    rTxtBox_Output.AppendText("\tSetting Database TerminationClause... '\n", Color.Black);
+                    db.Alter(TerminationClause.RollbackTransactionsImmediately);
+                }
             }
-
+            
+            sqlServer.Refresh();
             db = sqlServer.Databases[databaseName];
             if (db.FileGroups[0].Files[0].Name != databaseName)
             {
-                //lbl_Oupt.Text += "Renaming Logical files from " + db.FileGroups[0].Files[0].Name + "... '\n";
-                rTxtBox_Output.AppendText("\t\tRenaming Logical files from " + db.FileGroups[0].Files[0].Name + "... '\n", Color.Black);
+                rTxtBox_Output.AppendText("\tRenaming Logical files from " + db.FileGroups[0].Files[0].Name + "... '\n", Color.Black);
                 db.FileGroups[0].Files[0].Rename(databaseName);
                 db.LogFiles[0].Rename(databaseName + "_log");
-                //lbl_Oupt.Text += "Successfully renamed Logical files to " + db.FileGroups[0].Files[0].Name + "... '\n";
-                rTxtBox_Output.AppendText("\t\tSuccessfully renamed Logical files to " + db.FileGroups[0].Files[0].Name + "... '\n", Color.Black);
+                rTxtBox_Output.AppendText("\tSuccessfully renamed Logical files to " + db.FileGroups[0].Files[0].Name + ". '\n", Color.Black);
             }
 
-            //lbl_Oupt.Text += "Resfresh environment is " + r_env + "...'\n";
-            //rTxtBox_Output.AppendText("\tEnvironment to be resfreshed is " + r_env + "...'\n", Color.Black);
-            if (r_env != "PROD")
+
+            if (rBtn_Refresh.Checked && cBox_DestEnvironment.Text != "PROD")
             {
-                //lbl_Oupt.Text += "Setting non production database to Simple mode...'\n";
-                rTxtBox_Output.AppendText("\t\tSetting non production database to Simple mode...'\n", Color.Black);
+                rTxtBox_Output.AppendText("\tSetting non production database to Simple mode...'\n", Color.Black);
+                db.RecoveryModel = RecoveryModel.Simple;
+                db.Alter();
+            }
+            else if (rBtn_Restore.Checked && r_env != "PROD")
+            {
+                rTxtBox_Output.AppendText("\tSetting non production database to Simple mode...'\n", Color.Black);
                 db.RecoveryModel = RecoveryModel.Simple;
                 db.Alter();
             }
@@ -665,7 +713,7 @@ namespace IppBackups
         private void SqlRestore_PercentComplete1(object sender, PercentCompleteEventArgs e)
         {
             if (!restorebackgroundWorker.CancellationPending)
-            {                
+            {
                 restorebackgroundWorker.CancelAsync();
                 return;
             }
@@ -683,17 +731,33 @@ namespace IppBackups
             if (!Directory.Exists(@dbDataSubFolderPath))
             {
                 //lbl_Oupt.Text += "Creating Database Data Subfolder. " + dbDataSubFolderPath + "\n";
-                rTxtBox_Output.AppendText("\tCreating Database Data Subfolder. " + dbDataSubFolderPath + "\n",Color.Black);
-                Directory.CreateDirectory(dbDataSubFolderPath);
+                rTxtBox_Output.AppendText("\tCreating Database Data Subfolder. " + dbDataSubFolderPath + "\n", Color.Black);
+                try
+                {
+                    Directory.CreateDirectory(dbDataSubFolderPath);
+                }
+                catch (Exception e)
+                {
+                    rTxtBox_Output.AppendText("\tCould not create subfolder because " + e.Message + "\n", Color.Purple);
+                    rTxtBox_Output.AppendText("\t Inner text : " + e.InnerException + "\n", Color.Purple);
+                }
                 rTxtBox_Output.AppendText("\tSuccessfully created Database Data Subfolder. " + dbDataSubFolderPath + "\n", Color.Black);
             }
 
             if (!Directory.Exists(@dbLogSubFolderPath))
             {
                 //lbl_Oupt.Text += "Creating Database Log Subfolder. " + dbLogSubFolderPath + "\n";
-                rTxtBox_Output.AppendText("\tCreating Database Log Subfolder. " + dbLogSubFolderPath + "\n",Color.Black);
-                Directory.CreateDirectory(dbLogSubFolderPath);
-                rTxtBox_Output.AppendText("\tSuccessfully createdg Database Log Subfolder. " + dbLogSubFolderPath + "\n", Color.Black);
+                rTxtBox_Output.AppendText("\tCreating Database Log Subfolder. " + dbLogSubFolderPath + "\n", Color.Black);
+                try
+                {
+                    Directory.CreateDirectory(dbLogSubFolderPath);
+                }
+                catch (Exception e)
+                {
+                    rTxtBox_Output.AppendText("\tCould not create subfolder because " + e.Message + "\n", Color.Purple);
+                    rTxtBox_Output.AppendText("\t Inner text : " + e.InnerException + "\n", Color.Purple);
+                }
+                rTxtBox_Output.AppendText("\tSuccessfully created Database Log Subfolder. " + dbLogSubFolderPath + "\n", Color.Black);
             }
 
             //String dataFileLocation = dataFilePath + "\\" + databaseName + "\\" + databaseName + ".mdf";
@@ -732,7 +796,7 @@ namespace IppBackups
             sqlRestore.PercentComplete += SqlRestore_PercentComplete;
             //sqlRestore.PercentComplete += new PercentCompleteEventHandler(sqlRestore_PercentComplete);
             //lbl_Oupt.Text += "About to restore... \n";
-            rTxtBox_Output.AppendText("\tAbout to restore... \n",Color.Black);
+            rTxtBox_Output.AppendText("\tAbout to restore... \n", Color.Black);
 
             try
             {
@@ -742,7 +806,7 @@ namespace IppBackups
             {
                 // TODO: Change font color
                 //lbl_Oupt.Text += ex.InnerException.Message + "\n";
-                rTxtBox_Output.AppendText(ex.InnerException.Message + "\n",Color.Red);
+                rTxtBox_Output.AppendText(ex.InnerException.Message + "\n", Color.Red);
                 ////lbl_Oupt.Text += ex.Message + "'\n";
             }
             db = sqlServer.Databases[databaseName];
@@ -777,15 +841,31 @@ namespace IppBackups
             if (!Directory.Exists(@dbDataSubFolderPath))
             {
                 //lbl_Oupt.Text += "Creating Database Data Subfolder. " + dbDataSubFolderPath + "\n";
-                rTxtBox_Output.AppendText("\tCreating Database Data Subfolder. " + dbDataSubFolderPath + "\n",Color.Black);
-                Directory.CreateDirectory(dbDataSubFolderPath);
+                rTxtBox_Output.AppendText("\tCreating Database Data Subfolder. " + dbDataSubFolderPath + "\n", Color.Black);
+                try
+                {
+                    Directory.CreateDirectory(dbDataSubFolderPath);
+                }
+                catch (Exception e)
+                {
+                    rTxtBox_Output.AppendText("\tCould not create subfolder because " + e.Message + "\n", Color.Purple);
+                    rTxtBox_Output.AppendText("\t Inner text : " + e.InnerException + "\n", Color.Purple);
+                }
             }
 
             if (!Directory.Exists(@dbLogSubFolderPath))
             {
                 //lbl_Oupt.Text += "Creating Database Log Subfolder. " + dbLogSubFolderPath + "\n";
-                rTxtBox_Output.AppendText("\tCreating Database Log Subfolder. " + dbLogSubFolderPath + "\n",Color.Black);
-                Directory.CreateDirectory(dbLogSubFolderPath);
+                rTxtBox_Output.AppendText("\tCreating Database Log Subfolder. " + dbLogSubFolderPath + "\n", Color.Black);
+                try
+                {
+                    Directory.CreateDirectory(dbLogSubFolderPath);
+                }
+                catch (Exception e)
+                {
+                    rTxtBox_Output.AppendText("\tCould not create subfolder because " + e.Message + "\n", Color.Purple);
+                    rTxtBox_Output.AppendText("\t Inner text : " + e.InnerException + "\n", Color.Purple);
+                }
             }
 
             string dataFileLocation = dbDataSubFolderPath + "\\" + databaseName + ".mdf";
@@ -817,7 +897,7 @@ namespace IppBackups
             sqlRestore.PercentComplete += SqlRestore_PercentComplete2;
             //sqlRestore.PercentComplete += new PercentCompleteEventHandler(sqlRestore_PercentComplete);
             //lbl_Oupt.Text += "About to restore... \n";
-            rTxtBox_Output.AppendText("About to restore... \n",Color.Black);
+            rTxtBox_Output.AppendText("About to restore... \n", Color.Black);
 
 
             try
@@ -828,7 +908,7 @@ namespace IppBackups
             {
                 // TODO: Change font color
                 //lbl_Oupt.Text += ex.InnerException.Message + "\n";
-                rTxtBox_Output.AppendText(ex.InnerException.Message + "\n",Color.Red);
+                rTxtBox_Output.AppendText(ex.InnerException.Message + "\n", Color.Red);
                 ////lbl_Oupt.Text += ex.Message + "'\n";
             }
             db = sqlServer.Databases[databaseName];
@@ -854,7 +934,7 @@ namespace IppBackups
 
         public void sqlRestore_Complete(object sender, ServerMessageEventArgs e)
         {
-
+            rTxtBox_Output.AppendText("\tRestore completed.\n", Color.Green);
         }
 
         public void sqlRestore_PercentComplete(object sender, PercentCompleteEventArgs e)
@@ -941,16 +1021,17 @@ namespace IppBackups
                 else if (rBtn_Restore.Checked)
                 {
                     backupSource = InputMessageBox();
-                    //rTxtBox_Output.AppendText("DEBUG: Selected backup source is : " + backupSource, Color.Purple);
 
-                    if (restorebackgroundWorker.IsBusy != true)
+                    if (string.IsNullOrEmpty(backupSource))
+                    {
+                        btn_Execute.Enabled = true;
+                    }
+                    else if (restorebackgroundWorker.IsBusy != true)
                     {
                         rTxtBox_Output.AppendText("Restoring selected database(s) with the specified environment backup(s)... \n", Color.Black);
                         restorebackgroundWorker.RunWorkerAsync();
                     }
 
-                    ////lbl_Oupt.Text += "Restoring " + cBox_DestEnvironment.Text + " environment with selected database(s)... \n";
-                    //restorebackgroundWorker.RunWorkerAsync();
                 }
                 else if (rBtn_Refresh.Checked)
                 {
@@ -959,35 +1040,28 @@ namespace IppBackups
                         r_env = cBox_DestEnvironment.SelectedItem.ToString();
                         if (backupbackgroundWorker.IsBusy != true)
                         {
-                            //cancelAsynButton.Enabled = true;
-                            //lbl_Oupt.Text += "Backing up source database... \n";
                             rTxtBox_Output.AppendText("Backing up selected source database(s)... \n", Color.Black);
                             // Start the asynchronous operation.
                             backupbackgroundWorker.RunWorkerAsync();
-                            //cancelAsynButton.Enabled = false;
                         }
                         else
                         {
-                            //lbl_Oupt.Text += "Refresh environment... \n";
                             rTxtBox_Output.AppendText("Refresh environment... \n", Color.Black);
                         }
                     }
                     else
                     {
-                        // TODO: Change font color
-                        //lbl_Oupt.Text += "Cannot refresh from a lower environemnt...\n";
-                        rTxtBox_Output.AppendText("Cannot refresh from a lower environemnt...\n", Color.Red);
+                        rTxtBox_Output.AppendText("Cannot refresh from a lower environemnt.\n", Color.Red);
                     }
                 }
                 else
                 {
-                    //lbl_Oupt.Text += "Select an action to perform...\n";
                     rTxtBox_Output.AppendText("Select an action to perform...\n", Color.Red);
                 }
             }
             else
             {
-                rTxtBox_Output.AppendText("There are no databases selected...\n", Color.Red);
+                rTxtBox_Output.AppendText("There are no databases selected.\n", Color.Red);
             }
         }
 
@@ -1001,15 +1075,8 @@ namespace IppBackups
                 InputBox.Type.ComboBox,                                                                         //Set type ComboBox/TextBox/Nothing (default nothing)
                 new string[] { "PROD", "PPD", "UAT", "QA", "CI", "TESTING", "DEV" },                                                        //Set string field as ComboBox items (default null)
                 true,                                                                                           //Set visible in taskbar (default false)
-                new System.Drawing.Font("Calibri", 10F, System.Drawing.FontStyle.Bold));  
+                new System.Drawing.Font("Calibri", 10F, System.Drawing.FontStyle.Bold));
 
-           /* DialogResult res = InputBox.ShowDialog("Select Environment you are restoring from:", "Restore From",   //Text message (mandatory), Title (optional)
-                InputBox.Icon.Question,                                                                         //Set icon type Error/Exclamation/Question/Warning (default info)
-                InputBox.Buttons.OkCancel,                                                                      //Set buttons set OK/OKcancel/YesNo/YesNoCancel (default ok)
-                InputBox.Type.ComboBox,                                                                         //Set type ComboBox/TextBox/Nothing (default nothing)
-                Enum.GetValues(typeof(Environment)).Cast<string>().Select(x => x.ToString()).ToArray(),                                                        //Set string field as ComboBox items (default null)
-                true,                                                                                           //Set visible in taskbar (default false)
-                new System.Drawing.Font("Calibri", 10F, System.Drawing.FontStyle.Bold));*/
             //Check InputBox result
             if (res == System.Windows.Forms.DialogResult.OK || res == System.Windows.Forms.DialogResult.Yes)     //Set font (default by system)
             {
@@ -1059,7 +1126,7 @@ namespace IppBackups
                                 var bla = GetStorageCredentials(azureKey);
 
                                 myKey = bla;
-                                
+
                                 restoreFromAzure = true;
 
                                 try
@@ -1094,12 +1161,12 @@ namespace IppBackups
 
                 if (restoreFromAzure)
                 {
-                    AzureBlobManager abm2 = new AzureBlobManager(curContName, myKey);                    
+                    AzureBlobManager abm2 = new AzureBlobManager(curContName, myKey);
                     string curDb = db.ToString() + ".bak";
 
                     if (rBtn_Restore.Checked)
                     {
-                        curDb = curDb.Replace(r_env , backupSource);
+                        curDb = curDb.Replace(r_env, backupSource);
                     }
 
                     try
@@ -1140,7 +1207,7 @@ namespace IppBackups
                     {
                         backStatus.Add(db, true);
                     }
-                    
+
                     rTxtBox_Output.AppendText("\tRestoring " + cBox_Environment.Text + " environment with selected database(s)... \n", Color.Black);
                     if (restorebackgroundWorker.IsBusy != true)
                     {
@@ -1171,7 +1238,6 @@ namespace IppBackups
                 rTxtBox_Output.AppendText("Backup process started at " + DateTime.Now + "\n", Color.Black);
                 foreach (string db in databaseList)
                 {
-                    rTxtBox_Output.AppendText("Backup Cancellation pending? " + backupbackgroundWorker.CancellationPending + " ...\n", Color.Purple);
                     if (!backupbackgroundWorker.CancellationPending)
                     {
                         string destPath = "";
@@ -1199,7 +1265,7 @@ namespace IppBackups
 
                         try
                         {
-                            rTxtBox_Output.AppendText("\n\tStarting Backup for " + db + ".\n", Color.Black);
+                            rTxtBox_Output.AppendText("\n\tStarting Backup for " + db + "...\n", Color.Black);
 
                             if (destPath.Contains("https:"))
                             {
@@ -1209,7 +1275,7 @@ namespace IppBackups
                             {
                                 BackupDatabase(db, sUsername, sPassword, curSrvInstanceToConnect, destPath);
                             }
-                            backStatus.Add(db, true);
+                            // backStatus.Add(db, true);
                         }
                         catch (Exception ex)
                         {
@@ -1221,14 +1287,20 @@ namespace IppBackups
                         finally
                         {
                             bool status;
+                            if (backStatus.ContainsKey(db))
+                            {
 
-                            if (backStatus[db])
-                            {
-                                rTxtBox_Output.AppendText("\tBackup completed...\n", Color.Green);
-                            }
-                            else
-                            {
-                                rTxtBox_Output.AppendText("\tBackup completed with error(s)...\n", Color.Red);
+                                if (backStatus[db])
+                                {
+                                    // rTxtBox_Output.AppendText("\tBackup completed...\n", Color.Green);
+                                }
+                                else
+                                {
+                                    if (rBtn_Refresh.Checked)
+                                    {
+                                        rTxtBox_Output.AppendText("\t" + db + " restore will be skipped...\n", Color.Red);
+                                    }
+                                }
                             }
                         }
                         cancelAsynButton.Enabled = false;
@@ -1247,26 +1319,27 @@ namespace IppBackups
         private void backupbackgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             //lbl_Oupt.Text += (e.ProgressPercentage.ToString() + "%");
-            rTxtBox_Output.AppendText((e.ProgressPercentage.ToString() + "%"),Color.Black);
+            rTxtBox_Output.AppendText((e.ProgressPercentage.ToString() + "%"), Color.Black);
         }
 
         private void backupbackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            if (e.Cancelled == true)
+            if (e.Cancelled == true || backupbackgroundWorker.CancellationPending)
             {
-                rTxtBox_Output.AppendText("Canceled! \n",Color.Yellow);
+                rTxtBox_Output.AppendText("Canceled! \n", Color.Yellow);
             }
             else if (e.Error != null)
             {
-                rTxtBox_Output.AppendText("Error: " + e.Error.Message , Color.Red);
+                rTxtBox_Output.AppendText("Error: " + e.Error.Message, Color.Red);
             }
             else
             {
-                rTxtBox_Output.AppendText("All selected backups completed\n\n",Color.Black);
-                rTxtBox_Output.AppendText(divider + "\n", Color.Black);
-                if (rBtn_Refresh.Checked)
+                if (rBtn_Refresh.Checked && !backupbackgroundWorker.CancellationPending)
                 {
-                    rTxtBox_Output.AppendText("\nRefreshing " + cBox_DestEnvironment.Text + " environment with selected database(s)... \n",Color.Black);
+                    rTxtBox_Output.AppendText("All selected backups completed\n\n", Color.Black);
+                    rTxtBox_Output.AppendText(divider + "\n", Color.Black);
+
+                    rTxtBox_Output.AppendText("\nRefreshing " + cBox_DestEnvironment.Text + " environment with selected database(s)... \n", Color.Black);
                     restorebackgroundWorker.RunWorkerAsync();
                 }
                 else
@@ -1278,8 +1351,8 @@ namespace IppBackups
 
         private void restorebackgroundWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-            if (!restorebackgroundWorker.CancellationPending)
-            { 
+            if (!restorebackgroundWorker.CancellationPending && !CancelRestore)
+            {
                 VerifyBackupExists();
 
                 BackgroundWorker restoreWorker = sender as BackgroundWorker;
@@ -1347,123 +1420,127 @@ namespace IppBackups
                     {
                         if (backStatus.ContainsKey(db) || rBtn_Restore.Checked)
                         {
-                            ///if (backStatus[db] || rBtn_Restore.Checked)
-                            //if (rBtn_Restore.Checked)
-                            //{
-                            try
+                            if (backStatus[db])
                             {
-                                string restore_db = "";
-                                if (rBtn_Refresh.Checked)
+                                //if (rBtn_Restore.Checked)
+                                //{
+                                try
                                 {
-                                    restore_db = db.Replace(cBox_Environment.Text, cBox_DestEnvironment.Text);
-                                }
-                                else if (rBtn_Restore.Checked)
-                                {
-                                    restore_db = db;
-                                }
-
-                                //string filePath = "\\\\" + curSrv + "\\" + backupDestination.Replace(":", "$") + "\\" + db + ".bak";
-                                string filePath = "";
-                                if (backupDestination.Contains("https"))
-                                {
-                                    //rTxtBox_Output.AppendText("\tRestoring from Azure...\n", Color.Black);
-                                    filePath = backupDestination + "/" + db + ".bak";
-                                    if (rBtn_Restore.Checked)
+                                    string restore_db = "";
+                                    if (rBtn_Refresh.Checked)
                                     {
-                                        rTxtBox_Output.AppendText("\tUpdating from soure path in Azure...\n", Color.Black);
-                                        filePath = filePath.Replace(cBox_Environment.Text, backupSource);
+                                        restore_db = db.Replace(cBox_Environment.Text, cBox_DestEnvironment.Text);
                                     }
-                                    //else
-                                    //{
-                                    //    filePath = backupDestination + "/" + db + ".bak";
-                                    //}
-                                }
-                                else
-                                {
-                                    filePath = "\\\\" + curSrv + "\\" + backupDestination.Replace(":", "$") + "\\" + db + ".bak";
-                                }
-
-                                rTxtBox_Output.AppendText("\n\tStarting restore for " + restore_db + ".'\n", Color.Black);
-
-                                // Perform a time consuming operation and report progress
-
-                                // TODO: Workout how to identify which domain the server is under
-                                restoringToOscar = oscarServers.Any(restoreToSrv.Contains);
-                                //if (restoreToSrv == "UK-CHFMIGSQL" || restoreToSrv == "UK-CHDEVSQL01" || restoreToSrv == "UK-CHDEVSQL02" || restoreToSrv == "FDC_TAB" || restoreToSrv == "CHI-7S45842" || restoreToSrv == "DEV-SENT01" || restoreToSrv == "UK-DEVEPI7" || restoreToSrv == "BSI16DBS04PRV" || restoreToSrv == "BSI16DBS03PRV" || restoreToSrv == "BSI10DBS03PRV")
-                                if (restoringToOscar)
-                                {
-                                    RestoreDatabaseToOscar(restore_db, filePath, srvName, srvInstance, r_port, r_sUsername, r_sPassword, restore_dataFilePath, restore_logFilePath, localcopy);
-                                }
-                                else
-                                {
-                                    RestoreDatabaseToPrivate(restore_db, filePath, srvName, srvInstance, r_sUsername, r_sPassword, restore_dataFilePath, restore_logFilePath, localcopy);
-                                }
-
-                                //if (restore_db.Contains("BSOL") || restore_db.Contains("CloudAdmin"))
-                                if (restore_db == (restoreToEnv + "-BSOL") || restore_db == (restoreToEnv + "-CloudAdmin"))
-                                {
-                                    //Server myServer = new Server(srvInstance);
-                                    Server myServer = new Server(srvName);
-                                    //lbl_Oupt.Text += "Calling GenerateViewScriptWithDependencies " + srvName +" ...\n";
-                                    rTxtBox_Output.AppendText("\t\tCalling GenerateDatabaseObjectsScriptWithDependencies " + srvName + " ...\n", Color.Black);
-
-                                    //GenerateViewScriptWithDependencies(myServer, restore_db);                                    
-                                    if (restore_db == (restoreToEnv + "-CloudAdmin"))
+                                    else if (rBtn_Restore.Checked)
                                     {
-                                        GenerateDatabaseObjectsScriptWithDependencies(myServer, restore_db, "Synonyms");
+                                        restore_db = db;
                                     }
-                                    GenerateDatabaseObjectsScriptWithDependencies(myServer, restore_db, "Views");
-                                }
 
-                                //if (restore_db.Contains("CloudAdmin") || restore_db.Contains("PersonalData"))
-
-                                int dashIndex = db.IndexOf("-") + 1;
-                                DirectoryInfo d = new DirectoryInfo(scriptLocation);
-                                foreach (var file in d.GetFiles("*.sql"))
-                                {
-                                    string dbPart = db.Substring(dashIndex, db.Length - dashIndex);
-
-                                    //if (file.Name.ToLower().Contains("_" + restoreToEnv.ToLower()) && file.Name.ToLower().Contains(dbPart.ToLower() + "_") && restore_db.ToLower().Contains(restoreToEnv.ToLower() + "-") && restore_db.ToLower().Contains("-" + dbPart.ToLower()))
-                                    if (file.Name.ToLower().Contains("_" + restoreToEnv.ToLower()) && file.Name.ToLower().Contains(dbPart.ToLower() + "_") && restore_db.ToLower().Contains(restoreToEnv.ToLower() + "-") && restore_db.ToLower().Contains("-" + dbPart.ToLower()) && file.Name.StartsWith(dbPart))
+                                    //string filePath = "\\\\" + curSrv + "\\" + backupDestination.Replace(":", "$") + "\\" + db + ".bak";
+                                    string filePath = "";
+                                    if (backupDestination.Contains("https"))
                                     {
-                                        //update_DatabaseEntries(srvName, restoreToEnv, restore_db, file.Name);
-                                        update_DatabaseEntries(srvName, srvInstance, restoreToEnv, restore_db, file.Name);
+                                        //rTxtBox_Output.AppendText("\tRestoring from Azure...\n", Color.Black);
+                                        filePath = backupDestination + "/" + db + ".bak";
+                                        if (rBtn_Restore.Checked)
+                                        {
+                                            rTxtBox_Output.AppendText("\tUpdating from soure path in Azure...\n", Color.Black);
+                                            filePath = filePath.Replace(cBox_Environment.Text, backupSource);
+                                        }
+                                        //else
+                                        //{
+                                        //    filePath = backupDestination + "/" + db + ".bak";
+                                        //}
                                     }
+                                    else
+                                    {
+                                        filePath = "\\\\" + curSrv + "\\" + backupDestination.Replace(":", "$") + "\\" + db + ".bak";
+                                    }
+
+                                    rTxtBox_Output.AppendText("\n\tStarting restore for " + restore_db + "...\n", Color.Black);
+
+                                    // Perform a time consuming operation and report progress
+
+                                    // TODO: Workout how to identify which domain the server is under
+                                    restoringToOscar = oscarServers.Any(restoreToSrv.Contains);
+                                    //if (restoreToSrv == "UK-CHFMIGSQL" || restoreToSrv == "UK-CHDEVSQL01" || restoreToSrv == "UK-CHDEVSQL02" || restoreToSrv == "FDC_TAB" || restoreToSrv == "CHI-7S45842" || restoreToSrv == "DEV-SENT01" || restoreToSrv == "UK-DEVEPI7" || restoreToSrv == "BSI16DBS04PRV" || restoreToSrv == "BSI16DBS03PRV" || restoreToSrv == "BSI10DBS03PRV")
+                                    if (restoringToOscar)
+                                    {
+                                        RestoreDatabaseToOscar(restore_db, filePath, srvName, srvInstance, r_port, r_sUsername, r_sPassword, restore_dataFilePath, restore_logFilePath, localcopy);
+                                    }
+                                    else
+                                    {
+                                        RestoreDatabaseToPrivate(restore_db, filePath, srvName, srvInstance, r_sUsername, r_sPassword, restore_dataFilePath, restore_logFilePath, localcopy);
+                                    }
+
+                                    //if (restore_db.Contains("BSOL") || restore_db.Contains("CloudAdmin"))
+                                    if (restore_db == (restoreToEnv + "-BSOL") || restore_db == (restoreToEnv + "-CloudAdmin"))
+                                    {
+                                        //Server myServer = new Server(srvInstance);
+                                        Server myServer = new Server(srvName);
+                                        //lbl_Oupt.Text += "Calling GenerateViewScriptWithDependencies " + srvName +" ...\n";
+                                        rTxtBox_Output.AppendText("\tScripting Database Objects with Dependencies for " + srvName + " ...\n", Color.Black);
+
+                                        //GenerateViewScriptWithDependencies(myServer, restore_db);                                    
+                                        if (restore_db == (restoreToEnv + "-CloudAdmin"))
+                                        {
+                                            GenerateDatabaseObjectsScriptWithDependencies(myServer, restore_db, "Synonyms");
+                                        }
+                                        GenerateDatabaseObjectsScriptWithDependencies(myServer, restore_db, "Views");
+                                    }
+
+                                    //if (restore_db.Contains("CloudAdmin") || restore_db.Contains("PersonalData"))
+                                    rTxtBox_Output.AppendText("\tApplying post restore scripts if applicable...\n", Color.Black);
+                                    int dashIndex = db.IndexOf("-") + 1;
+                                    DirectoryInfo d = new DirectoryInfo(scriptLocation);
+                                    foreach (var file in d.GetFiles("*.sql"))
+                                    {
+                                        string dbPart = db.Substring(dashIndex, db.Length - dashIndex);
+
+                                        //if (file.Name.ToLower().Contains("_" + restoreToEnv.ToLower()) && file.Name.ToLower().Contains(dbPart.ToLower() + "_") && restore_db.ToLower().Contains(restoreToEnv.ToLower() + "-") && restore_db.ToLower().Contains("-" + dbPart.ToLower()))
+                                        if (file.Name.ToLower().Contains("_" + restoreToEnv.ToLower()) && file.Name.ToLower().Contains(dbPart.ToLower() + "_") && restore_db.ToLower().Contains(restoreToEnv.ToLower() + "-") && restore_db.ToLower().Contains("-" + dbPart.ToLower()) && file.Name.StartsWith(dbPart))
+                                        {
+                                            //update_DatabaseEntries(srvName, restoreToEnv, restore_db, file.Name);
+                                            update_DatabaseEntries(srvName, srvInstance, restoreToEnv, restore_db, file.Name);
+                                        }
+                                    }
+                                    rTxtBox_Output.AppendText("\t" + db + " Successfully restored to " + restoreToEnv + " .\n", Color.Green);
+                                }
+                                catch (Exception ex)
+                                {
+                                    rTxtBox_Output.AppendText("\tSomething happened while restoring " + db + "\n", Color.Black);
+                                    rTxtBox_Output.AppendText("\tException: " + ex.Message + "\n", Color.Red);
+                                    rTxtBox_Output.AppendText("\n\t\tInner exception : " + ex.InnerException + "\n", Color.Red);
+                                }
+                                finally
+                                {
+                                    //rTxtBox_Output.AppendText("\t" + db + " Restore completed...\n", Color.Green);
                                 }
                             }
-                            catch (Exception ex)
+                            else
                             {
-                                rTxtBox_Output.AppendText("\tSsmething happened while restoring " + db, Color.Black);
-                                rTxtBox_Output.AppendText("\n\tException: " + ex.Message + "\n", Color.Red);
+                                rTxtBox_Output.AppendText("\tSkipping " + db + " restore, because the backup failed...\n", Color.Red);
                             }
-                            finally
-                            {
-                                rTxtBox_Output.AppendText("\t" + db + " Restore completed...\n", Color.Green);
-                            }
-                            //}
-                            //else
-                            //{
-                            //    rTxtBox_Output.AppendText("\nThere was a problem with the last " + db + " backup, restore can not be performed...\n\n",Color.Red);
-                            //}
                         }
                         else
                         {
                             rTxtBox_Output.AppendText("\n\tThere was a problem with the last " + db + " backup, restore can not be performed...\n\n", Color.Red);
                         }
                     }
-                    rTxtBox_Output.AppendText("Restore process completed at " + DateTime.Now + "\n", Color.Green);
+                    rTxtBox_Output.AppendText("\nRestore process completed at " + DateTime.Now + "\n", Color.Green);
                 }
             }
             else
             {
-                rTxtBox_Output.AppendText("Pending restore cancelled by user...", Color.Purple);
+                rTxtBox_Output.AppendText("\tPending restore cancelled by user...\n", Color.Black);
+                CancelRestore = false;
             }
         }
 
         private void restorebackgroundWorker_ProgressChanged(object sender, System.ComponentModel.ProgressChangedEventArgs e)
         {
             //lbl_Oupt.Text += (e.ProgressPercentage.ToString() + "%");
-            rTxtBox_Output.AppendText((e.ProgressPercentage.ToString() + "%"),Color.Black);
+            rTxtBox_Output.AppendText((e.ProgressPercentage.ToString() + "%"), Color.Black);
         }
 
         private void restorebackgroundWorker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
@@ -1471,18 +1548,18 @@ namespace IppBackups
             if (e.Cancelled == true)
             {
                 //lbl_Oupt.Text += "Canceled! '\n";
-                rTxtBox_Output.AppendText("Canceled! '\n",Color.Yellow);
+                rTxtBox_Output.AppendText("Canceled! '\n", Color.Yellow);
             }
             else if (e.Error != null)
             {
                 // TODO: Change font color
                 //lbl_Oupt.Text += "Error: " + e.Error.Message;
-                rTxtBox_Output.AppendText("Error: " + e.Error.Message +"\n", Color.Red);
+                rTxtBox_Output.AppendText("Error: " + e.Error.Message + "\n", Color.Red);
             }
             else
             {
                 //lbl_Oupt.Text += "Restore Done! '\n";
-                rTxtBox_Output.AppendText("All selected databases has been restored. '\n",Color.Green);
+                rTxtBox_Output.AppendText("All selected databases has been restored. '\n", Color.Green);
                 rTxtBox_Output.AppendText(divider + "\n", Color.Black);
                 btn_Execute.Enabled = true;
             }
@@ -1502,7 +1579,7 @@ namespace IppBackups
                     restorebackgroundWorker.CancelAsync();
                     return;
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     rTxtBox_Output.AppendText("\t\tException: " + ex.Message, Color.Red);
                 }
@@ -1517,7 +1594,7 @@ namespace IppBackups
                     restorebackgroundWorker.CancelAsync();
                     return;
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     rTxtBox_Output.AppendText("\t\tException: " + ex.Message, Color.Red);
                 }
@@ -1531,17 +1608,17 @@ namespace IppBackups
                 //cBox_DestServer.DataSource = _servers2;
                 //cBox_DestServer.Enabled = true;
                 //cBox_DestEnvironment.Enabled = true;
-                cBox_Server.DataSource = _servers;                
+                cBox_Server.DataSource = _servers;
                 cBox_DestServer.Enabled = false;
                 cBox_DestEnvironment.Enabled = false;
             }
-           /* else
-            {
-                //cBox_DestServer.Enabled = false;
-                //cBox_DestEnvironment.Enabled = false;
-                cBox_DestServer.Enabled = true;
-                cBox_DestEnvironment.Enabled = true;
-            }*/
+            /* else
+             {
+                 //cBox_DestServer.Enabled = false;
+                 //cBox_DestEnvironment.Enabled = false;
+                 cBox_DestServer.Enabled = true;
+                 cBox_DestEnvironment.Enabled = true;
+             }*/
         }
 
         private void rBtn_Refresh_CheckedChanged(object sender, EventArgs e)
@@ -1597,7 +1674,8 @@ namespace IppBackups
 
         private void update_DatabaseEntries(string serverName, string serverInstance, string env, string db, string cur_ScriptFile)
         {
-            rTxtBox_Output.AppendText("\t\tUpdating Database entries for " + db + " using " + cur_ScriptFile + " on server " + serverName + " instance " + serverInstance + "...\n", Color.Black);
+            //rTxtBox_Output.AppendText("\tUpdating Database entries for " + db + " using " + cur_ScriptFile + " on server " + serverName + " instance " + serverInstance + "...\n", Color.Black);
+            rTxtBox_Output.AppendText("\tExecuting Update_" + cur_ScriptFile + " script on " + db + " ...\n", Color.Black);
 
             /* Try manipulating the incoming server details to cater for both default and instanced SQL */
             Server srv;
@@ -1618,21 +1696,21 @@ namespace IppBackups
             }
 
             string sqlConnectionString = "Data Source=" + serverInstance + "; Initial Catalog=" + db + "; Integrated Security=SSPI;";
-            
+
             string scriptFile = scriptLocation + cur_ScriptFile;
             FileInfo file = new FileInfo(scriptFile);
             string script = file.OpenText().ReadToEnd();
             SqlConnection conn = new SqlConnection(sqlConnectionString);
-            
+
             conn.Open();
-            
+
             SqlCommand cmd = new SqlCommand(script, conn);
-            cmd.CommandTimeout = 360;
-            
+            cmd.CommandTimeout = 0;
+
             try
             {
                 cmd.ExecuteNonQuery();
-                rTxtBox_Output.AppendText("\t\tScript executed successfully...\n", Color.Green);
+                rTxtBox_Output.AppendText("\tScript executed successfully.\n", Color.Black);
                 conn.Close();
             }
             catch (SqlServerManagementException e)
@@ -1694,7 +1772,7 @@ namespace IppBackups
                         else if (rBtn_Restore.Checked)
                         {
                             //updatedScript = Regex.Replace(create_script, Environment.CI | Environment.DEV | Environment.MIG | Environment.PPD | Environment.PROD | Environment.QA | Environment.TEST  + "-", cBox_Environment.Text + "-", RegexOptions.IgnoreCase);
-                            updatedScript = Regex.Replace(create_script,  backupSource + "-", cBox_Environment.Text + "-", RegexOptions.IgnoreCase);
+                            updatedScript = Regex.Replace(create_script, backupSource + "-", cBox_Environment.Text + "-", RegexOptions.IgnoreCase);
                         }
 
                         sqlFile.WriteLine(updatedScript);
@@ -1723,7 +1801,7 @@ namespace IppBackups
             {
                 // Connect to the default instance of SQL Server.
                 srv = new Server();
-            }            
+            }
 
             // Reference the database.
             Database restoreDb = srv.Databases[db];
@@ -1746,8 +1824,8 @@ namespace IppBackups
             UrnCollection udvObjs = new UrnCollection();
 
             // Iterate through the views in database and script each one. Display the script.
-            rTxtBox_Output.AppendText("\t\tCollating all views for this database...'\n",Color.Black);
-            foreach( Microsoft.SqlServer.Management.Smo.View view in restoreDb.Views)
+            rTxtBox_Output.AppendText("\t\tCollating all views for this database...'\n", Color.Black);
+            foreach (Microsoft.SqlServer.Management.Smo.View view in restoreDb.Views)
             {
                 // Check if the view is not a system view            
                 if (!view.IsSystemObject)
@@ -1765,70 +1843,70 @@ namespace IppBackups
             StringBuilder sb = new StringBuilder();
 
             //lbl_Oupt.Text += "Building Dependencies tree for all views...'\n";
-            rTxtBox_Output.AppendText("\t\tBuilding Dependencies tree for all views...'\n",Color.Black);
+            rTxtBox_Output.AppendText("\t\tBuilding Dependencies tree for all views...'\n", Color.Black);
 
-            foreach(DependencyCollectionNode dcoln in dcollect)
+            foreach (DependencyCollectionNode dcoln in dcollect)
             {
                 foreach (Microsoft.SqlServer.Management.Smo.View myView in restoreDb.Views)
                 {
-                if (myView.Name == dcoln.Urn.GetAttribute("Name"))
-                {
-                    if (dcoln.Urn.Type == "View")
+                    if (myView.Name == dcoln.Urn.GetAttribute("Name"))
                     {
-                        rTxtBox_Output.AppendText("\t\t" + dcoln.Urn.GetAttribute("Name") + " will be scripted. '\n", Color.Black);
-
-                        /* Generating IF EXISTS and DROP command for views */
-                        StringCollection viewScripts = myView.Script(scriptOptions);
-
-                        foreach (string script in viewScripts)
+                        if (dcoln.Urn.Type == "View")
                         {
-                            var updatedScript = "";
+                            rTxtBox_Output.AppendText("\t\t" + dcoln.Urn.GetAttribute("Name") + " will be scripted. '\n", Color.Black);
 
-                           if (rBtn_Refresh.Checked)
-                           {
-                                updatedScript = Regex.Replace(script, cBox_Environment.Text + "-", cBox_DestEnvironment.Text + "-", RegexOptions.IgnoreCase);
-                            }
-                            else if (rBtn_Restore.Checked)
+                            /* Generating IF EXISTS and DROP command for views */
+                            StringCollection viewScripts = myView.Script(scriptOptions);
+
+                            foreach (string script in viewScripts)
                             {
-                                //updatedScript = Regex.Replace(create_script, Environment.CI | Environment.DEV | Environment.MIG | Environment.PPD | Environment.PROD | Environment.QA | Environment.TEST  + "-", cBox_Environment.Text + "-", RegexOptions.IgnoreCase);
-                                updatedScript = Regex.Replace(script, backupSource + "-", cBox_Environment.Text + "-", RegexOptions.IgnoreCase);
+                                var updatedScript = "";
+
+                                if (rBtn_Refresh.Checked)
+                                {
+                                    updatedScript = Regex.Replace(script, cBox_Environment.Text + "-", cBox_DestEnvironment.Text + "-", RegexOptions.IgnoreCase);
+                                }
+                                else if (rBtn_Restore.Checked)
+                                {
+                                    //updatedScript = Regex.Replace(create_script, Environment.CI | Environment.DEV | Environment.MIG | Environment.PPD | Environment.PROD | Environment.QA | Environment.TEST  + "-", cBox_Environment.Text + "-", RegexOptions.IgnoreCase);
+                                    updatedScript = Regex.Replace(script, backupSource + "-", cBox_Environment.Text + "-", RegexOptions.IgnoreCase);
+                                }
+
+
+                                sqlFile.WriteLine(updatedScript);
                             }
 
-
-                            sqlFile.WriteLine(updatedScript);
-                        }
-
-                        /* Generating CREATE VIEW command */
-                        viewScripts = myView.Script(scriptOptionsForCreate);
-                        foreach (string create_script in viewScripts)
-                        {
-                            var updatedScript = "";
-                            if (rBtn_Refresh.Checked)
+                            /* Generating CREATE VIEW command */
+                            viewScripts = myView.Script(scriptOptionsForCreate);
+                            foreach (string create_script in viewScripts)
                             {
-                                updatedScript = Regex.Replace(create_script, cBox_Environment.Text + "-", cBox_DestEnvironment.Text + "-", RegexOptions.IgnoreCase);
-                            }
-                            else if (rBtn_Restore.Checked)
-                            {
-                                //updatedScript = Regex.Replace(create_script, Environment.CI | Environment.DEV | Environment.MIG | Environment.PPD | Environment.PROD | Environment.QA | Environment.TEST  + "-", cBox_Environment.Text + "-", RegexOptions.IgnoreCase);
-                                updatedScript = Regex.Replace(create_script, backupSource + "-", cBox_Environment.Text + "-", RegexOptions.IgnoreCase);
-                            }
+                                var updatedScript = "";
+                                if (rBtn_Refresh.Checked)
+                                {
+                                    updatedScript = Regex.Replace(create_script, cBox_Environment.Text + "-", cBox_DestEnvironment.Text + "-", RegexOptions.IgnoreCase);
+                                }
+                                else if (rBtn_Restore.Checked)
+                                {
+                                    //updatedScript = Regex.Replace(create_script, Environment.CI | Environment.DEV | Environment.MIG | Environment.PPD | Environment.PROD | Environment.QA | Environment.TEST  + "-", cBox_Environment.Text + "-", RegexOptions.IgnoreCase);
+                                    updatedScript = Regex.Replace(create_script, backupSource + "-", cBox_Environment.Text + "-", RegexOptions.IgnoreCase);
+                                }
 
-                            sqlFile.WriteLine(updatedScript);
+                                sqlFile.WriteLine(updatedScript);
+                            }
                         }
                     }
-                }
                 }
             }
 
             sqlFile.Write(sb);
-            rTxtBox_Output.AppendText("\tView Scripts completed...\n",Color.Black);
+            rTxtBox_Output.AppendText("\tView Scripts completed...\n", Color.Black);
             sqlFile.Close();
 
             if (rBtn_Refresh.Checked)
             {
                 destEnv = cBox_DestEnvironment.Text;
             }
-            else if(rBtn_Restore.Checked)
+            else if (rBtn_Restore.Checked)
             {
                 destEnv = cBox_Environment.Text;
             }
@@ -1874,7 +1952,7 @@ namespace IppBackups
             UrnCollection udvObjs = new UrnCollection();
 
             // Iterate through the views in database and script each one. Display the script.
-            rTxtBox_Output.AppendText("\t\tCollating all " + dbObj + " for this database...'\n", Color.Black);
+            rTxtBox_Output.AppendText("\tCollating all " + dbObj + " for this database...'\n", Color.Black);
 
             switch (dbObj)
             {
@@ -1894,12 +1972,12 @@ namespace IppBackups
                         // Check if the synonym is not a system view
                         //if (!synonym..IsSchemaOwned)
                         //{
-                            udvObjs.Add(synonym.Urn);
+                        udvObjs.Add(synonym.Urn);
                         //}
                     }
                     break;
                 case "StdProc":
-                    foreach(Microsoft.SqlServer.Management.Smo.StoredProcedure stdProc in restoreDb.StoredProcedures)
+                    foreach (Microsoft.SqlServer.Management.Smo.StoredProcedure stdProc in restoreDb.StoredProcedures)
                     {
                         // Check if the synonym is not a system view
                         if (!stdProc.IsSystemObject)
@@ -1909,17 +1987,17 @@ namespace IppBackups
                     }
                     break;
                 case "Triggers":
-                    foreach(Microsoft.SqlServer.Management.Smo.Trigger trigger in restoreDb.Triggers)
+                    foreach (Microsoft.SqlServer.Management.Smo.Trigger trigger in restoreDb.Triggers)
                     {
                         // Check if the synonym is not a system view
-                        if(!trigger.IsSystemObject)
+                        if (!trigger.IsSystemObject)
                         {
                             udvObjs.Add(trigger.Urn);
                         }
                     }
                     break;
             }
-        //}
+            //}
 
             // Creating Dependency Tree
             DependencyTree dtree = scrp.DiscoverDependencies(udvObjs, true);
@@ -1928,7 +2006,7 @@ namespace IppBackups
 
             StringBuilder sb = new StringBuilder();
 
-            rTxtBox_Output.AppendText("\t\tBuilding Dependencies tree for all " + dbObj + " ...'\n", Color.Black);
+            rTxtBox_Output.AppendText("\tBuilding Dependencies tree for all " + dbObj + " ...'\n", Color.Black);
 
             foreach (DependencyCollectionNode dcoln in dcollect)
             {
@@ -2133,11 +2211,11 @@ namespace IppBackups
                         break;
                 }
 
-                
+
             }
 
             sqlFile.Write(sb);
-            rTxtBox_Output.AppendText("\t" + dbObj + " Scripts completed...\n", Color.Black);
+            rTxtBox_Output.AppendText("\t" + dbObj + " Scripts completed.\n", Color.Black);
             sqlFile.Close();
 
             if (rBtn_Refresh.Checked)
@@ -2164,7 +2242,7 @@ namespace IppBackups
             conn.Open();
             SqlCommand cmd = new SqlCommand(script, conn);
 
-            rTxtBox_Output.AppendText("\t\tLoading Viewupdate file from: " + scriptFile + "\n",Color.Black);
+            rTxtBox_Output.AppendText("\t\tLoading Viewupdate file from: " + scriptFile + "\n", Color.Black);
 
             try
             {
@@ -2174,15 +2252,15 @@ namespace IppBackups
             }
             catch (SqlServerManagementException ex)
             {
-                rTxtBox_Output.AppendText("\t\tSqlServerManagementException: " + ex.Message + "\n",Color.Red);
+                rTxtBox_Output.AppendText("\t\tSqlServerManagementException: " + ex.Message + "\n", Color.Red);
             }
             catch (SqlException ex)
             {
-               rTxtBox_Output.AppendText("\t\tSqlException: " + ex.Message + "\n",Color.Red);
+                rTxtBox_Output.AppendText("\t\tSqlException: " + ex.Message + "\n", Color.Red);
             }
             catch (Exception ex)
             {
-                rTxtBox_Output.AppendText("\t\tException: " + ex.Message + "\n",Color.Red);
+                rTxtBox_Output.AppendText("\t\tException: " + ex.Message + "\n", Color.Red);
             }
         }
 
@@ -2197,7 +2275,8 @@ namespace IppBackups
             conn.Open();
             SqlCommand cmd = new SqlCommand(script, conn);
 
-            rTxtBox_Output.AppendText("\t\tLoading " + dbObj + "update file from: " + scriptFile + "\n", Color.Black);
+            //rTxtBox_Output.AppendText("\tLoading " + dbObj + " update file from: " + scriptFile + "\n", Color.Black);
+            rTxtBox_Output.AppendText("\tLoading script to update existing " + dbObj + " ...\n", Color.Black);
 
             try
             {
@@ -2284,7 +2363,7 @@ namespace IppBackups
                     new_entry.Show();
                 }
             }
-            else 
+            else
             {
                 MessageBox.Show("Please, select only one database");
             }

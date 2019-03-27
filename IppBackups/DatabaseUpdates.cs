@@ -1793,7 +1793,7 @@ namespace IppBackups
                         // do something with each column for that table
 
                         field.Add(column.Name);
-                        if (column.DataType.ToString().ToUpper() == "NVARCHAR")
+                        if (column.DataType.ToString().ToUpper() == "NVARCHAR" || column.DataType.ToString().ToUpper() == "VARCHAR")
                         {
                             if (column.DataType.MaximumLength == -1)
                             {
